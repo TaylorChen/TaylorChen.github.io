@@ -1,0 +1,9 @@
+# Site settings
+title: TayloyChen Blog
+SEOTitle: TayloyChen 的博客 | TayloyChen Blog
+header-img: img/home-bg.jpg
+email: cherrycmd@gmail.com
+description: "这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员"
+keyword: "互联网, 后端, 设计"
+url: "https://taylorchen.github.io/"
+baseurl: ""
