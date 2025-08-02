@@ -1,4 +1,97 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-02T09:36:07+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">TayloyChen Blog</title><subtitle>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><entry><title type="html">二八法则的一些思考</title><link href="http://localhost:4000/2025/08/01/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83.html" rel="alternate" type="text/html" title="二八法则的一些思考" /><published>2025-08-01T00:00:00+08:00</published><updated>2025-08-01T00:00:00+08:00</updated><id>http://localhost:4000/2025/08/01/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83</id><content type="html" xml:base="http://localhost:4000/2025/08/01/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83.html"><![CDATA[<p>关于二八法则的另外一种叫法是80/20法则，或者叫关键少数法则。在生活工作方各方面都有体现：</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-02T10:10:04+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">TayloyChen Blog</title><subtitle>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><entry><title type="html">Ai 辅助编程中的 llm 选择最佳实践</title><link href="http://localhost:4000/2025/08/02/AI-%E8%BE%85%E5%8A%A9%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84-LLM-%E9%80%89%E6%8B%A9%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" rel="alternate" type="text/html" title="Ai 辅助编程中的 llm 选择最佳实践" /><published>2025-08-02T00:00:00+08:00</published><updated>2025-08-02T00:00:00+08:00</updated><id>http://localhost:4000/2025/08/02/AI%C2%A0%E8%BE%85%E5%8A%A9%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%C2%A0LLM%C2%A0%E9%80%89%E6%8B%A9%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5</id><content type="html" xml:base="http://localhost:4000/2025/08/02/AI-%E8%BE%85%E5%8A%A9%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84-LLM-%E9%80%89%E6%8B%A9%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"><![CDATA[<h1 id="ai辅助编程中的llm选择最佳实践">AI 辅助编程中的 LLM 选择最佳实践</h1>
+
+<p><strong>看开发阶段、试不同模型、管好成本，最终找到最适合自己的方案</strong></p>
+
+<p>软件开发有不同阶段，每个阶段需要 AI 的不同能力。开发分成四个阶段，并给出如何选择模型的建议：</p>
+
+<h2 id="1-设计与架构阶段">1. 设计与架构阶段</h2>
+
+<ul>
+  <li>
+    <p>需求：这个阶段你需要一个能深度思考、有丰富知识的模型，帮助理解业务需求并设计架构。</p>
+  </li>
+  <li>
+    <p>推荐模型：OpenAI o1、Gemini 2.5 Pro、DeepSeek R1</p>
+  </li>
+  <li>
+    <p>为什么选这些：这些模型推理能力强，能帮你做出清晰的早期决策</p>
+  </li>
+  <li>
+    <p>成本建议：这里值得用高级模型，因为好的架构能省下后期改动的麻烦</p>
+  </li>
+</ul>
+
+<h2 id="2-开发阶段">2. 开发阶段</h2>
+
+<ul>
+  <li>
+    <p>需求：写代码时，需要模型能理解代码模式、建议补全、解释实现</p>
+  </li>
+  <li>
+    <p>推荐模型：Gemini 2.5 Pro、GPT-4o、Grok 3</p>
+  </li>
+  <li>
+    <p>额外亮点：Claude 3.7 Sonnet 虽然基准测试分数不最高，但很多开发者喜欢，建议多试试</p>
+  </li>
+  <li>
+    <p>成本建议：简单编码用中档模型就够，复杂任务再用高级模型</p>
+  </li>
+</ul>
+
+<h2 id="3-测试阶段">3. 测试阶段</h2>
+
+<ul>
+  <li>
+    <p>需求：写测试时，模型要能发现边缘情况、写出可靠的测试代码</p>
+  </li>
+  <li>
+    <p>推荐模型：Claude 3.7、OpenAI o1、GPT-4o Mini</p>
+  </li>
+  <li>
+    <p>成本建议：普通测试用中档模型，复杂或关键测试用高级模型</p>
+  </li>
+</ul>
+
+<h2 id="4-部署与审查阶段">4. 部署与审查阶段</h2>
+
+<ul>
+  <li>
+    <p>需求：审查大段代码时，模型要有大上下文窗口，能一次看懂整个代码库</p>
+  </li>
+  <li>
+    <p>推荐模型：Gemini 2.5 Pro、GPT-4o Mini、GPT-4.1、OpenAI o1</p>
+  </li>
+  <li>
+    <p>成本建议：高级模型能加快审查速度，节省时间，值得投资</p>
+  </li>
+</ul>
+
+<p><strong>实用建议：如何选到适合的模型</strong></p>
+
+<p>除了按阶段选模型，还有一些实用技巧：</p>
+
+<ul>
+  <li>
+    <p>从小模型开始：先试试中档模型（如 Claude 3 Haiku 或 GPT-3.5），不够用再升级</p>
+  </li>
+  <li>
+    <p>任务分模型：在 Cline 中，可以为不同任务设置不同模型。比如头脑风暴用高级模型，日常编码用中档，写文档用便宜的</p>
+  </li>
+  <li>
+    <p>关注花销：用 Cline 的 token 计数器，看看哪些任务花钱多，优化模型选择</p>
+  </li>
+  <li>
+    <p>别只看分数：基准测试（如 MMLU Pro、Big CodeBench）只是参考，实际用起来可能不一样</p>
+  </li>
+  <li>
+    <p>多试试：在不重要的项目上实验不同模型，找到感觉</p>
+  </li>
+  <li>
+    <p>Plan/Act 分开选：Cline 有个 Plan/Act 模式，规划可以用推理强的模型（如 Gemini 2.5 Pro），实现用快又便宜的（如 Gemini 2.5 Flash Preview）</p>
+  </li>
+</ul>
+
+<p><img src="https://github.com/user-attachments/assets/71dda563-29c3-4ed0-8fd0-93aa8b23faad" alt="Image" /></p>]]></content><author><name></name></author><summary type="html"><![CDATA[AI 辅助编程中的 LLM 选择最佳实践]]></summary></entry><entry><title type="html">二八法则的一些思考</title><link href="http://localhost:4000/2025/08/01/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83.html" rel="alternate" type="text/html" title="二八法则的一些思考" /><published>2025-08-01T00:00:00+08:00</published><updated>2025-08-01T00:00:00+08:00</updated><id>http://localhost:4000/2025/08/01/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83</id><content type="html" xml:base="http://localhost:4000/2025/08/01/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83.html"><![CDATA[<p>关于二八法则的另外一种叫法是80/20法则，或者叫关键少数法则。在生活工作方各方面都有体现：</p>
 
 <p>在经济学领域，全球最富有的20%的人口，控制着世界收入的82.7%。</p>
 
