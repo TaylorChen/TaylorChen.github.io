@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-02T09:36:07+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">TayloyChen Blog</title><subtitle>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><entry><title type="html">二八法则的一些思考</title><link href="http://localhost:4000/2025/08/01/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83.html" rel="alternate" type="text/html" title="二八法则的一些思考" /><published>2025-08-01T00:00:00+08:00</published><updated>2025-08-01T00:00:00+08:00</updated><id>http://localhost:4000/2025/08/01/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83</id><content type="html" xml:base="http://localhost:4000/2025/08/01/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83.html"><![CDATA[<p>关于二八法则的另外一种叫法是80/20法则，或者叫关键少数法则。在生活工作方各方面都有体现：</p>
+
+<p>在经济学领域，全球最富有的20%的人口，控制着世界收入的82.7%。</p>
+
+<p>在软件领域，可以应用于优化软件工作，通过修复报告最多的错误的前20%，给定系统中80%的相关错误将被消除。</p>
+
+<p>在运动锻炼上，20%的练习和习惯影响着80%的结果，受训者不应该专注于多种训练。</p>
+
+<p>将二八法则落实到行动上，简单整理了如下方法</p>
+
+<p><strong>做有复利积累的事情</strong></p>
+
+<p>复利特别在经济学领域比较常用，例如做量化一般也会评估复利的长期收益(常说的利滚利)。最常见的复利即资产，即可以自行为持有人带来收益的东西，资产本身是固化的劳动，而靠其赚到的钱又可以固化为资产，从而以指数增长的方式增殖。当然，任何可以积累的东西都是具有复利效应：知识是可以积累下来的，积累的知识帮助做出更高概率正确的决策，带来更大的视野，从而有需求及动力学习更多知识；个人IP影响力是可以积累的，更高的影响力带来更大的曝光，接触更多优秀的人，有更多合作机会，反过来又增强个人的影响力。</p>
+
+<p><strong>极致聚焦，做减法</strong></p>
+
+<p>现实中每个人的精力有限，不太可能可以做所有的事情，要通过分析和评估来确定哪些是产生最大价值的关键因素。旦识别出关键因素，就需要对它们进行优先排序。这意味着要将资源和精力集中在那些最能产生效益的领域。识别并剔除那些消耗时间、金钱和资源但收益甚微的活动。在决策过程中，尽量减少不必要的选项和复杂性。通过简化流程，可以提高效率并减少错误。有效地利用资源，提高效率和产出。</p>
+
+<p><strong>战略优于战术</strong></p>
+
+<p>程序员应该都有感受，写代码最重要的是前面的思考的环节，写只占据很少时间，若思考不清晰，后续会有无尽的debug负担；做产品也一样，我个人看来，商业模式&gt;流量策略&gt;具体开发，商业模式定义了是否解决的是痛点问题，该问题是否给用户带来价值从而用户有付费意愿，该问题定义清楚后，流量策略和具体开发则是水到渠成的事情，而渠道的重要性往往要高于具体开发。</p>
+
+<p><strong>发挥自己的比较优势</strong></p>
+
+<p>社会分工之所以存在，是因为每个人有其比较优势，各自做擅长的事情并合作，会提升整体效率。对个人来说，发挥自己的比较优势，只做那 20% 自己擅长的或有热情的事情（热情本身也会变为擅长），其他事情则是最大程度自动化或者外包出去。当前AI能力如此强大，各细分领域服务极度充沛，特定问题付费解决可节省大量人力，成本远低于自己浪费时间。</p>]]></content><author><name></name></author><summary type="html"><![CDATA[关于二八法则的另外一种叫法是80/20法则，或者叫关键少数法则。在生活工作方各方面都有体现：]]></summary></entry><entry><title type="html">实用mac软件推荐列表</title><link href="http://localhost:4000/2025/08/01/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html" rel="alternate" type="text/html" title="实用mac软件推荐列表" /><published>2025-08-01T00:00:00+08:00</published><updated>2025-08-01T00:00:00+08:00</updated><id>http://localhost:4000/2025/08/01/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8</id><content type="html" xml:base="http://localhost:4000/2025/08/01/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html"><![CDATA[<p><strong>Apps</strong></p>
+
+<p><strong>日常使用</strong></p>
+
+<p>ClashX Pro：科学上网</p>
+
+<p>只有先科学上网，才能装后面的</p>
+
+<p>Notion：笔记输入 + 博客输出的工具</p>
+
+<p>Chrome：浏览器</p>
+
+<p>Xnip：截图工具</p>
+
+<p>1password 7：密码管理工具</p>
+
+<p>其它的也用过，还是这个原生 App 比较流畅</p>
+
+<p>CleanMyMac X：Mac优化清理工具</p>
+
+<p>Warp WindTerm iTerm2：终端</p>
+
+<p>Alfred：本地搜索、应用启动、剪贴板 📋</p>
+
+<p><strong>效率神器</strong></p>
+
+<p>Karabiner-Elements：键盘键位修改神器</p>
+
+<p>一些配置 <a href="https://gist.github.com/ycjcl868/3933cb65acedb5d771855dee927781d8">karabiner.json</a> ，主要是改 HHKB 和 Apple Keyboard</p>
+
+<p><a href="https://dida365.com/">滴答清单</a> ：任务和规划时间（GTD）的应用</p>
+
+<p><a href="https://flomoapp.com/">flomo</a> ：快速记录一些想法</p>
+
+<p><a href="https://github.com/ripperhe/Bob/releases">Bob 社区版</a> ：划词翻译和截图翻译工具</p>
+
+<p>支持多个翻译聚合还挺方便的</p>
+
+<p><a href="https://inputsource.pro/">Input Source Pro</a> ：不同应用、不同网站自动切换输入法</p>
+
+<p><a href="https://y.qq.com/">QQ Music</a> ：网络音乐服务产品</p>
+
+<p><a href="https://srf.baidu.com/input/mac.html">百度五笔输入法</a></p>
+
+<p>试过 Mac 上各类的五笔输入，还是这个好用</p>
+
+<p><a href="https://netnewswire.com/">NetNewsWire</a> ：开源、免费、全平台的 RSS 订阅、阅读</p>
+
+<p>订阅 <a href="https://github.com/ycjcl868/feeds/blob/master/index.opml">index.opml</a></p>
+
+<p><a href="https://www.macbartender.com/Bartender4/">Bartender 4</a> ：菜单栏应用图标管理工具</p>
+
+<p>管理挺方便，就是 Mac 屏中间刘海那块没适配好</p>
+
+<p>OpenInTerminal：从 Finder 一键打开 Terminal</p>
+
+<p>之前的 Go2Shell 似乎不维护了，就用了这个</p>
+
+<p><a href="https://iina.io/">IINA</a> ：媒体播放器</p>
+
+<p><a href="https://getkap.co/">Kap</a> ：开源录屏工具</p>
+
+<p>可转成 gif、mp4，支持插件</p>
+
+<p>新 Mac 生成 gif 基本是秒级导出</p>
+
+<p><a href="https://www.taskpaper.com/">TaskPaper</a> ：文本编辑器模式的任务管理工具（GTD）</p>
+
+<p>经常用来管理工作上需要长期跟进的事，和滴答清单结合使用</p>
+
+<p>Mindnode</p>
+
+<p><a href="https://telegram.org/">Telegram</a> ：相对匿名安全的聊天软件</p>
+
+<p><a href="https://cubox.pro/">Cubox</a> ：一站式信息收集、阅读、管理和回顾</p>
+
+<p>碎片化阅读时代的文章、视频收集器</p>
+
+<p><a href="https://kyome.io/runcat/index.html?lang=en">RunCat</a> ：在任务栏奔跑的猫</p>
+
+<p>猫奔跑的速度会随着CPU使用率提升而越来越快（新 Mac 怎么开发都没看猫奔跑过）</p>
+
+<p><a href="https://magnet.crowdcafe.com/">Magnet</a> ：窗口管理</p>
+
+<p><a href="https://github.com/MonitorControl/MonitorControl">MonitorControl</a> ：显示器亮度调节</p>
+
+<p><a href="https://apps.apple.com/jp/app/standup/id1439378680?l=en&amp;mt=12">StandUp</a> ：提醒站立</p>
+
+<p><a href="https://medium.com/@mariociabarra/wifriedx-in-depth-look-at-yosemite-wifi-and-awdl-airdrop-41a93eb22e48">WiFriedX</a> ：关闭 AWDL/AirDrop，优化 M1 系列 Mac 的 Wifi 连接</p>
+
+<p> </p>
+
+<p><strong>开发使用</strong></p>
+
+<p><a href="https://code.visualstudio.com/">VSCode</a> ：代码编辑器</p>
+
+<p>通过自带的 <a href="https://code.visualstudio.com/docs/editor/settings-sync">Settings Sync</a> 功能一键同步</p>
+
+<p><a href="https://github.com/git-up/GitUp">GitUp</a> ：Git GUI 软件</p>
+
+<p>比 SourceTree 等软件要简洁，日常开发中基本没有做不了 GUI 操作</p>
+
+<p><a href="https://www.sublimetext.com/">Sublime Text</a> ：文本编辑器</p>
+
+<p>准确来讲，经常用这个编辑器快速做一些纪要</p>
+
+<p>DataGrip：数据库开发工具</p>
+
+<p>Goland：Gopher 开发工具</p>
+
+<p>Dash：API 文档和代码片段管理</p>
+
+<p>一直在用，找 API 文档和用法太方便了</p>
+
+<p><a href="https://www.postman.com/">Postman</a> ：API 调试神器</p>
+
+<p><a href="https://github.com/oldj/SwitchHosts">SwitchHosts</a> ：管理、切换多个hosts 方案的工具</p>
+
+<p>QuickLook 预览插件</p>
+
+<p><a href="http://www.sagtau.com/quicklookjson.html">quicklook-json</a></p>
+
+<p><a href="https://github.com/toland/qlmarkdown">qlmarkdown</a></p>
+
+<p><a href="https://github.com/Marginal/QLVideo">QLVideo</a></p>
+
+<p> </p>
+
+<p><strong>System Configuration</strong></p>
+
+<p>触摸板三指拖拽</p>
+
+<p>系统设置 → 辅助功能 → 指针控制 → 触控板选项 → 启用拖移（三指拖移）</p>
+
+<p>退格键响应速度</p>
+
+<p>系统设置 → 键盘，按键重复 调到最快、重复前延迟调最短</p>
+
+<p><a href="https://gist.github.com/laispace/666dd7b27e9116faece6?permalink_comment_id=3686810#gistcomment-3686810">Github clone 加速</a></p>
+
+<p>屏保 <a href="https://aerialscreensaver.github.io/">Aerial</a></p>
+
+<p> </p>
+
+<p><strong>Dev</strong></p>
+
+<p>brew</p>
+
+<p>on-my-zsh</p>
+
+<p>fzf</p>
+
+<p>autojump</p>
+
+<p><a href="https://github.com/jesseduffield/lazygit">lazygit</a> ：命令行版 Git GUI</p>
+
+<p><a href="https://github.com/BurntSushi/ripgrep">ripgrep</a> ：快速搜索文件/目录中包含的字符串</p>
+
+<p>bat</p>
+
+<p><a href="https://cli.github.com/">gh</a></p>
+
+<p><a href="https://github.com/profclems/glab">glab</a></p>
+
+<p><a href="https://github.com/TheYkk/git-switcher">git-switcher</a></p>
+
+<p>graphviz</p>
+
+<p>Node.js 相关</p>
+
+<p>fnm</p>
+
+<p>node 16 似乎用不了 node-gyp-build</p>
+
+<p>Python 相关</p>
+
+<p>pyenv</p>
+
+<p>Java 相关</p>
+
+<p><a href="https://github.com/jenv/jenv">jenv</a></p>
+
+<p>Go</p>
+
+<p>modd</p>
+
+<p>tree</p>
+
+<p>字体安装</p>
+
+<p>brew install –cask font-fira-code font-jetbrains-mono</p>
+
+<p> </p>
+
+<p><strong>Plugins</strong></p>
+
+<p>Alfred workflows</p>
+
+<p><a href="https://github.com/jopemachine/alfred-chromium-workflow/">alfred-chromium-workflow</a> ：浏览器历史记录搜索</p>
+
+<p>找一些页面很方便</p>
+
+<p><a href="https://github.com/wensonsmith/YoudaoTranslator">YoudaoTranslator</a> ：有道搜索</p>
+
+<p>平时直接 yd 中英文单词/句子 很方便</p>
+
+<p><a href="https://github.com/ycjcl868/alfred-npmjs">NpmSearch</a> ：npm 包搜索</p>
+
+<p>npm 包名 搜索一些包版本，同时支持任意 registry 源</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Apps]]></summary></entry></feed>
