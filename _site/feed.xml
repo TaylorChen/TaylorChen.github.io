@@ -1,15 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-02T22:11:34+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">TayloyChen Blog</title><subtitle>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><entry><title type="html">关于ai应用的思考</title><link href="http://localhost:4000/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83.html" rel="alternate" type="text/html" title="关于ai应用的思考" /><published>2025-08-02T00:00:00+08:00</published><updated>2025-08-02T00:00:00+08:00</updated><id>http://localhost:4000/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83</id><content type="html" xml:base="http://localhost:4000/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83.html"><![CDATA[<h2 id="关于ai应用的思考">关于AI应用的思考</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-02T22:22:13+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">TayloyChen Blog</title><subtitle>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><entry><title type="html">关于ai应用的思考</title><link href="http://localhost:4000/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83.html" rel="alternate" type="text/html" title="关于ai应用的思考" /><published>2025-08-02T00:00:00+08:00</published><updated>2025-08-02T00:00:00+08:00</updated><id>http://localhost:4000/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83</id><content type="html" xml:base="http://localhost:4000/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83.html"><![CDATA[<h2 id="关于ai应用的思考">关于AI应用的思考</h2>
 
 <h3 id="与ia共创">与IA共创</h3>
 <h4 id="1-梯人纵发展">1. 梯人纵发展</h4>
 <p>目前的速度AI工具及应用层出不穷，几乎每天都会有新的style出来，从应用的角度来看有点应接不暇。从单纯的chat聊天模式开始，会发现有一部分的内容AI其实处理的不是很好，即使用到了一些先进的prompt词也不一定会有效果。这个可以想象AI技术能力的提升也是依赖于海量的知识数据，如果现行互联网的数据维持在一个相对静态的状态下，单纯靠AI在此基础上升华创造，不是说不肯能，只是需要的时间会更长。其实反过来如果在AI的加持下，通过人类的思维创造出更高维度的知识或者解决问题的思路，把这些方式公开到网络上，让AI进行提取学习，可能这种发展离真正的“智能”会更近一步。这种模式就是左脚踩右脚的模式，一步步靠近终极目标方向。</p>
 
 <h4 id="2-企业应用ai-accessibility">2. 企业应用AI Accessibility</h4>
-<p>现在AI应用无处不在，日常文案的优化、生活和工作中遇到问题会先用AI进行科普扫盲、AI Coding、代码review、调研报告等。但是可以看看真正企业与AI的结合程度如何？按照目前阶段来说还在初级阶段，目前使用的模型都是基于现有公开的网络的数据进行训练的，那么对于企业本身的数据在公网是无法被访问到的，这里面包括企业运过程中产生的数据、文档、知识库、业务领域知识、企业文化、日常工作流程等。
-<strong>成本角度</strong>
-大多数企业不太可能基于开源的模型进行训练自己的私有模型，这个训练时需要额外的开销。当然大公司或者一些医院机构在使用AI的时候，会考虑用模型进行训练，给AI投喂的都是私有数据，在这种情况下进行使用的。
-<strong>安全角度</strong>
-数据安全是目前企业考虑的一个方面，担心敏感隐私数据泄漏。这也是目前AI与企业业务结合相对慢的一个原因。这个当时也是可以解决的，就是把敏感数据排除在外进行脱敏处理，再让AI访问。</p>
+<p>现在AI应用无处不在，日常文案的优化、生活和工作中遇到问题会先用AI进行科普扫盲、AI Coding、代码review、调研报告等。但是可以看看真正企业与AI的结合程度如何？按照目前阶段来说还在初级阶段，目前使用的模型都是基于现有公开的网络的数据进行训练的，那么对于企业本身的数据在公网是无法被访问到的，这里面包括企业运过程中产生的数据、文档、知识库、业务领域知识、企业文化、日常工作流程等。</p>
+
+<p><strong>成本角度</strong></p>
+<blockquote>
+  <p>大多数企业不太可能基于开源的模型进行训练自己的私有模型，这个训练时需要额外的开销。当然大公司或者一些医院机构在使用AI的时候，会考虑用模型进行训练，给AI投喂的都是私有数据，在这种情况下进行使用的。</p>
+</blockquote>
+
+<p><strong>安全角度</strong></p>
+<blockquote>
+  <p>数据安全是目前企业考虑的一个方面，担心敏感隐私数据泄漏。这也是目前AI与企业业务结合相对慢的一个原因。这个当时也是可以解决的，就是把敏感数据排除在外进行脱敏处理，再让AI访问。</p>
+</blockquote>
 
 <p>从未来的角度看，如果那一天公司的相关数据能够被AI学习，那么有一天可能会出现的几个场景如下：</p>
 <ol>
