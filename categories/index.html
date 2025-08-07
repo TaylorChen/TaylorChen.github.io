@@ -1,0 +1,15 @@
+---
+layout: default
+title: 分类
+---
+
+<h1>所有分类</h1>
+<ul>
+  {% for category in site.categories %}
+    <li>
+      <a href="/categories/{{ category[0] | uri_escape }}/">
+        {{ category[0] }} ({{ category[1].size }})
+      </a>
+    </li>
+  {% endfor %}
+</ul>
