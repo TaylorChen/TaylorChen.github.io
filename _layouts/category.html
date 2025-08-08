@@ -3,11 +3,19 @@ layout: default
 ---
 
 <h1>分类：{{ page.category }}</h1>
+{% assign cat_path = page.category | split: '/' %}
 <ul>
-  {% assign posts = site.categories[page.category] %}
-  {% for post in posts %}
-    <li>
-      <a href="{{ post.url }}">{{ post.title }}</a> ({{ post.date | date: "%Y-%m-%d" }})
-    </li>
+  {% for post in site.posts %}
+    {% assign match = true %}
+    {% for idx in (0..cat_path.size-1) %}
+      {% if post.categories.size <= idx or post.categories[idx] != cat_path[idx] %}
+        {% assign match = false %}
+      {% endif %}
+    {% endfor %}
+    {% if match %}
+      <li>
+        <a href="{{ post.url }}">{{ post.title }}</a> ({{ post.date | date: "%Y-%m-%d" }})
+      </li>
+    {% endif %}
   {% endfor %}
 </ul>

@@ -41,33 +41,88 @@
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
         <h1>所有分类</h1>
-<ul>
+<ul id="category-tree">
   
+  
+  
+  
+    
+    
+    
+    
+    
+    
     <li>
-      <a href="/categories/%E6%88%90%E9%95%BF/">
-        成长 (2)
-      </a>
+      
+        <a href="/categories/AI/" class="cat-link">AI <span class="cat-count">(2)</span></a>
+      
     </li>
   
+    
+    
+    
+    
+    
+    
     <li>
-      <a href="/categories/%E5%B7%A5%E5%85%B7/">
-        工具 (2)
-      </a>
+      
+        <a href="/categories/%E5%B7%A5%E5%85%B7/" class="cat-link">工具 <span class="cat-count">(2)</span></a>
+      
     </li>
   
+    
+    
+    
+    
+    
+    
     <li>
-      <a href="/categories/%E6%80%9D%E8%80%83/">
-        思考 (5)
-      </a>
+      
+        <a href="/categories/%E6%80%9D%E8%80%83/" class="cat-link">思考 <span class="cat-count">(5)</span></a>
+      
     </li>
   
+    
+    
+    
+    
+    
+    
     <li>
-      <a href="/categories/AI/">
-        AI (2)
-      </a>
+      
+        <a href="/categories/%E6%88%90%E9%95%BF/" class="cat-link">成长 <span class="cat-count">(2)</span></a>
+      
     </li>
   
 </ul>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var toggles = document.querySelectorAll('.tree-toggle-btn');
+  toggles.forEach(function(toggle) {
+    toggle.style.cursor = 'pointer';
+    toggle.onclick = function(e) {
+      e.preventDefault();
+      var prev = toggle.previousElementSibling;
+      var next = toggle.nextElementSibling;
+      while (next && next.tagName !== 'UL') next = next.nextElementSibling;
+      if (next) {
+        var isOpen = next.style.display === 'block';
+        next.style.display = isOpen ? 'none' : 'block';
+        toggle.textContent = isOpen ? '+' : '-';
+      }
+    };
+  });
+});
+</script>
+<style>
+#category-tree ul { margin-left: 1em; }
+.cat-link { font-weight: bold; color: #0074d9; text-decoration: none; }
+.cat-link:hover { text-decoration: underline; }
+.tree-toggle { font-weight: bold; color: #0074d9; }
+.cat-count { color: #888; font-weight: normal; }
+.tree-toggle-btn { font-size: 1em; background: none; border: none; color: #0074d9; }
+</style>
 
       </div>
     </main><footer class="site-footer h-card">

@@ -4,12 +4,87 @@ title: 分类
 ---
 
 <h1>所有分类</h1>
-<ul>
-  {% for category in site.categories %}
+<ul id="category-tree">
+  {% assign tree = "" | split: "|" %}
+  {% for post in site.posts %}
+    {% if post.categories.size > 0 %}
+      {% assign top = post.categories[0] %}
+      {% assign found = false %}
+      {% for t in tree %}
+        {% if t == top %}{% assign found = true %}{% endif %}
+      {% endfor %}
+      {% if found == false %}
+        {% assign tree = tree | push: top %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+  {% assign tree = tree | uniq %}
+  {% for top in tree %}
+    {% assign subs = "" | split: "|" %}
+    {% for post in site.posts %}
+      {% if post.categories.size > 1 and post.categories[0] == top %}
+        {% assign sub = post.categories[1] %}
+        {% unless subs contains sub %}
+          {% assign subs = subs | push: sub %}
+        {% endunless %}
+      {% endif %}
+    {% endfor %}
+    {% assign subs = subs | uniq %}
+    {% comment %}统计一级分类下所有文章数量（含二级）{% endcomment %}
+    {% assign count = 0 %}
+    {% for post in site.posts %}
+      {% if post.categories.size > 0 and post.categories[0] == top %}
+        {% assign count = count | plus: 1 %}
+      {% endif %}
+    {% endfor %}
     <li>
-      <a href="/categories/{{ category[0] | uri_escape }}/">
-        {{ category[0] }} ({{ category[1].size }})
-      </a>
+      {% if subs.size > 0 %}
+        <span class="tree-toggle">{{ top }} <span class="cat-count">({{ count }})</span></span>
+        <button class="tree-toggle-btn" style="margin-left:6px;">+</button>
+        <ul style="display:none;">
+          {% for sub in subs %}
+            {% assign sub_count = 0 %}
+            {% for post in site.posts %}
+              {% if post.categories.size > 1 and post.categories[0] == top and post.categories[1] == sub %}
+                {% assign sub_count = sub_count | plus: 1 %}
+              {% endif %}
+            {% endfor %}
+            <li>
+              <a href="/categories/{{ top | append: '/' | append: sub | uri_escape }}/">{{ sub }} <span class="cat-count">({{ sub_count }})</span></a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <a href="/categories/{{ top | uri_escape }}/" class="cat-link">{{ top }} <span class="cat-count">({{ count }})</span></a>
+      {% endif %}
     </li>
   {% endfor %}
 </ul>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var toggles = document.querySelectorAll('.tree-toggle-btn');
+  toggles.forEach(function(toggle) {
+    toggle.style.cursor = 'pointer';
+    toggle.onclick = function(e) {
+      e.preventDefault();
+      var prev = toggle.previousElementSibling;
+      var next = toggle.nextElementSibling;
+      while (next && next.tagName !== 'UL') next = next.nextElementSibling;
+      if (next) {
+        var isOpen = next.style.display === 'block';
+        next.style.display = isOpen ? 'none' : 'block';
+        toggle.textContent = isOpen ? '+' : '-';
+      }
+    };
+  });
+});
+</script>
+<style>
+#category-tree ul { margin-left: 1em; }
+.cat-link { font-weight: bold; color: #0074d9; text-decoration: none; }
+.cat-link:hover { text-decoration: underline; }
+.tree-toggle { font-weight: bold; color: #0074d9; }
+.cat-count { color: #888; font-weight: normal; }
+.tree-toggle-btn { font-size: 1em; background: none; border: none; color: #0074d9; }
+</style>
