@@ -219,7 +219,7 @@
 <loc>http://localhost:4000/categories/%E6%8A%80%E6%9C%AF/</loc>
 </url>
 <url>
-<loc>http://localhost:4000/tags/AI/</loc>
+<loc>http://localhost:4000/categories/%E6%80%9D%E8%80%83/</loc>
 </url>
 <url>
 <loc>http://localhost:4000/categories/Web3/</loc>
@@ -234,7 +234,7 @@
 <loc>http://localhost:4000/categories/%E5%B7%A5%E5%85%B7/</loc>
 </url>
 <url>
-<loc>http://localhost:4000/tags/%E6%80%9D%E8%80%83/</loc>
+<loc>http://localhost:4000/tags/AI/</loc>
 </url>
 <url>
 <loc>http://localhost:4000/tags/%E6%88%90%E9%95%BF/</loc>
@@ -243,6 +243,18 @@
 <loc>http://localhost:4000/tags/%E5%B7%A5%E5%85%B7/</loc>
 </url>
 <url>
-<loc>http://localhost:4000/categories/%E6%80%9D%E8%80%83/</loc>
+<loc>http://localhost:4000/tags/%E6%80%9D%E8%80%83/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/page2/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/page3/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/page4/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/page5/</loc>
 </url>
 </urlset>

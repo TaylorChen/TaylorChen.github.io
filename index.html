@@ -1,0 +1,48 @@
+---
+layout: default
+---
+
+<div class="home">
+  <h1 class="page-heading">最新文章</h1>
+
+  <ul class="post-list">
+    {% assign posts = paginator.posts | default: site.posts %}
+    {% for post in posts %}
+    <li>
+      <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
+      <h3>
+        <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+      </h3>
+      {% if site.show_excerpts %}
+      {{ post.excerpt }}
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+
+  {% if paginator and paginator.total_pages > 1 %}
+  <nav class="pagination" role="navigation">
+    {% if paginator.previous_page %}
+      <a class="previous" href="{{ paginator.previous_page_path | relative_url }}">上一页</a>
+    {% else %}
+      <span class="previous">上一页</span>
+    {% endif %}
+
+    <span class="page-number">第 {{ paginator.page }} / {{ paginator.total_pages }} 页</span>
+
+    {% if paginator.next_page %}
+      <a class="next" href="{{ paginator.next_page_path | relative_url }}">下一页</a>
+    {% else %}
+      <span class="next">下一页</span>
+    {% endif %}
+  </nav>
+  {% endif %}
+</div>
+
+<style>
+.pagination{display:flex; gap:12px; align-items:center; margin-top:24px}
+.pagination .previous,.pagination .next{padding:6px 10px; border:1px solid #ddd}
+.pagination .page-number{color:#666}
+</style>
+
+
