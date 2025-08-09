@@ -1,0 +1,65 @@
+---
+layout: default
+title: 标签
+---
+
+<h1>所有标签</h1>
+<ul id="tag-list">
+  {%- assign all_tags = '' | split: '|' -%}
+  {%- for post in site.posts -%}
+    {%- if post.tags -%}
+      {%- for t in post.tags -%}
+        {%- unless all_tags contains t -%}
+          {%- assign all_tags = all_tags | push: t -%}
+        {%- endunless -%}
+      {%- endfor -%}
+    {%- endif -%}
+    {%- if post.categories -%}
+      {%- for c in post.categories -%}
+        {%- unless all_tags contains c -%}
+          {%- assign all_tags = all_tags | push: c -%}
+        {%- endunless -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- assign all_tags = all_tags | sort -%}
+
+  {%- for tag_name in all_tags -%}
+    {%- assign matched = '' | split: '|' -%}
+    {%- for p in site.posts -%}
+      {%- if (p.tags and p.tags contains tag_name) or (p.categories and p.categories contains tag_name) -%}
+        {%- assign matched = matched | push: p -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- assign count = matched.size -%}
+    <li>
+      <button class="tag-toggle" data-target="tag-{{ tag_name | url_encode }}">{{ tag_name }} <span class="tag-count">({{ count }})</span></button>
+      <ul class="tag-posts" id="tag-{{ tag_name | url_encode }}" style="display:none;">
+        {%- for p in matched -%}
+          <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a> <small>({{ p.date | date: "%Y-%m-%d" }})</small></li>
+        {%- endfor -%}
+      </ul>
+    </li>
+  {%- endfor -%}
+</ul>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.tag-toggle').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const id = this.dataset.target;
+      const list = document.getElementById(id);
+      if (!list) return;
+      list.style.display = (list.style.display === 'none' || list.style.display === '') ? 'block' : 'none';
+    });
+  });
+});
+</script>
+<style>
+#tag-list { margin-left: 0; padding-left: 0; }
+#tag-list > li { list-style: none; margin: 6px 0; }
+.tag-toggle { background: none; border: none; padding: 0; font-size: 1rem; color: #0074d9; cursor: pointer; }
+.tag-toggle:hover { text-decoration: underline; }
+.tag-count { color: #888; }
+.tag-posts { margin: 6px 0 6px 18px; }
+</style>

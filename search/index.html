@@ -1,0 +1,37 @@
+---
+layout: default
+title: 搜索
+---
+
+<h1>站内搜索</h1>
+<input id="search-input" type="search" placeholder="输入关键词..." style="width:100%;padding:8px;">
+<ul id="search-results"></ul>
+
+<script src="https://cdn.jsdelivr.net/npm/lunr/lunr.min.js"></script>
+<script>
+(async function() {
+  const res = await fetch('/search.json');
+  const docs = await res.json();
+  const idx = lunr(function () {
+    this.ref('url');
+    this.field('title');
+    this.field('content');
+    docs.forEach(d => this.add(d));
+  });
+  const input = document.getElementById('search-input');
+  const list = document.getElementById('search-results');
+  input.addEventListener('input', function() {
+    const q = input.value.trim();
+    list.innerHTML = '';
+    if (!q) return;
+    const hits = idx.search(q);
+    hits.slice(0, 20).forEach(h => {
+      const doc = docs.find(d => d.url === h.ref);
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="${doc.url}">${doc.title}</a>`;
+      list.appendChild(li);
+    });
+  });
+})();
+</script>
+

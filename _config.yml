@@ -54,3 +54,20 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: post
+
+paginate: 10
+paginate_path: "/page:num/"
+
+giscus:
+  repo: ""      # user/repo
+  repo_id: ""
+  category: "General"
+  category_id: ""
+  theme: "light"

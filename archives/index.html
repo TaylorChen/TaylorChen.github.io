@@ -1,0 +1,16 @@
+---
+layout: default
+title: 归档
+---
+
+<h1>文章归档</h1>
+{% assign posts_by_year = site.posts | group_by_exp: 'post', 'post.date | date: "%Y"' %}
+{% assign posts_by_year = posts_by_year | sort: 'name' | reverse %}
+{% for year in posts_by_year %}
+  <h2>{{ year.name }}</h2>
+  <ul>
+    {% for post in year.items %}
+      <li><a href="{{ post.url }}">{{ post.title }}</a> ({{ post.date | date: "%m-%d" }})</li>
+    {% endfor %}
+  </ul>
+{% endfor %}
