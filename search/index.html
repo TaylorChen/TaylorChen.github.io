@@ -6,32 +6,73 @@ title: 搜索
 <h1>站内搜索</h1>
 <input id="search-input" type="search" placeholder="输入关键词..." style="width:100%;padding:8px;">
 <ul id="search-results"></ul>
+<div id="search-empty" style="color:#888;margin-top:8px;display:none;">未找到结果</div>
 
 <script src="https://cdn.jsdelivr.net/npm/lunr/lunr.min.js"></script>
 <script>
 (async function() {
-  const res = await fetch('/search.json');
-  const docs = await res.json();
+  const canonical = document.querySelector('link[rel="canonical"]');
+  const base = canonical && canonical.getAttribute('href') ? canonical.getAttribute('href') : '';
+  let docs = [];
+  try {
+    const res = await fetch((base && base.endsWith('/') ? base.slice(0,-1) : (base || '')) + '/search.json');
+    if (!res.ok) throw new Error('search.json load failed');
+    docs = await res.json();
+  } catch (e) {
+    console.error('加载搜索索引失败', e);
+    document.getElementById('search-empty').style.display = 'block';
+    return;
+  }
+
   const idx = lunr(function () {
+    this.tokenizer.separator = /[\s\-_.:/?&=#%]+/;
     this.ref('url');
     this.field('title');
     this.field('content');
-    docs.forEach(d => this.add(d));
+    docs.forEach(d => this.add({ url: d.url, title: d.title, content: d.content }));
   });
+
   const input = document.getElementById('search-input');
   const list = document.getElementById('search-results');
-  input.addEventListener('input', function() {
-    const q = input.value.trim();
+  const empty = document.getElementById('search-empty');
+
+  const render = (items) => {
     list.innerHTML = '';
-    if (!q) return;
-    const hits = idx.search(q);
-    hits.slice(0, 20).forEach(h => {
-      const doc = docs.find(d => d.url === h.ref);
+    if (!items || items.length === 0) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    items.slice(0,20).forEach(item => {
+      const doc = item.url ? item : docs.find(d => decodeURI(d.url) === decodeURI(item.ref));
+      if (!doc) return;
       const li = document.createElement('li');
       li.innerHTML = `<a href="${doc.url}">${doc.title}</a>`;
       list.appendChild(li);
     });
-  });
+  };
+
+  const doSearch = () => {
+    const q = input.value.trim();
+    list.innerHTML = '';
+    if (!q) { list.innerHTML = ''; empty.style.display = 'none'; return; }
+    try {
+      // 对中文做简易切词：按非字母数字分隔，并按每个字符做 OR 查询
+      const ascii = /[\x00-\x7F]/.test(q);
+      const tokens = ascii ? [q] : q.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+      const query = tokens.length > 1 ? tokens.map(t => `${t}*`).join(' ') : `${q}*`;
+      const hits = idx.search(query);
+      if (hits && hits.length > 0) return render(hits);
+    } catch (e) { /* ignore lunr parse errors */ }
+    // 中文或解析失败时的回退：标题/正文包含匹配
+    const qLower = q.toLowerCase();
+    const fallback = docs.filter(d => {
+      const inTitle = d.title && d.title.toLowerCase().includes(qLower);
+      const inContent = d.content && d.content.toLowerCase().includes(qLower);
+      const inUrl = d.url && (d.url.toLowerCase().includes(qLower) || decodeURI(d.url).toLowerCase().includes(qLower));
+      return inTitle || inContent || inUrl;
+    });
+    render(fallback.map(d => ({ url: d.url, title: d.title })));
+  };
+
+  ['input', 'change', 'keyup', 'compositionend'].forEach(evt => input.addEventListener(evt, doSearch));
 })();
 </script>
 
