@@ -27,7 +27,15 @@ title: 标签
   {%- for tag_name in all_tags -%}
     {%- assign matched = '' | split: '|' -%}
     {%- for p in site.posts -%}
-      {%- if (p.tags and p.tags contains tag_name) or (p.categories and p.categories contains tag_name) -%}
+      {%- assign has_tag = false -%}
+      {%- if p.tags and p.tags contains tag_name -%}
+        {%- assign has_tag = true -%}
+      {%- endif -%}
+      {%- assign has_cat = false -%}
+      {%- if p.categories and p.categories contains tag_name -%}
+        {%- assign has_cat = true -%}
+      {%- endif -%}
+      {%- if has_tag or has_cat -%}
         {%- assign matched = matched | push: p -%}
       {%- endif -%}
     {%- endfor -%}

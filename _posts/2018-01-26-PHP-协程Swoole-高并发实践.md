@@ -2,7 +2,8 @@
 title: "PHP 协程 Swoole 高并发实践"
 date: 2018-01-26
 categories: [技术, PHP]
-tags: [技术, PHP, Swoole, 并发]
+tags: [技术, PHP, Swoole, 并发, 协程, 性能]
+description: "围绕 Swoole 协程/调度/Hook 与连接池等关键点，提供高并发落地范式、压测方法与避坑清单。"
 ---
 
 Swoole 将 PHP 带入常驻内存 + 协程并发时代。本文聚焦调度、Hook、协程上下文与与 MySQL/Redis 客户端协作细节，并提供压测脚本与避坑指南。

@@ -5,13 +5,13 @@ layout: default
 <div class="home">
   <h1 class="page-heading">最新文章</h1>
 
-  <ul class="post-list">
+  <ul class="post-list" itemscope itemtype="https://schema.org/Blog">
     {% assign posts = paginator.posts | default: site.posts %}
     {% for post in posts %}
-    <li>
-      <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
-      <h3>
-        <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <span class="post-meta"><time itemprop="datePublished" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time></span>
+      <h3 itemprop="headline">
+        <a class="post-link" itemprop="url" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
       </h3>
       {% if site.show_excerpts %}
       {{ post.excerpt }}

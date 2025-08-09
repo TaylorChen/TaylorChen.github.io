@@ -2,7 +2,8 @@
 title: "Go goroutine 调度器原理：GMP"
 date: 2015-11-02
 categories: [技术, Golang]
-tags: [技术, Golang]
+tags: [技术, Golang, GMP, 调度器, 并发]
+description: "系统拆解 Go 的 G-M-P 三元模型、work stealing、抢占与 netpoller 协作机制，配合实验/可观测手段理解调度器的性能与权衡。"
 ---
 
 这篇文章不只是“是什么”，而是从语言设计动机与系统实现细节出发，系统性拆解 Go 调度器的三元模型：G（goroutine）、M（OS thread）、P（processor）。围绕“为什么要引入 GMP”“GMP 解决了什么问题”“有哪些代价与权衡”“如何直观理解并用实验证明”，我们给出多维度、可操作的深度解读。

@@ -3,6 +3,7 @@ title: "Java 并发编程：从 Lock 到 AQS"
 date: 2017-05-21
 categories: [技术, Java]
 tags: [技术, Java, 并发, AQS]
+description: "从对象头与锁位、CAS 内存语义到 AQS 队列机制，结合 x86/ARM 差异与工程选型，给出面向性能与可见性的并发实践指南。"
 ---
 
 并发编程里，“锁”是跨线程协调和内存可见性的核心抽象。本文从 Java 对象头与锁位开始，系统梳理锁信息的存放位置、`synchronized` 与 `Lock/AQS` 的实现原理、CAS 的内存语义与常见陷阱，并从 x86/ARM 的汇编视角出发，解释 HotSpot 在不同平台上的底层逻辑。最后给出工程实践的选型建议与调优要点。

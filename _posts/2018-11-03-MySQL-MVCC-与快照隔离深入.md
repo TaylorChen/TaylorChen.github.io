@@ -3,6 +3,7 @@ title: "MySQL MVCC 与快照隔离深入"
 date: 2018-11-03
 categories: [技术, MySQL]
 tags: [技术, MySQL, 事务, MVCC]
+description: "系统拆解 InnoDB MVCC：undo/隐式列、Read View 可见性与二级索引回表一致性，附可复现实验、源码走读与排错/最佳实践清单。"
 ---
 
 本文系统拆解 InnoDB MVCC 的实现细节：undo log、隐式列、Read View、可见性判断与二级索引回表的一致性，并给出可复现实验、源码走读与排错清单。

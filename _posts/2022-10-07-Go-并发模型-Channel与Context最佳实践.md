@@ -3,6 +3,7 @@ title: "Go 并发模型：Channel 与 Context 最佳实践"
 date: 2022-10-07
 categories: [技术, Golang]
 tags: [技术, Golang, 并发]
+description: "以可复用的模式（扇入扇出/超时取消/泄漏排查）与代码片段，总结 Channel/Context 的工程化用法与排障要点。"
 ---
 
 如何用 Channel 建模生产者-消费者、扇入扇出、超时与取消？Context 在线程间传递取消与元数据，避免协程泄漏。

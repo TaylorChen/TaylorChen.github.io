@@ -5,7 +5,18 @@ layout: default
 <article class="post">
   <header>
     <h1>{{ page.title }}</h1>
-    <p class="post-meta">{{ page.date | date: "%Y-%m-%d" }}{% if page.categories %} · {{ page.categories | join: ' / ' }}{% endif %}{% if page.tags %} · {{ page.tags | join: ', ' }}{% endif %}</p>
+    <p class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>
+      {% if page.last_modified_at %} · 最后更新于 <time datetime="{{ page.last_modified_at | date_to_xmlschema }}">{{ page.last_modified_at | date: "%Y-%m-%d" }}</time>{% endif %}
+      {% if page.categories %} · {{ page.categories | join: ' / ' }}{% endif %}
+      {% if page.tags %} · {{ page.tags | join: ', ' }}{% endif %}
+    </p>
+    {% if page.description %}
+      <meta name="description" content="{{ page.description | strip_html | strip_newlines | truncate: 160 }}">
+    {% endif %}
+    {% if page.tags %}
+      <meta name="keywords" content="{{ page.tags | join: ', ' }}">
+    {% endif %}
   </header>
 
   <div class="post-body" id="post-body">
@@ -14,6 +25,37 @@ layout: default
       {{ content }}
     </div>
   </div>
+
+  {% comment %} 相关阅读（按同标签/分类匹配，最多 5 篇） {% endcomment %}
+  {% assign related = '' | split: '|' %}
+  {% for p in site.posts %}
+    {% if p.url == page.url %}{% continue %}{% endif %}
+    {% assign is_related = false %}
+    {% if page.tags and p.tags %}
+      {% for t in page.tags %}
+        {% if p.tags contains t %}{% assign is_related = true %}{% break %}{% endif %}
+      {% endfor %}
+    {% endif %}
+    {% if is_related == false and page.categories and p.categories %}
+      {% for c in page.categories %}
+        {% if p.categories contains c %}{% assign is_related = true %}{% break %}{% endif %}
+      {% endfor %}
+    {% endif %}
+    {% if is_related %}
+      {% assign related = related | push: p %}
+    {% endif %}
+    {% if related.size >= 5 %}{% break %}{% endif %}
+  {% endfor %}
+  {% if related.size > 0 %}
+  <section class="related-posts">
+    <h2>相关阅读</h2>
+    <ul>
+      {% for r in related %}
+        <li><a href="{{ r.url | relative_url }}">{{ r.title }}</a> <small>({{ r.date | date: "%Y-%m-%d" }})</small></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
 
   <footer class="post-footer">
     <div class="share">
@@ -100,7 +142,16 @@ layout: default
 
 // 图片懒加载
 (function(){
-  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+  document.querySelectorAll('#post-content img').forEach(img => {
+    img.loading = 'lazy';
+    if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+      try {
+        const u = new URL(img.src, window.location.origin);
+        const name = (u.pathname.split('/').pop() || '').split('.')[0];
+        if (name) img.setAttribute('alt', decodeURIComponent(name));
+      } catch (e) {}
+    }
+  });
 })();
 </script>
 
@@ -112,5 +163,26 @@ layout: default
 .copy-btn{font-size:12px; padding:2px 6px}
 @media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
 </style>
+
+{%- comment -%} 结构化数据：Article {%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": {{ page.title | jsonify }},
+  "description": {{ page.description | default: site.description | jsonify }},
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
+  "author": {
+    "@type": "Person",
+    "name": {{ site.author.name | default: site.title | jsonify }}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ page.url | absolute_url }}"
+  },
+  "url": "{{ page.url | absolute_url }}"
+}
+</script>
 
 

@@ -3,6 +3,7 @@ title: "Nginx Ingress 高并发场景优化实践"
 date: 2025-07-01
 categories: [技术, Nginx]
 tags: [技术, Nginx, Kubernetes, 并发]
+description: "在高并发/高吞吐场景下优化 Ingress-Nginx 的系统方案：内核参数、连接与线程、日志与轮转、压测与观测、排障与灰度实操清单。附 Helm values 与生产指标口径。"
 ---
 
 在高并发/高吞吐场景下，Ingress-Nginx 的瓶颈往往在四处：连接与端口、文件句柄、握手与 TIME_WAIT、日志 I/O。本文给出值可直接落地的 Helm `values.yaml` 片段、Linux 内核参数、日志轮转 sidecar、压测与观测清单。

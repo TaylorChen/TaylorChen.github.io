@@ -2,7 +2,8 @@
 title: "Nginx Ingress 在 Kubernetes 的高可用配置"
 date: 2023-12-05
 categories: [技术, Nginx]
-tags: [技术, Nginx, Kubernetes]
+tags: [技术, Nginx, Kubernetes, Ingress, 高可用]
+description: "给出 Ingress-Nginx 在 K8s 的高可用与灰度配置：基础清单、金丝雀、反亲和/跨区扩散/PDB、升级收敛、HPA 与连接复用等实操要点。"
 ---
 
 在 K8s 中落地 Ingress-Nginx 时，如何配置高可用、弹性与灰度？本文给出实操 YAML、金丝雀流量与压测/演练手册。

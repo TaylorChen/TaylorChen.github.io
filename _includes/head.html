@@ -1,22 +1,28 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
-<meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="TayloyChen Blog" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
-<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
-<link rel="canonical" href="{{ site.baseurl }}" />
-<meta property="og:url" content="{{ site.baseurl }}" />
-<meta property="og:site_name" content="TayloyChen Blog" />
-<meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="TayloyChen Blog" />
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":"{{ site.baseurl }}"}</script>
-<!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="{{ site.baseurl }}/feed.xml" title="TayloyChen Blog" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if page.robots %}
+  <meta name="robots" content="{{ page.robots }}">
+  {% endif %}
+  {% seo %}
+  {% if paginator %}
+    {% if paginator.previous_page %}
+      <link rel="prev" href="{{ paginator.previous_page_path | absolute_url }}">
+    {% endif %}
+    {% if paginator.next_page %}
+      <link rel="next" href="{{ paginator.next_page_path | absolute_url }}">
+    {% endif %}
+  {% endif %}
+  {% if page.last_modified_at %}
+    <meta property="article:modified_time" content="{{ page.last_modified_at | date_to_xmlschema }}">
+  {% endif %}
+  <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
+  <link rel="alternate" type="application/atom+xml" href="{{ '/feed.xml' | absolute_url }}" title="{{ site.title }}" />
+  <link rel="icon" href="{{ '/assets/images/favicons/favicon.ico' | relative_url }}" type="image/x-icon">
+  {% assign share_img = page.image | default: site.og_image | default: site.logo %}
+  {% if share_img %}
+    <meta property="og:image" content="{{ share_img | absolute_url }}">
+    <meta name="twitter:image" content="{{ share_img | absolute_url }}">
+  {% endif %}
 </head>
-<link rel="shortcut icon" type="image/x-icon" href="{{ site.baseurl }}/assets/images/favicons/favicon.ico">

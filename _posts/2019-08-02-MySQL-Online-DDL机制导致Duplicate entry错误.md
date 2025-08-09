@@ -2,6 +2,8 @@
 title: "MySQL Online DDL机制导致"
 date: 2019-08-02
 categories: [技术 , MySQL]
+description: "解析 Online DDL row log 重放机制为何会触发 Duplicate entry，给出时间线、源码指引与工程上的可行规避策略（低峰变更/EXCLUSIVE/分阶段变更）。"
+tags: [技术, MySQL, Online DDL, 唯一键, 重放]
 ---
 # MySQL Online DDL机制导致"Duplicate entry”错误的分析
 

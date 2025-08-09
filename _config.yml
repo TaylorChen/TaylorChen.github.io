@@ -23,10 +23,17 @@ email: cherrycmd@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://taylorchen.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://taylorchen.github.io" # the base hostname & protocol for your site (no trailing slash)
 twitter_username: shlchen
 github_username: taylorchen
-Keyword: 技术博客, 技术文章, 教程, Tutorial, Guide, 实战, 笔记, 总结, 经验, 分享, 踩坑, Best Practice, 性能优化, 重构, 架构设计
+keywords: 技术博客, 技术文章, 教程, Tutorial, Guide, 实战, 笔记, 总结, 经验, 分享, 踩坑, Best Practice, 性能优化, 重构, 架构设计
+lang: zh-CN
+timezone: Asia/Shanghai
+author:
+  name: "TayloyChen"
+  url: "https://taylorchen.github.io"
+logo: /assets/images/favicons/favicon-96x96.png
+og_image: /assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg
 
 # Build settings
 theme: minima
