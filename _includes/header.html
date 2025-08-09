@@ -1,13 +1,15 @@
 <header class="site-header" role="banner">
   <div class="wrapper">
-    <a class="site-title" rel="author" href="/">{{ site.title }}</a>
+    <a class="site-title" rel="author" href="{{ '/' | relative_url }}">{{ site.title }}</a>
     <nav class="site-nav">
-      <a class="page-link" href="/">首页</a>
-      <a class="page-link" href="/categories/">分类</a>
-      <a class="page-link" href="/tags/">标签</a>
-      <a class="page-link" href="/archives/">归档</a>
-      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="{{ '/' | relative_url }}">首页</a>
+      <a class="page-link" href="{{ '/categories/' | relative_url }}">分类</a>
+      <a class="page-link" href="{{ '/tags/' | relative_url }}">标签</a>
+      <a class="page-link" href="{{ '/archives/' | relative_url }}">归档</a>
+      <a class="page-link" href="{{ '/search/' | relative_url }}">搜索</a>
+      <a class="page-link" href="{{ '/about/' | relative_url }}">关于</a>
     </nav>
   </div>
 </header>
+
 
