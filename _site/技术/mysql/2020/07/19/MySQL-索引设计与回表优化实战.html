@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>MySQL 索引设计与回表优化实战</h1>
+    <p class="post-meta">2020-07-19 · 技术 / MySQL · 技术, MySQL, 索引, 调优</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>索引，是 MySQL 性能工程的地基。设计得当，查询如行云流水；设计不当，慢查询、锁等待、CPU 飙高全都找上门。本文在原“回表优化实战”的基础上，系统扩展到索引必要性、InnoDB B+ 树底层原理、索引大小对性能的影响、工程化建索引方法论与排障清单，给出一套可直接落地的完整方案。</p>
+
+<h2 id="1-为什么需要索引必要性与代价的平衡">1. 为什么需要索引：必要性与代价的平衡</h2>
+
+<p>没有索引时，只能全表扫描，I/O 与 CPU 成本随数据量线性增长。索引将“查找”从 O(N) 降为 O(log_f N)，其中 f 为 B+ 树扇出（可达数百至上千），并提供有序访问能力，显著优化范围扫描、排序与分组。</p>
+
+<p>同时必须正视代价：</p>
+<ul>
+  <li>写放大：DML 需要维护主键与二级索引，伴随页分裂/合并；</li>
+  <li>存储膨胀：索引页占用 Buffer Pool，命中率受影响；</li>
+  <li>计划风险：索引过多/质量差会让优化器选择困难，出现计划抖动。</li>
+</ul>
+
+<p>结论：索引不是越多越好，而是“必要且刚好”。</p>
+
+<h2 id="2-底层原理为什么是-b-树">2. 底层原理：为什么是 B+ 树？</h2>
+
+<p>InnoDB 采用 B+ 树组织数据与索引（聚簇索引与二级索引），核心动机：</p>
+<ul>
+  <li>磁盘/页友好：节点存大量键指针，扇出大、树高低（亿级数据常 3~4 层）；</li>
+  <li>顺序扫描：叶子节点双向链表，天然支持范围/排序；</li>
+  <li>缓存友好：热路径节点易命中 Buffer Pool；</li>
+  <li>对比哈希/红黑树：B+ 树既支持范围/排序，又以页为单位贴合块设备。</li>
+</ul>
+
+<p>两个关键事实：</p>
+<ul>
+  <li>聚簇索引叶子存整行，主键既是逻辑主键也是物理组织；</li>
+  <li>二级索引叶子为“索引键 + 主键”，因此二级索引命中后常需“回表”。</li>
+</ul>
+
+<p>这解释了覆盖索引为何能避免回表：当查询列全被索引覆盖时，无需回到聚簇索引取整行。</p>
+
+<h2 id="3-索引大小如何影响性能">3. 索引大小如何影响性能</h2>
+
+<p>1) 树高与扇出：键越短、记录越小，扇出越大、树高越低；树高每 +1，未命中缓存时多一次随机 I/O，P95/99 延迟明显上升。</p>
+
+<p>2) 缓存命中与热点：索引越小，更多页常驻 Buffer Pool，随机 I/O 更少；大索引会稀释缓存，导致更频繁的落盘访问。</p>
+
+<p>3) 写放大与碎片：宽主键（如 UUID v4 文本）插入随机，页分裂与碎片更多；宽二级索引（长字符串/多列组合）放大维护成本。</p>
+
+<p>工程启示：</p>
+<ul>
+  <li>控制主键宽度，倾向递增或准递增（BIGINT 雪花、UUID v7/Binary(16)）；</li>
+  <li>长字符串用前缀索引或生成列（表达式持久化/CRC32）缩小叶子记录；</li>
+  <li>复合索引列顺序以短且高选择度列在前，降低树高。</li>
+</ul>
+
+<h2 id="4-设计方法论如何系统化建索引">4. 设计方法论：如何系统化建索引</h2>
+
+<h3 id="41-读路径画像与选择度">4.1 读路径画像与选择度</h3>
+<p>把 80% 关键查询归类为：点查、范围、排序、分组、Top-N、Join。逐条识别过滤列、排序/分组列、返回列与基数（选择度）。</p>
+
+<h3 id="42-等值-范围-排序的列序">4.2 等值-范围-排序的列序</h3>
+<p>复合索引常见顺序：等值列 → 范围列 → 排序/分组列。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 典型 OLTP 列表页</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx_u_s_ctid</span> <span class="k">ON</span> <span class="n">orders</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">created_at</span><span class="p">,</span> <span class="n">id</span><span class="p">);</span>
+<span class="c1">-- WHERE user_id=? AND status=? AND created_at BETWEEN ... ORDER BY id LIMIT N</span>
+</code></pre></div></div>
+
+<p>注意：范围列之后的排序是否生效，取决于范围收敛与索引序可用性，否则仍可能 filesort。</p>
+
+<h3 id="43-覆盖索引优先尽量避免回表">4.3 覆盖索引优先，尽量避免回表</h3>
+<p>将 SELECT 所需列合入索引尾部，形成覆盖（Extra: Using index）。</p>
+<ul>
+  <li>列表页热点读优先覆盖；</li>
+  <li>谨慎控制索引宽度，避免为覆盖无限扩列；</li>
+  <li>搭配 LIMIT 收敛候选集。</li>
+</ul>
+
+<h3 id="44-索引下推icp与条件重写">4.4 索引下推（ICP）与条件重写</h3>
+<p>MySQL 5.6+ 支持 Index Condition Pushdown，在索引层预过滤，减少回表。</p>
+<ul>
+  <li>避免在索引列上包裹函数/隐式类型转换；</li>
+  <li>用生成列持久化表达式并建函数索引：</li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">t</span>
+  <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">created_date</span> <span class="nb">DATE</span> <span class="k">GENERATED</span> <span class="n">ALWAYS</span> <span class="k">AS</span> <span class="p">(</span><span class="nb">DATE</span><span class="p">(</span><span class="n">created_at</span><span class="p">))</span> <span class="n">STORED</span><span class="p">,</span>
+  <span class="k">ADD</span> <span class="k">INDEX</span> <span class="n">idx_created_date</span><span class="p">(</span><span class="n">created_date</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="45-低选择度列的处理">4.5 低选择度列的处理</h3>
+<p>将低选择度枚举（性别/状态）与高选择度列（租户/用户/时间）复合，提升过滤效率。</p>
+
+<h3 id="46-排序分组利用索引序">4.6 排序/分组利用索引序</h3>
+<ul>
+  <li>让 ORDER BY 列与 WHERE 等值列共用一个索引，避免外部排序；</li>
+  <li>GROUP BY 尝试松散索引扫描（loose index scan），在可跳跃场景显著降低代价。</li>
+</ul>
+
+<h3 id="47-join-场景">4.7 JOIN 场景</h3>
+<ul>
+  <li>驱动表选高过滤性；</li>
+  <li>被驱动表在 Join key 建索引，保证 Nested Loop 点查高效；</li>
+  <li>Join + Order 时，考虑“Join key + 排序列”复合。</li>
+</ul>
+
+<h3 id="48-反模式速查">4.8 反模式速查</h3>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">LIKE '%kw%'</code> 不走前缀索引：考虑反向索引、ngram、全文索引；</li>
+  <li>表达式在列外：<code class="language-plaintext highlighter-rouge">WHERE DATE(ts)=...</code>、<code class="language-plaintext highlighter-rouge">col+1=...</code> 阻断索引；</li>
+  <li>隐式转换：字符串列与数值比较触发转换，索引失效；</li>
+  <li>8.0 混合排序：按需指定 <code class="language-plaintext highlighter-rouge">ASC/DESC</code>，避免额外排序。</li>
+</ul>
+
+<h2 id="5-回表优化理解并减少">5. 回表优化：理解并减少</h2>
+
+<p>回表代价在于额外随机 I/O 与潜在锁冲突。</p>
+
+<p>1) 覆盖索引优先：尽可能避免回表。</p>
+
+<p>2) 限制回表次数：</p>
+<ul>
+  <li>提升过滤收敛；</li>
+  <li>ICP 在索引层筛除不匹配；</li>
+  <li>Top-N 列表减少 LIMIT，利用更强 WHERE。</li>
+</ul>
+
+<p>3) 利用主键有序性：</p>
+<ul>
+  <li>让二级索引输出的主键更“聚集”（时间段/自增 ID），减少跨页跳转；</li>
+  <li>使用 seek 分页替代深 OFFSET，避免无效回表。</li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 基于主键的延续分页</span>
+<span class="k">SELECT</span> <span class="n">cols</span> <span class="k">FROM</span> <span class="n">t</span> <span class="k">FORCE</span> <span class="k">INDEX</span><span class="p">(</span><span class="n">idx_a_created_id</span><span class="p">)</span>
+<span class="k">WHERE</span> <span class="n">a</span><span class="o">=?</span> <span class="k">AND</span> <span class="p">(</span><span class="n">created_at</span><span class="p">,</span><span class="n">id</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="o">?</span><span class="p">,</span><span class="o">?</span><span class="p">)</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">created_at</span><span class="p">,</span><span class="n">id</span>
+<span class="k">LIMIT</span> <span class="mi">50</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>4) 特殊手段：</p>
+<ul>
+  <li>热点路径物化/汇总表，用写放大换读性能；</li>
+  <li>使用外部缓存兜热点主键查；</li>
+  <li>JSON/表达式查询用生成列 + 函数索引减少“索引参与度低”的回表。</li>
+</ul>
+
+<h2 id="6-主键设计影响一切的根基">6. 主键设计：影响一切的根基</h2>
+
+<ul>
+  <li>宽度：尽量短（BIGINT 优于 UUID v4 文本）；必要时用 <code class="language-plaintext highlighter-rouge">BINARY(16)</code> 或 UUID v7；</li>
+  <li>递增性：递增/准递增减少页分裂、提升局部性；</li>
+  <li>业务含义：避免在主键编码复杂业务语义，后期变更代价高。</li>
+</ul>
+
+<h2 id="7-统计与优化器让选择更聪明">7. 统计与优化器：让选择更聪明</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ANALYZE TABLE</code> 刷新统计，保证基数估计；</li>
+  <li>8.0 直方图（<code class="language-plaintext highlighter-rouge">CREATE HISTOGRAM</code>）改善倾斜分布估计；</li>
+  <li>持久统计（<code class="language-plaintext highlighter-rouge">innodb_stats_persistent=ON</code>）减少重启抖动；</li>
+  <li>不可见索引（Invisible Index）灰度验证，新索引先不可见，验证后再切换可见。</li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx_demo</span> <span class="k">ON</span> <span class="n">t</span><span class="p">(</span><span class="n">col1</span><span class="p">,</span><span class="n">col2</span><span class="p">)</span> <span class="n">INVISIBLE</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">t</span> <span class="k">ALTER</span> <span class="k">INDEX</span> <span class="n">idx_demo</span> <span class="n">VISIBLE</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="8-实战建索引流程可执行清单">8. 实战建索引流程（可执行清单）</h2>
+
+<p>1) 收集与分群：</p>
+<ul>
+  <li>慢日志、Top SQL（performance_schema / sys）；</li>
+  <li>按 DIGEST 聚类，统计 QPS、P95/P99、Rows Examined。</li>
+</ul>
+
+<p>2) 设计与评审：</p>
+<ul>
+  <li>为每类查询提出 1~2 个候选复合索引；</li>
+  <li>检查“等值→范围→排序/分组”、是否可覆盖；</li>
+  <li>评估索引宽度、写放大、与现有索引冗余关系。</li>
+</ul>
+
+<p>3) 预演与验证：</p>
+<ul>
+  <li>影子环境回放真实流量；</li>
+  <li>用 <code class="language-plaintext highlighter-rouge">EXPLAIN ANALYZE</code> 对比访问类型、rows/filtered、Extra；</li>
+  <li>评估 CPU/I-O/延迟改善与副作用。</li>
+</ul>
+
+<p>4) 渐进上线：</p>
+<ul>
+  <li>不可见索引或分批实例灰度；</li>
+  <li>观察计划回归、锁等待、写延迟；</li>
+  <li>冗余索引及时下线，保持索引集简洁。</li>
+</ul>
+
+<h2 id="9-ddl-模板与技巧">9. DDL 模板与技巧</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 1) 复合 + 覆盖：等值-范围-排序</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx_a_b_c_id</span> <span class="k">ON</span> <span class="n">t</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="k">c</span><span class="p">,</span> <span class="n">id</span><span class="p">);</span>
+
+<span class="c1">-- 2) 前缀索引：控制宽列大小（留意选择度与碰撞）</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx_email_prefix</span> <span class="k">ON</span> <span class="n">users</span><span class="p">(</span><span class="n">email</span><span class="p">(</span><span class="mi">16</span><span class="p">));</span>
+
+<span class="c1">-- 3) 生成列 + 函数索引：避免表达式阻断索引</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span>
+  <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">email_lc</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">GENERATED</span> <span class="n">ALWAYS</span> <span class="k">AS</span> <span class="p">(</span><span class="k">LOWER</span><span class="p">(</span><span class="n">email</span><span class="p">))</span> <span class="n">STORED</span><span class="p">,</span>
+  <span class="k">ADD</span> <span class="k">INDEX</span> <span class="n">idx_email_lc</span><span class="p">(</span><span class="n">email_lc</span><span class="p">);</span>
+
+<span class="c1">-- 4) 混合排序（8.0+）：与业务排序一致</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx_city_score</span> <span class="k">ON</span> <span class="n">shop</span><span class="p">(</span><span class="n">city_id</span> <span class="k">ASC</span><span class="p">,</span> <span class="n">score</span> <span class="k">DESC</span><span class="p">,</span> <span class="n">id</span> <span class="k">ASC</span><span class="p">);</span>
+
+<span class="c1">-- 5) JSON 多值索引（8.0.17+）</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">doc</span> <span class="k">ADD</span> <span class="k">INDEX</span> <span class="n">idx_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="k">COMMENT</span> <span class="s1">'MVI on JSON array'</span><span class="p">;</span>
+<span class="c1">-- WHERE JSON_CONTAINS(tags, '"ai"', '$')</span>
+
+<span class="c1">-- 6) 不可见索引灰度</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx_hot</span> <span class="k">ON</span> <span class="n">t</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="k">c</span><span class="p">)</span> <span class="n">INVISIBLE</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">t</span> <span class="k">ALTER</span> <span class="k">INDEX</span> <span class="n">idx_hot</span> <span class="n">VISIBLE</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="10-监控与排障发现坏索引缺索引">10. 监控与排障：发现“坏索引/缺索引”</h2>
+
+<ul>
+  <li>慢日志：<code class="language-plaintext highlighter-rouge">Rows_examined</code> 远大于返回行；</li>
+  <li><code class="language-plaintext highlighter-rouge">performance_schema</code>/<code class="language-plaintext highlighter-rouge">sys</code>：按 DIGEST 聚合最高延迟/扫描行；</li>
+  <li><code class="language-plaintext highlighter-rouge">EXPLAIN ANALYZE</code> 指标：
+    <ul>
+      <li>type=ALL：全表扫；</li>
+      <li>key=NULL：未命中索引；</li>
+      <li>rows ≫ 返回行：回表/过滤浪费；</li>
+      <li>Extra 含 <code class="language-plaintext highlighter-rouge">Using filesort</code>/<code class="language-plaintext highlighter-rouge">Using temporary</code>：排序/分组未利用索引序；</li>
+    </ul>
+  </li>
+  <li>InnoDB：Buffer Pool 命中率、页分裂率、<code class="language-plaintext highlighter-rouge">history list length</code>（长事务影响 purge 与统计）。</li>
+</ul>
+
+<h2 id="11-常见问答与取舍">11. 常见问答与取舍</h2>
+
+<ul>
+  <li>外键列要不要建索引？建议要。否则外键检查/级联会加大锁范围与阻塞。</li>
+  <li><code class="language-plaintext highlighter-rouge">INDEX MERGE</code> 能替代复合索引吗？不建议依赖。常需临时合并，CPU 与内存代价高。</li>
+  <li>宽文本如何索引？前缀 + 覆盖或生成列，全文检索需求引入专用引擎更合适。</li>
+  <li>是否删除“看似无用”的索引？先做不可见灰度并跨报表/离线窗口观察，避免尖峰慢查。</li>
+</ul>
+
+<h2 id="12-经典案例回顾结合回表优化">12. 经典案例回顾（结合回表优化）</h2>
+
+<p>问题：<code class="language-plaintext highlighter-rouge">SELECT id FROM t WHERE a = ? AND b &gt; ? ORDER BY c LIMIT 20</code> filesort + 回表严重。</p>
+
+<p>方案：</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx_a_b_c_id</span> <span class="k">ON</span> <span class="n">t</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="k">c</span><span class="p">,</span> <span class="n">id</span><span class="p">);</span>
+<span class="k">EXPLAIN</span> <span class="k">SELECT</span> <span class="n">id</span> <span class="k">FROM</span> <span class="n">t</span> <span class="k">WHERE</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">AND</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">c</span> <span class="k">LIMIT</span> <span class="mi">20</span><span class="p">;</span> <span class="c1">-- Extra: Using index</span>
+</code></pre></div></div>
+<p>要点：</p>
+<ul>
+  <li>等值 a 在前、范围 b 其后、排序 c 与主键 id 形成覆盖；</li>
+  <li>若范围过宽导致排序失效，缩小 b 的范围或改以 (a,c,id) 兜底并增加 WHERE 收敛；</li>
+  <li>LIMIT 收敛候选集，减少回表数量。</li>
+</ul>
+
+<h2 id="13-sql-排查脚本保留与扩展">13. SQL 排查脚本（保留与扩展）</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Top 慢 SQL 家族</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">performance_schema</span><span class="p">.</span><span class="n">events_statements_summary_by_digest</span> 
+<span class="k">WHERE</span> <span class="n">DIGEST_TEXT</span> <span class="k">LIKE</span> <span class="s1">'SELECT%FROM t%'</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">AVG_TIMER_WAIT</span> <span class="k">DESC</span> <span class="k">LIMIT</span> <span class="mi">20</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="14-总结可落地的准则">14. 总结：可落地的准则</h2>
+
+<ul>
+  <li>以查询为中心：有读路径画像，后有索引方案；</li>
+  <li>等值→范围→排序/分组组织复合索引，热点读优先覆盖；</li>
+  <li>控制索引大小：短主键、前缀/生成列、谨慎扩列；</li>
+  <li>减少回表：覆盖索引 + ICP + seek 分页；</li>
+  <li>喂饱优化器：直方图、持久统计、定期 ANALYZE；</li>
+  <li>灰度为先：不可见索引/影子环境验证；</li>
+  <li>持续治理：监控—评审—精简的闭环。</li>
+</ul>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=MySQL%20%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

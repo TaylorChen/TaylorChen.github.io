@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>NFT 标准与应用实践：ERC-721/1155、元数据与版税</h1>
+    <p class="post-meta">2022-10-01 · Web3 · NFT, ERC-721, ERC-1155, 元数据</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>NFT（Non-Fungible Token）不是“把图片放上链”，而是在链上记录“不可替代的资产凭证”，其核心在于可验证的所有权、可组合的协议接口和链上/链下协作的系统工程。本文从标准、元数据与存储、铸造与交易、版税争议、动态 NFT、跨链、索引与运维全方位实战讲解。</p>
+
+<h2 id="1-标准概览与对比">1. 标准概览与对比</h2>
+<ul>
+  <li>ERC-721：一物一权，每个 <code class="language-plaintext highlighter-rouge">tokenId</code> 独立；适合独特资产（艺术品、门票）。</li>
+  <li>ERC-1155：同一合约内可发行“半同质/多类型”资产，节省 Gas；适合游戏道具/批量空投。</li>
+  <li>EIP-2981（版税建议）：提供 <code class="language-plaintext highlighter-rouge">royaltyInfo(tokenId, salePrice)</code> 接口，市场可选择是否尊重。</li>
+  <li>元数据 URI：<code class="language-plaintext highlighter-rouge">tokenURI(tokenId) -&gt; string</code>，可返回 HTTP/IPFS/Arweave 等。</li>
+</ul>
+
+<p>接口最小集合：</p>
+<pre><code class="language-solidity">interface IERC721 {
+  event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+  function ownerOf(uint256 tokenId) external view returns (address);
+  function safeTransferFrom(address from, address to, uint256 tokenId) external;
+  function tokenURI(uint256 tokenId) external view returns (string memory);
+}
+</code></pre>
+
+<h2 id="2-元数据与存储ipfsarweave-与缓存">2. 元数据与存储：IPFS/Arweave 与缓存</h2>
+<ul>
+  <li>结构：<code class="language-plaintext highlighter-rouge">name/description/image/attributes</code>（OpenSea 等通用字段）；</li>
+  <li>存储：
+    <ul>
+      <li>中心化 HTTP（快速，但需确保持久与防篡改）；</li>
+      <li>IPFS：内容寻址（CID），需 pin 服务保障可用性；</li>
+      <li>Arweave：长久存储付费一次。</li>
+    </ul>
+  </li>
+  <li>缓存：CDN 前置（Cloudflare IPFS Gateway），前端做占位与懒加载；</li>
+  <li>防篡改：在链上记录 CID（如 <code class="language-plaintext highlighter-rouge">ipfs://CID/123.json</code>），并将根目录 CID 固定到事件或不可变变量。</li>
+</ul>
+
+<p>生成与上传脚本（Node.js）：</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 生成 10k 元数据并上传到 IPFS（示意）</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">create</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">ipfs-http-client</span><span class="dl">'</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">ipfs</span> <span class="o">=</span> <span class="nf">create</span><span class="p">({</span> <span class="na">url</span><span class="p">:</span> <span class="dl">'</span><span class="s1">https://ipfs.infura.io:5001/api/v0</span><span class="dl">'</span> <span class="p">})</span>
+<span class="kd">const</span> <span class="nx">meta</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span><span class="dl">'</span><span class="s1">Art #1</span><span class="dl">'</span><span class="p">,</span> <span class="na">description</span><span class="p">:</span><span class="dl">'</span><span class="s1">...</span><span class="dl">'</span><span class="p">,</span> <span class="na">image</span><span class="p">:</span><span class="dl">'</span><span class="s1">ipfs://.../1.png</span><span class="dl">'</span><span class="p">,</span> <span class="na">attributes</span><span class="p">:[{</span><span class="na">trait_type</span><span class="p">:</span><span class="dl">'</span><span class="s1">Rarity</span><span class="dl">'</span><span class="p">,</span><span class="na">value</span><span class="p">:</span><span class="dl">'</span><span class="s1">Rare</span><span class="dl">'</span><span class="p">}]</span> <span class="p">}</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">cid</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">ipfs</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">(</span><span class="nx">meta</span><span class="p">))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">tokenURI=ipfs://</span><span class="dl">'</span><span class="o">+</span><span class="nx">cid</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="3-铸造交易流程与合约实践">3. 铸造/交易流程与合约实践</h2>
+<ul>
+  <li>铸造（Mint）：公开/白名单/签名授权（EIP-712）；</li>
+  <li>交易：P2P、拍卖、订单簿；</li>
+  <li>安全：重入防护、白名单签名防复制、<code class="language-plaintext highlighter-rouge">safeMint</code>/<code class="language-plaintext highlighter-rouge">safeTransferFrom</code> 防止接收方丢失。</li>
+</ul>
+
+<p>签名白名单铸造（示意）：</p>
+<pre><code class="language-solidity">contract MintPass is ERC721, EIP712 {
+  mapping(bytes32=&gt;bool) public used;
+  function mint(address to, bytes calldata sig) external {
+    bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(keccak256("Mint(address to)"), to)));
+    require(!used[digest],"used");
+    address signer = ECDSA.recover(digest, sig);
+    require(signer==whitelistSigner,"!auth");
+    used[digest]=true; _safeMint(to, ++id);
+  }
+}
+</code></pre>
+
+<h2 id="4-版税争议与处理">4. 版税争议与处理</h2>
+<ul>
+  <li>背景：部分市场为提高流动性取消强制版税，仅保留可选打赏；</li>
+  <li>链上强制：通过转移白名单/Operator Filter 限制交易场所（兼容性差）；</li>
+  <li>现实折中：EIP-2981 提供建议值 + 市场生态共识，或链下结算；</li>
+  <li>运营建议：透明声明、签约支持版税的平台、给创作者留足分润空间。</li>
+</ul>
+
+<h2 id="5-动态与可组合-nft">5. 动态与可组合 NFT</h2>
+<ul>
+  <li>动态元数据：<code class="language-plaintext highlighter-rouge">tokenURI</code> 返回的 JSON 随链上状态或时间变化（需缓存刷新策略）；</li>
+  <li>可组合（Composable NFT）：装备/组件作为子 NFT（EIP-998/可组合规范），或通过外部合约组合查询；</li>
+  <li>关联状态：质押/解押、升级、跨合约权限校验。</li>
+</ul>
+
+<h2 id="6-跨链与桥接">6. 跨链与桥接</h2>
+<ul>
+  <li>方式：锁定-铸造、燃烧-铸造、轻客户端证明；</li>
+  <li>风险：桥被攻击、双花、流动性不足；</li>
+  <li>建议：尽量在单链内沉淀资产，通过显示跨链凭证映射，或使用成熟跨链基础设施。</li>
+</ul>
+
+<h2 id="7-索引与缓存高性能展示">7. 索引与缓存：高性能展示</h2>
+<ul>
+  <li>单个查询：<code class="language-plaintext highlighter-rouge">ownerOf/tokenURI</code> 直读 RPC；</li>
+  <li>批量：订阅 <code class="language-plaintext highlighter-rouge">Transfer</code> 事件构建持有关系；</li>
+  <li>缓存图像与元数据：CDN/边缘缓存 + 定期刷新；</li>
+  <li>SEO/社交：预生成 OpenGraph 卡片（标题/图），避免钱包/市场的拉取超时。</li>
+</ul>
+
+<p>索引器（Node + DB）示例：</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">provider</span><span class="p">.</span><span class="nf">on</span><span class="p">({</span> <span class="na">address</span><span class="p">:</span> <span class="nx">NFT</span><span class="p">,</span> <span class="na">topics</span><span class="p">:</span> <span class="p">[</span><span class="nx">topicTransfer</span><span class="p">]</span> <span class="p">},</span> <span class="k">async </span><span class="p">(</span><span class="nx">log</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="k">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">tokenId</span> <span class="p">}</span> <span class="o">=</span> <span class="nf">decode</span><span class="p">(</span><span class="nx">log</span><span class="p">)</span>
+  <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nf">tx</span><span class="p">(</span><span class="k">async</span> <span class="nx">t</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if </span><span class="p">(</span><span class="k">from</span> <span class="o">!==</span> <span class="nx">ZERO</span><span class="p">)</span> <span class="k">await</span> <span class="nx">t</span><span class="p">.</span><span class="nf">none</span><span class="p">(</span><span class="dl">'</span><span class="s1">DELETE FROM hold WHERE addr=$1 AND id=$2</span><span class="dl">'</span><span class="p">,[</span><span class="k">from</span><span class="p">,</span> <span class="nx">tokenId</span><span class="p">])</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">to</span> <span class="o">!==</span> <span class="nx">ZERO</span><span class="p">)</span>   <span class="k">await</span> <span class="nx">t</span><span class="p">.</span><span class="nf">none</span><span class="p">(</span><span class="dl">'</span><span class="s1">INSERT INTO hold(addr,id) VALUES($1,$2) ON CONFLICT DO NOTHING</span><span class="dl">'</span><span class="p">,[</span><span class="nx">to</span><span class="p">,</span> <span class="nx">tokenId</span><span class="p">])</span>
+  <span class="p">})</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h2 id="8-反女巫与防钓鱼">8. 反女巫与防钓鱼</h2>
+<ul>
+  <li>反女巫：行为/社交/设备指纹综合评分；</li>
+  <li>防钓鱼：签名提示明确用途，警惕 <code class="language-plaintext highlighter-rouge">setApprovalForAll</code> 的授权弹窗；</li>
+  <li>白名单分发：与 DID/VC 结合减少机器人；</li>
+  <li>前端：标注“仅签名登录/不转移资产”的提示卡片。</li>
+</ul>
+
+<h2 id="9-运维与看板">9. 运维与看板</h2>
+<ul>
+  <li>指标：铸造成功率、二级交易量、地板价、持有者分布、活跃度；</li>
+  <li>异常：元数据拉取失败率、渲染错误、跨链失败；</li>
+  <li>资产备份：元数据与图像的多地备份（IPFS + HTTP 备份）。</li>
+</ul>
+
+<h2 id="10-实操清单">10. 实操清单</h2>
+<ul>
+  <li>设计：标准选择（721/1155）、版税策略、元数据模式；</li>
+  <li>工程：合约安全、签名授权、事件设计；</li>
+  <li>内容：版权与授权、图像防伪与盲盒揭示；</li>
+  <li>上线：白名单预热、灰度分发、市场联动；</li>
+  <li>运营：看板与告警、创作者沟通、反作弊与法务合规。</li>
+</ul>
+
+<blockquote>
+  <p>结语：NFT 的价值在于“开放可验证的所有权”和“可组合的协议接口”。在实践中，工程与运营要素同样重要：安全、缓存、跨链风控、看板告警，缺一不可。</p>
+</blockquote>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=NFT%20%E6%A0%87%E5%87%86%E4%B8%8E%E5%BA%94%E7%94%A8%E5%AE%9E%E8%B7%B5%EF%BC%9AERC-721/1155%E3%80%81%E5%85%83%E6%95%B0%E6%8D%AE%E4%B8%8E%E7%89%88%E7%A8%8E&url=http://localhost:4000/web3/2022/10/01/Web3-NFT-%E6%A0%87%E5%87%86%E4%B8%8E%E5%BA%94%E7%94%A8%E5%AE%9E%E8%B7%B5.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/web3/2022/10/01/Web3-NFT-%E6%A0%87%E5%87%86%E4%B8%8E%E5%BA%94%E7%94%A8%E5%AE%9E%E8%B7%B5.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

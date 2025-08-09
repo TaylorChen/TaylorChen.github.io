@@ -70,7 +70,7 @@
 <p>当执行一个不涉及唯一索引的DDL操作（如修改其他字段）时，MySQL的Online DDL流程如下：</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T0: 开始DDL，创建中间表(#sql-ibxxx)
-T1: 将原表数据复制到中间表（此时中间表已包含phone='13089687850'）
+T1: 将原表数据复制到中间表（此时中间表已包含phone='xxxxx'）
 T2: 开始记录DML变更到row log
 T3: 应用程序执行INSERT ... ON DUPLICATE KEY UPDATE
 T4: 将row log中的变更应用到中间表
@@ -82,13 +82,13 @@ T5: 原子替换原表与中间表
 <p><strong>关键点：row log记录的是原始SQL操作，而非实际执行的操作</strong></p>
 
 <p>当应用程序执行：</p>
-<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">users</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'13089687850'</span><span class="p">,</span> <span class="s1">'张三'</span><span class="p">)</span> 
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">users</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'xxxxx'</span><span class="p">,</span> <span class="s1">'张三'</span><span class="p">)</span> 
 <span class="k">ON</span> <span class="n">DUPLICATE</span> <span class="k">KEY</span> <span class="k">UPDATE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">'张三'</span><span class="p">;</span>
 </code></pre></div></div>
 
 <p>MySQL的处理流程：</p>
 <ol>
-  <li>检测到唯一键冲突（phone=’13089687850’已存在）</li>
+  <li>检测到唯一键冲突（phone=’xxxxx’已存在）</li>
   <li><strong>将INSERT操作内部转换为UPDATE操作</strong></li>
   <li>执行UPDATE，成功完成</li>
 </ol>
@@ -103,13 +103,13 @@ T5: 原子替换原表与中间表
 <h3 id="3-冲突发生的具体时间线">3. 冲突发生的具体时间线</h3>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T0: 开始DDL，创建中间表
-T1: 中间表从原表复制数据（已包含phone='13089687850'）
+T1: 中间表从原表复制数据（已包含phone='xxxxx'）
 T2: 开始记录row log
 T3: 应用程序执行INSERT ... ON DUPLICATE KEY UPDATE
     - 原表：检测到冲突，自动转为UPDATE，成功
-    - row log记录：INSERT INTO ... VALUES('13089687850', ...)
+    - row log记录：INSERT INTO ... VALUES('xxxxx', ...)
 T4: DDL尝试将row log应用到中间表
-    - 中间表：已从T1复制拥有phone='13089687850'的记录
+    - 中间表：已从T1复制拥有phone='xxxxx'的记录
     - 执行INSERT操作 → 触发Duplicate entry错误
 T5: DDL操作失败
 </code></pre></div></div>
@@ -231,7 +231,7 @@ T5: DDL操作失败
 
 <h3 id="3-为什么先查询再插入无效">3. 为什么”先查询再插入”无效？</h3>
 <p>即使应用程序改为：</p>
-<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">phone</span><span class="o">=</span><span class="s1">'13089687850'</span><span class="p">;</span>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">phone</span><span class="o">=</span><span class="s1">'xxxxx'</span><span class="p">;</span>
 <span class="c1">-- 如果存在则UPDATE，否则INSERT</span>
 </code></pre></div></div>
 <p>在Online DDL期间：</p>

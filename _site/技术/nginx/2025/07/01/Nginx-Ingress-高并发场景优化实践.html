@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>Nginx Ingress 高并发场景优化实践</h1>
+    <p class="post-meta">2025-07-01 · 技术 / Nginx · 技术, Nginx, Kubernetes, 并发</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>在高并发/高吞吐场景下，Ingress-Nginx 的瓶颈往往在四处：连接与端口、文件句柄、握手与 TIME_WAIT、日志 I/O。本文给出值可直接落地的 Helm <code class="language-plaintext highlighter-rouge">values.yaml</code> 片段、Linux 内核参数、日志轮转 sidecar、压测与观测清单。</p>
+
+<h2 id="1-云负载均衡clbnlb容量">1. 云负载均衡（CLB/NLB）容量</h2>
+<ul>
+  <li>选择性能容量型/增强型实例，并调高带宽上限；入口成为系统上限的概率远高于后端。</li>
+  <li>自建 CLB 后通过注解/固定 <code class="language-plaintext highlighter-rouge">loadBalancerIP</code> 复用为 Ingress 入口。</li>
+</ul>
+
+<h2 id="2-linux-内核参数容器内以-initcontainer-动态设置">2. Linux 内核参数（容器内以 initContainer 动态设置）</h2>
+
+<p>Helm <code class="language-plaintext highlighter-rouge">values.yaml</code>：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="na">extraInitContainers</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">sysctl</span>
+      <span class="na">image</span><span class="pi">:</span> <span class="s">busybox</span>
+      <span class="na">imagePullPolicy</span><span class="pi">:</span> <span class="s">IfNotPresent</span>
+      <span class="na">securityContext</span><span class="pi">:</span>
+        <span class="na">privileged</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">command</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">sh</span>
+        <span class="pi">-</span> <span class="s">-c</span>
+        <span class="pi">-</span> <span class="pi">|</span>
+          <span class="s">sysctl -w net.core.somaxconn=65535</span>
+          <span class="s">sysctl -w net.ipv4.ip_local_port_range="1024 65535"</span>
+          <span class="s">sysctl -w net.ipv4.tcp_tw_reuse=1</span>
+          <span class="s">sysctl -w fs.file-max=1048576</span>
+</code></pre></div></div>
+
+<p>说明：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">somaxconn</code> 提升监听队列，缓解 SYN/accept 队列溢出。</li>
+  <li><code class="language-plaintext highlighter-rouge">ip_local_port_range</code> 扩大源端口范围，降低端口耗尽风险。</li>
+  <li><code class="language-plaintext highlighter-rouge">tcp_tw_reuse</code> 在客户端侧端口紧张时复用 TIME_WAIT（谨慎，仍以观测为准）。</li>
+  <li><code class="language-plaintext highlighter-rouge">fs.file-max</code> 与容器 <code class="language-plaintext highlighter-rouge">ulimit</code>/<code class="language-plaintext highlighter-rouge">worker_rlimit_nofile</code> 对齐。</li>
+</ul>
+
+<h2 id="3-ingress-nginx-配置连接与工作线程">3. Ingress-Nginx 配置（连接与工作线程）</h2>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="na">config</span><span class="pi">:</span>
+    <span class="na">keep-alive-requests</span><span class="pi">:</span> <span class="s2">"</span><span class="s">1000"</span>                 <span class="c1"># client &lt;-&gt; ingress 单连接可承载请求数</span>
+    <span class="na">upstream-keepalive-connections</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2000"</span>      <span class="c1"># ingress &lt;-&gt; upstream 空闲长连接上限</span>
+    <span class="na">max-worker-connections</span><span class="pi">:</span> <span class="s2">"</span><span class="s">65536"</span>             <span class="c1"># 每 worker 可开的最大连接数</span>
+</code></pre></div></div>
+
+<p>要点：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">keep-alive-requests</code> 过高可能导致扩容后负载不均；建议结合压测观察。</li>
+  <li><code class="language-plaintext highlighter-rouge">upstream-keepalive-connections</code> 是空闲连接上限（非总连接数）；按 worker 数乘算总上限。</li>
+</ul>
+
+<h2 id="4-日志落盘与轮转降低高并发下-stdout-cpu-开销">4. 日志落盘与轮转（降低高并发下 stdout CPU 开销）</h2>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="na">config</span><span class="pi">:</span>
+    <span class="na">access-log-path</span><span class="pi">:</span> <span class="s">/var/log/nginx/nginx_access.log</span>
+    <span class="na">error-log-path</span><span class="pi">:</span> <span class="s">/var/log/nginx/nginx_error.log</span>
+  <span class="na">extraVolumes</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">log</span>
+      <span class="na">emptyDir</span><span class="pi">:</span> <span class="pi">{}</span>
+  <span class="na">extraVolumeMounts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">log</span>
+      <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/var/log/nginx</span>
+  <span class="na">extraContainers</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">logrotate</span>
+      <span class="na">image</span><span class="pi">:</span> <span class="s">imroc/logrotate:latest</span>
+      <span class="na">imagePullPolicy</span><span class="pi">:</span> <span class="s">IfNotPresent</span>
+      <span class="na">env</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">LOGROTATE_FILE_PATTERN</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/var/log/nginx/nginx_*.log"</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">LOGROTATE_FILESIZE</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">100M"</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">LOGROTATE_FILENUM</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">3"</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">CRON_EXPR</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">*/1</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*"</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">CROND_LOGLEVEL</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">8"</span>
+      <span class="na">volumeMounts</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">log</span>
+          <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/var/log/nginx</span>
+</code></pre></div></div>
+
+<h2 id="5-端到端压测与观测">5. 端到端压测与观测</h2>
+<ul>
+  <li>压测：<code class="language-plaintext highlighter-rouge">wrk</code>（HTTP/1.x）、<code class="language-plaintext highlighter-rouge">h2load</code>（HTTP/2/3）、<code class="language-plaintext highlighter-rouge">vegeta/fortio</code>；建议 10–30 分钟稳定压测并观测收敛。</li>
+  <li>指标：活动连接、连接错误、<code class="language-plaintext highlighter-rouge">$upstream_response_time</code> 分位数、5xx 率、<code class="language-plaintext highlighter-rouge">worker_connections</code> 使用率、TIME_WAIT 总数、端口使用率。</li>
+  <li>日志：使用 JSON 格式，记录上游地址、上游时延、路由信息，便于定位热点与异常。</li>
+</ul>
+
+<h2 id="6-常见排障路径">6. 常见排障路径</h2>
+<ul>
+  <li>端口耗尽：增大 <code class="language-plaintext highlighter-rouge">ip_local_port_range</code>，提升上游 keepalive，排查异常关闭；观测 <code class="language-plaintext highlighter-rouge">ss -s</code>。</li>
+  <li>队列溢出/5xx：调大 <code class="language-plaintext highlighter-rouge">somaxconn</code> 与 <code class="language-plaintext highlighter-rouge">backlog</code>，核查上游超时/重试策略，查丢包。</li>
+  <li>CPU 飙升：stdout I/O 抖动，切换日志落盘+轮转；或减少日志字段。</li>
+</ul>
+
+<hr />
+
+<p>参考链接：</p>
+<ul>
+  <li>高并发场景优化（外部实践指南）：<a href="https://imroc.cc/tke/networking/ingress-nginx/high-concurrency"><code class="language-plaintext highlighter-rouge">https://imroc.cc/tke/networking/ingress-nginx/high-concurrency</code></a></li>
+</ul>
+
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=Nginx%20Ingress%20%E9%AB%98%E5%B9%B6%E5%8F%91%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96%E5%AE%9E%E8%B7%B5&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2025/07/01/Nginx-Ingress-%E9%AB%98%E5%B9%B6%E5%8F%91%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96%E5%AE%9E%E8%B7%B5.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2025/07/01/Nginx-Ingress-%E9%AB%98%E5%B9%B6%E5%8F%91%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96%E5%AE%9E%E8%B7%B5.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>去中心化应用（DApps）架构实战：钱包、签名与读写分层</h1>
+    <p class="post-meta">2021-03-12 · Web3 · DApp, 钱包, EIP-1193, EVM</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>在 Web3 语境下，“应用”与传统 Web2 的差异并不只是是否使用区块链，而是信任模型从“平台背书”转向“代码即法律（Code is Law）”与“加密签名即授权”。DApp 的工程化落地，归根结底是围绕三件事：身份与授权（钱包）、状态与规则（智能合约）、读写与观测（RPC/索引器）。本文从体系结构到实战细节，带你搭建一个可上线的 DApp，并覆盖常见错误与运维要点。</p>
+
+<h2 id="1-架构概览与信任边界">1. 架构概览与信任边界</h2>
+<ul>
+  <li>前端（dApp）：运行在用户浏览器或移动端，负责连接钱包、发起签名、调用合约、渲染数据；</li>
+  <li>钱包（Provider/Signer）：保存私钥，EIP-1193 暴露统一接口，EVM 链上用 <code class="language-plaintext highlighter-rouge">eth_*</code> JSON-RPC；</li>
+  <li>合约（EVM Solidity）：在链上保存规则与资产，事件（logs）作为“事实来源”；</li>
+  <li>后端/索引器：尽量“最小信任”。使用 The Graph/SubQuery/自建 ETL，将事件抽取到可查询存储以供前端检索；</li>
+  <li>节点与网关：Infura/Alchemy/自建 Geth/Erigon；选择稳定 RPC 与指数退避策略；</li>
+  <li>可观测与告警：交易成功率、确认时间、事件延迟、钱包连接失败率、RPC 错误码分布。</li>
+</ul>
+
+<pre><code class="language-mermaid">graph LR
+  UI[dApp Frontend] -- EIP-1193 --&gt; Wallet
+  Wallet -- sendTx/sign --&gt; Chain[Blockchain]
+  UI -- read --&gt; RPC
+  UI -- query --&gt; Indexer[(Indexer/DB)]
+  Chain -- logs --&gt; Indexer
+</code></pre>
+
+<h2 id="2-钱包连接与权限模型eip-11936963">2. 钱包连接与权限模型（EIP-1193/6963）</h2>
+<p>EIP-1193 统一了 Provider 的交互方式，EIP-6963 定义多钱包发现与选择机制。常见流程：
+1) 发现与连接钱包（请求账户权限）；2) 检查与切换网络；3) 监听账户/网络变化；4) 以签名/交易完成授权。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 探测 Provider（EIP-1193），兼容多钱包</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">ethers</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">ethers</span><span class="dl">'</span>
+<span class="kd">const</span> <span class="nx">anyProvider</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">ethereum</span>
+<span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">anyProvider</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">No wallet provider found</span><span class="dl">'</span><span class="p">)</span>
+<span class="c1">// 请求账户权限（用户会看到弹窗）</span>
+<span class="k">await</span> <span class="nx">anyProvider</span><span class="p">.</span><span class="nf">request</span><span class="p">({</span> <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">eth_requestAccounts</span><span class="dl">'</span> <span class="p">})</span>
+<span class="kd">const</span> <span class="nx">provider</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ethers</span><span class="p">.</span><span class="nc">BrowserProvider</span><span class="p">(</span><span class="nx">anyProvider</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">signer</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">provider</span><span class="p">.</span><span class="nf">getSigner</span><span class="p">()</span>
+<span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">address=</span><span class="dl">'</span><span class="p">,</span> <span class="k">await</span> <span class="nx">signer</span><span class="p">.</span><span class="nf">getAddress</span><span class="p">())</span>
+<span class="c1">// 监听账户/网络变化</span>
+<span class="nx">anyProvider</span><span class="p">.</span><span class="nf">on</span><span class="p">(</span><span class="dl">'</span><span class="s1">accountsChanged</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">accs</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span> <span class="cm">/* 刷新会话 */</span> <span class="p">})</span>
+<span class="nx">anyProvider</span><span class="p">.</span><span class="nf">on</span><span class="p">(</span><span class="dl">'</span><span class="s1">chainChanged</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">chainId</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nf">reload</span><span class="p">()</span> <span class="p">})</span>
+</code></pre></div></div>
+
+<p>网络切换（EIP-3085/3326）：</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 若链ID不匹配，引导用户添加并切换</span>
+<span class="k">await</span> <span class="nx">anyProvider</span><span class="p">.</span><span class="nf">request</span><span class="p">({</span>
+  <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">wallet_addEthereumChain</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">params</span><span class="p">:</span> <span class="p">[{</span> <span class="na">chainId</span><span class="p">:</span> <span class="dl">'</span><span class="s1">0x1</span><span class="dl">'</span><span class="p">,</span> <span class="na">chainName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Ethereum</span><span class="dl">'</span><span class="p">,</span> <span class="na">rpcUrls</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">https://mainnet.infura.io/v3/xxx</span><span class="dl">'</span><span class="p">],</span> <span class="na">nativeCurrency</span><span class="p">:</span> <span class="p">{</span><span class="na">name</span><span class="p">:</span><span class="dl">'</span><span class="s1">ETH</span><span class="dl">'</span><span class="p">,</span><span class="na">symbol</span><span class="p">:</span><span class="dl">'</span><span class="s1">ETH</span><span class="dl">'</span><span class="p">,</span><span class="na">decimals</span><span class="p">:</span><span class="mi">18</span><span class="p">}}]</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h2 id="3-合约设计与最小可行用例solidity">3. 合约设计与最小可行用例（Solidity）</h2>
+<p>以“白名单凭证 NFT”举例：</p>
+<ul>
+  <li>功能：允许白名单地址铸造一次；</li>
+  <li>事件：<code class="language-plaintext highlighter-rouge">Minted(address indexed to, uint256 tokenId)</code>；</li>
+  <li>安全：只读视图函数 <code class="language-plaintext highlighter-rouge">whitelisted(address)</code>；</li>
+  <li>运维：合约版本标识与所有者（多签）。</li>
+</ul>
+
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+import {ERC721} from "solmate/tokens/ERC721.sol";
+import {Owned} from "solmate/auth/Owned.sol";
+
+contract Voucher is ERC721, Owned {
+    mapping(address =&gt; bool) public used;
+    uint256 public nextId;
+    string public baseURI;
+
+    event Minted(address indexed to, uint256 indexed tokenId);
+
+    constructor(string memory _name, string memory _symbol, string memory _base) ERC721(_name,_symbol) Owned(msg.sender) {
+        baseURI = _base;
+    }
+
+    function tokenURI(uint256 id) public view override returns (string memory) {
+        return string(abi.encodePacked(baseURI, _toString(id), ".json"));
+    }
+
+    function mint() external {
+        require(!used[msg.sender], "used");
+        used[msg.sender] = true;
+        uint256 id = ++nextId;
+        _safeMint(msg.sender, id);
+        emit Minted(msg.sender, id);
+    }
+}
+</code></pre>
+
+<p>部署（Foundry）：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>forge create <span class="nt">--rpc-url</span> <span class="nv">$RPC</span> <span class="nt">--private-key</span> <span class="nv">$PK</span> src/Voucher.sol:Voucher <span class="se">\</span>
+  <span class="nt">--constructor-args</span> <span class="s2">"Voucher"</span> <span class="s2">"VCH"</span> <span class="s2">"ipfs://CID/"</span>
+</code></pre></div></div>
+
+<h2 id="4-前端读写分层与索引器">4. 前端读写分层与索引器</h2>
+<ul>
+  <li>写：调用 <code class="language-plaintext highlighter-rouge">mint()</code> 发起交易。需要 Nonce 管理（失败重发）、Gas 估算冗余（+10~20%）、提示用户确认。</li>
+  <li>读：合约状态（<code class="language-plaintext highlighter-rouge">used(addr)</code>、<code class="language-plaintext highlighter-rouge">ownerOf</code>）适合实时 RPC；批量列表（最近铸造）用索引器重放事件。</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 写：mint</span>
+<span class="kd">const</span> <span class="nx">voucher</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ethers</span><span class="p">.</span><span class="nc">Contract</span><span class="p">(</span><span class="nx">addr</span><span class="p">,</span> <span class="nx">abi</span><span class="p">,</span> <span class="nx">signer</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">tx</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">voucher</span><span class="p">.</span><span class="nf">mint</span><span class="p">()</span>
+<span class="kd">const</span> <span class="nx">receipt</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">tx</span><span class="p">.</span><span class="nf">wait</span><span class="p">()</span> <span class="c1">// 等待确认，前端显示 Pending/Confirmed</span>
+
+<span class="c1">// 读：单点查询</span>
+<span class="kd">const</span> <span class="nx">used</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">voucher</span><span class="p">.</span><span class="nf">used</span><span class="p">(</span><span class="nx">address</span><span class="p">)</span>
+
+<span class="c1">// 读：通过 subgraph/自建 indexer，</span>
+<span class="c1">// 例如请求 /api/minted?owner=0xabc 返回分页列表</span>
+</code></pre></div></div>
+
+<p>索引器方案：</p>
+<ul>
+  <li>The Graph：声明式子图，快；</li>
+  <li>自建 ETL：使用 <code class="language-plaintext highlighter-rouge">ethers</code> 订阅事件写入 PostgreSQL/ClickHouse，配合 REST/GraphQL 查询；</li>
+  <li>延迟与一致性：UI 上标注“最新区块高度”，避免用户对数据新鲜度的误解。</li>
+</ul>
+
+<h2 id="5-错误处理与用户体验">5. 错误处理与用户体验</h2>
+<ul>
+  <li>交易被用户拒绝：错误码 <code class="language-plaintext highlighter-rouge">4001</code> → 友好提示；</li>
+  <li>Nonce 过低/冲突：后端给出“替换交易”指导；</li>
+  <li>Gas 估算失败：提供“手动输入”模式，并提示风险；</li>
+  <li>网络切换失败：指导手动添加 RPC，或降级到只读模式；</li>
+  <li>交易 Pending 过久：给出区块浏览器链接；</li>
+  <li>本地缓存：用 IndexedDB 缓存用户最近交互状态，提升体验。</li>
+</ul>
+
+<h2 id="6-安全清单">6. 安全清单</h2>
+<ul>
+  <li>签名提示（EIP-4361 SIWE）明确用途，避免“盲签”；</li>
+  <li>前端不要保存私钥；</li>
+  <li>合约函数最小暴露，使用 <code class="language-plaintext highlighter-rouge">reentrancy guard</code> 与访问控制；</li>
+  <li>升级与多签：关键参数由多签修改，预留“暂停开关”；</li>
+  <li>依赖锁定：固定依赖版本，审计后再升级；</li>
+  <li>漏洞响应：准备紧急流程与白帽通道。</li>
+</ul>
+
+<h2 id="7-部署与运维">7. 部署与运维</h2>
+<ul>
+  <li>环境：Testnet（Sepolia/holesky）→ Mainnet/L2；</li>
+  <li>RPC：多供应商容灾（Infura/Alchemy/自建），退避+重试；</li>
+  <li>日志：合约事件/前端错误/链上回执三方对账；</li>
+  <li>指标：交易成功率、确认时间分布、钱包连接失败率、索引器延迟；</li>
+  <li>版本回滚：前端通过 CDN 回滚，合约通过“开关+迁移”方案；</li>
+  <li>风险演练：限流/拥塞/价格飙升场景压测。</li>
+</ul>
+
+<h2 id="8-典型问题与排查">8. 典型问题与排查</h2>
+<ul>
+  <li>交易总失败：检查链 ID、不足 Gas、Nonce 冲突、RPC 限流；</li>
+  <li>事件读取不全：索引器区块范围/重组处理、分片并行拉取；</li>
+  <li>钱包不兼容：提供 WalletConnect 与多 Provider 适配；</li>
+  <li>L2 差异：确认时间、手续费代币与跨链桥时延。</li>
+</ul>
+
+<h2 id="9-进阶多链与账户抽象aa">9. 进阶：多链与账户抽象（AA）</h2>
+<ul>
+  <li>多链：统一接口层（如 wagmi/viem），在 UI 与配置层做网络切换；</li>
+  <li>账户抽象（EIP-4337）：用 <code class="language-plaintext highlighter-rouge">UserOperation</code> 替代直接 <code class="language-plaintext highlighter-rouge">sendTransaction</code>，可实现“代付手续费”“批量操作”等体验优化。</li>
+</ul>
+
+<h2 id="10-小结">10. 小结</h2>
+<p>一个可上线的 DApp，不只是一两个合约与一个页面，需要“端-链-索引-观测”的闭环设计。以钱包为入口、合约为规则源，辅以稳健的读写分层与索引器，是工程落地的通用路径。持续优化签名提示、错误处理与运维指标，才能支撑从爱好者到大众用户的跃迁。</p>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8%EF%BC%88DApps%EF%BC%89%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98%EF%BC%9A%E9%92%B1%E5%8C%85%E3%80%81%E7%AD%BE%E5%90%8D%E4%B8%8E%E8%AF%BB%E5%86%99%E5%88%86%E5%B1%82&url=http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

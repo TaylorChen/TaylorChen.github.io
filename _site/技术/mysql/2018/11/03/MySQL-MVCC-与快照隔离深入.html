@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>MySQL MVCC 与快照隔离深入</h1>
+    <p class="post-meta">2018-11-03 · 技术 / MySQL · 技术, MySQL, 事务, MVCC</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>本文系统拆解 InnoDB MVCC 的实现细节：undo log、隐式列、Read View、可见性判断与二级索引回表的一致性，并给出可复现实验、源码走读与排错清单。</p>
+
+<h2 id="1-mvcc-结构">1. MVCC 结构</h2>
+<ul>
+  <li>隐式列：<code class="language-plaintext highlighter-rouge">trx_id</code>（最近一次修改事务ID）、<code class="language-plaintext highlighter-rouge">roll_pointer</code>（回滚指针）。</li>
+  <li>undo log：维护历史版本链；读已提交/可重复读通过 Read View 选择可见版本。</li>
+</ul>
+
+<h2 id="2-read-view-生成与可见性">2. Read View 生成与可见性</h2>
+<ul>
+  <li>关键字段：<code class="language-plaintext highlighter-rouge">creator_trx_id</code>、活跃集合 <code class="language-plaintext highlighter-rouge">m_ids</code>、<code class="language-plaintext highlighter-rouge">low_limit_id</code>、<code class="language-plaintext highlighter-rouge">up_limit_id</code>。</li>
+  <li>判断规则：<code class="language-plaintext highlighter-rouge">trx_id &lt; low_limit_id</code> 可见；<code class="language-plaintext highlighter-rouge">trx_id &gt;= up_limit_id</code> 不可见；在集合内不可见。</li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="k">SESSION</span> <span class="n">TRANSACTION</span> <span class="k">ISOLATION</span> <span class="k">LEVEL</span> <span class="k">REPEATABLE</span> <span class="k">READ</span><span class="p">;</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">-- 固定 Read View</span>
+</code></pre></div></div>
+
+<h2 id="3-二级索引一致性">3. 二级索引一致性</h2>
+<ul>
+  <li>二级索引条目不含行可见性信息，需回表到聚簇索引判断；</li>
+  <li>覆盖索引可避免回表，但仍受 MVCC 可见性约束。</li>
+</ul>
+
+<hr />
+
+<h2 id="4-可复现实验幻读与间隙锁">4. 可复现实验：幻读与间隙锁</h2>
+<p>准备数据：</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t</span><span class="p">(</span>
+  <span class="n">id</span> <span class="nb">INT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">k</span>  <span class="nb">INT</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="n">idx_k</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">t</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">20</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">30</span><span class="p">);</span>
+</code></pre></div></div>
+<p>事务 A（会话1）：</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="n">TRANSACTION</span> <span class="k">ISOLATION</span> <span class="k">LEVEL</span> <span class="k">REPEATABLE</span> <span class="k">READ</span><span class="p">;</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t</span> <span class="k">WHERE</span> <span class="n">k</span> <span class="k">BETWEEN</span> <span class="mi">10</span> <span class="k">AND</span> <span class="mi">30</span> <span class="k">FOR</span> <span class="k">UPDATE</span><span class="p">;</span> <span class="c1">-- Next-Key Lock</span>
+</code></pre></div></div>
+<p>事务 B（会话2）：</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">t</span> <span class="k">VALUES</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">25</span><span class="p">);</span> <span class="c1">-- 阻塞：被间隙锁拦截，避免幻读</span>
+</code></pre></div></div>
+<p>切换 RC：</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="k">GLOBAL</span> <span class="n">transaction_isolation</span><span class="o">=</span><span class="s1">'READ-COMMITTED'</span><span class="p">;</span>
+<span class="c1">-- 重新测试，观察 gap 锁减少与并发插入的行为变化</span>
+</code></pre></div></div>
+
+<h2 id="5-实验rr-下版本可见性">5. 实验：RR 下版本可见性</h2>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 会话1</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="c1">-- 读到 v1</span>
+<span class="c1">-- 会话2</span>
+<span class="k">UPDATE</span> <span class="n">t</span> <span class="k">SET</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="k">COMMIT</span><span class="p">;</span>          <span class="c1">-- v2</span>
+<span class="c1">-- 会话1</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="c1">-- 仍读到 v1（同一 Read View）</span>
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="6-源码走读要点80">6. 源码走读要点（8.0）</h2>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">read0read.cc</code>：一致性读实现，基于 Read View 的可见性检查；</li>
+  <li><code class="language-plaintext highlighter-rouge">trx0trx.cc</code>：事务生命周期与 <code class="language-plaintext highlighter-rouge">ReadView</code> 构建；</li>
+  <li><code class="language-plaintext highlighter-rouge">lock0lock.cc</code>：Next-Key Lock 组合与冲突检测。</li>
+</ul>
+
+<p>关注点：<code class="language-plaintext highlighter-rouge">m_ids</code> 计算的边界、长事务导致的 purge 延迟对可见性的影响。</p>
+
+<hr />
+
+<h2 id="7-典型排错清单">7. 典型排错清单</h2>
+<ul>
+  <li>长事务导致 <code class="language-plaintext highlighter-rouge">history list length</code> 过大，undo 堆积：
+    <ul>
+      <li>排查 <code class="language-plaintext highlighter-rouge">information_schema.innodb_trx</code>，定位阻塞的只读/未提交事务；</li>
+    </ul>
+  </li>
+  <li>幻读与行锁升级：
+    <ul>
+      <li>检查是否遗漏索引导致范围扩大、或 RC 下并发写放大；</li>
+    </ul>
+  </li>
+  <li>覆盖索引未生效：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">EXPLAIN ANALYZE</code> 对比 <code class="language-plaintext highlighter-rouge">using index</code>；确认选择列是否完全被索引覆盖。</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="8-最佳实践">8. 最佳实践</h2>
+<ul>
+  <li>将批量只读分析放到只读副本，避免长事务阻塞主库 purge；</li>
+  <li>范围更新尽量精确，必要时逻辑分片降低锁冲突；</li>
+  <li>定期巡检长事务、undo 使用、<code class="language-plaintext highlighter-rouge">innodb_purge_threads</code> 与 IO 限流。</li>
+</ul>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=MySQL%20MVCC%20%E4%B8%8E%E5%BF%AB%E7%85%A7%E9%9A%94%E7%A6%BB%E6%B7%B1%E5%85%A5&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2018/11/03/MySQL-MVCC-%E4%B8%8E%E5%BF%AB%E7%85%A7%E9%9A%94%E7%A6%BB%E6%B7%B1%E5%85%A5.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2018/11/03/MySQL-MVCC-%E4%B8%8E%E5%BF%AB%E7%85%A7%E9%9A%94%E7%A6%BB%E6%B7%B1%E5%85%A5.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

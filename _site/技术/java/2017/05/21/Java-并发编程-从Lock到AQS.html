@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>Java 并发编程：从 Lock 到 AQS</h1>
+    <p class="post-meta">2017-05-21 · 技术 / Java · 技术, Java, 并发, AQS</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>并发编程里，“锁”是跨线程协调和内存可见性的核心抽象。本文从 Java 对象头与锁位开始，系统梳理锁信息的存放位置、<code class="language-plaintext highlighter-rouge">synchronized</code> 与 <code class="language-plaintext highlighter-rouge">Lock/AQS</code> 的实现原理、CAS 的内存语义与常见陷阱，并从 x86/ARM 的汇编视角出发，解释 HotSpot 在不同平台上的底层逻辑。最后给出工程实践的选型建议与调优要点。</p>
+
+<h2 id="1-java-对象对象头与锁位">1. Java 对象、对象头与锁位</h2>
+
+<p>HotSpot 中对象的内存布局通常包含三段：</p>
+<ul>
+  <li>对象头（Header）：包含 <code class="language-plaintext highlighter-rouge">Mark Word</code> 和 <code class="language-plaintext highlighter-rouge">Klass Pointer</code>；数组对象还包含数组长度。</li>
+  <li>实例数据（Instance Data）：各字段的实际存储。</li>
+  <li>对齐填充（Padding）：保证对象按 8 字节对齐。</li>
+</ul>
+
+<h3 id="11-mark-word-与锁信息">1.1 Mark Word 与锁信息</h3>
+<p><code class="language-plaintext highlighter-rouge">Mark Word</code> 是一个会随对象状态复用的位段（32/64 位 JVM 分别是 32/64 位；在 64 位下如果启用指针压缩，<code class="language-plaintext highlighter-rouge">Klass Pointer</code> 为 32 位）：</p>
+<ul>
+  <li>无锁：存放对象哈希（identity hash code）、GC Age 等。</li>
+  <li>偏向锁：存放偏向线程 ID、Epoch、Age 等。</li>
+  <li>轻量级锁：存放指向线程栈上“锁记录（Lock Record）”的指针（Displaced Header）。</li>
+  <li>重量级锁：存放指向 Monitor（对象监视器）的指针。</li>
+</ul>
+
+<p>锁标志位（lock bits）与偏向标志位（biased bit）共同决定 Mark Word 当前的语义。需要注意：</p>
+<ul>
+  <li>一旦对象计算过 identity hash code（如调用过 <code class="language-plaintext highlighter-rouge">System.identityHashCode</code>，或对象参与了基于哈希的容器），Mark Word 需要存放 hash，偏向锁将无法使用（会导致偏向撤销或直接进入轻量级/重量级路径）。</li>
+  <li>锁状态是“可升级、不可降级”的：无锁 → 偏向 → 轻量级 → 重量级。</li>
+</ul>
+
+<h3 id="12-jdk-版本对偏向锁的影响">1.2 JDK 版本对偏向锁的影响</h3>
+<ul>
+  <li>JDK 6～8：偏向锁默认启用（可通过 <code class="language-plaintext highlighter-rouge">-XX:-UseBiasedLocking</code> 关闭）。</li>
+  <li>JDK 15：根据 JEP 374，偏向锁被默认禁用并标记为废弃。</li>
+  <li>JDK 18 起：HotSpot 中移除了偏向锁实现（仅保留语义历史说明）。</li>
+</ul>
+
+<p>工程上撰写面向“现代 JDK（11/17/21 LTS 及以上）”的代码时，可不再依赖偏向锁的收益模型，更多关注轻量级/重量级路径与锁粗细粒度的取舍。</p>
+
+<h2 id="2-synchronized-的状态流转与-monitor">2. <code class="language-plaintext highlighter-rouge">synchronized</code> 的状态流转与 Monitor</h2>
+
+<p><code class="language-plaintext highlighter-rouge">synchronized</code> 基于对象监视器（Monitor）实现。HotSpot 会根据竞争情况在不同状态间切换：
+1) 无锁：进入同步块首次尝试；
+2) 轻量级锁：线程在自己的栈帧创建“锁记录”，用 CAS 将对象头替换为指向锁记录的指针；
+3) 自旋：竞争不重时短暂自旋等待可避免阻塞开销；
+4) 重量级锁：自旋失败或竞争激烈时膨胀为 Monitor，失败线程进入阻塞，等待 <code class="language-plaintext highlighter-rouge">unpark/notify</code> 唤醒。</p>
+
+<p>Monitor 内部有两个队列概念：</p>
+<ul>
+  <li>入口队列（EntryList）：在 <code class="language-plaintext highlighter-rouge">synchronized</code> 入口处等待获取锁的线程。</li>
+  <li>WaitSet：调用 <code class="language-plaintext highlighter-rouge">Object.wait()</code> 释放锁并等待条件的线程集合，被 <code class="language-plaintext highlighter-rouge">notify/notifyAll</code> 转移回 EntryList。</li>
+</ul>
+
+<p>现代 HotSpot 中，阻塞/唤醒通常经由 <code class="language-plaintext highlighter-rouge">Unsafe.park/unpark</code> 实现，底层在 Linux 使用 <code class="language-plaintext highlighter-rouge">futex</code>，在 macOS 使用 pthread 条件变量等原语。</p>
+
+<h3 id="21-轻量级锁细节lock-record">2.1 轻量级锁细节（Lock Record）</h3>
+<p>轻量级锁是“乐观地假设不存在并发”。流程：
+1) 将对象头的 Mark Word 复制到线程栈的锁记录。
+2) 使用 CAS 将对象头替换为指向锁记录的指针。
+3) 成功即获得锁；失败说明存在竞争，进入自旋或膨胀。
+4) 解锁时尝试用 CAS 将对象头还原为锁记录中保存的 Displaced Header；失败则说明发生竞争，转重量级解锁路径。</p>
+
+<p>轻量级锁的优势是在“短临界区、低冲突”场景下显著减少阻塞/唤醒的系统开销。</p>
+
+<h2 id="3-从-cas-谈起原理内存语义与陷阱">3. 从 CAS 谈起：原理、内存语义与陷阱</h2>
+
+<p>CAS（Compare-And-Swap/Exchange）是硬件提供的原子读-改-写指令族。以三元组 (V, A, B) 描述：当且仅当 V==A 时，将 V 置为 B；否则失败。Java 中的 CAS 主要通过 <code class="language-plaintext highlighter-rouge">Unsafe</code>/<code class="language-plaintext highlighter-rouge">VarHandle</code> 暴露：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Java 9+ VarHandle 示例</span>
+<span class="kd">class</span> <span class="nc">Counter</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">volatile</span> <span class="kt">int</span> <span class="n">value</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">VarHandle</span> <span class="no">VH</span><span class="o">;</span>
+  <span class="kd">static</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="no">VH</span> <span class="o">=</span> <span class="nc">MethodHandles</span><span class="o">.</span><span class="na">lookup</span><span class="o">()</span>
+          <span class="o">.</span><span class="na">in</span><span class="o">(</span><span class="nc">Counter</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+          <span class="o">.</span><span class="na">findVarHandle</span><span class="o">(</span><span class="nc">Counter</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"value"</span><span class="o">,</span> <span class="kt">int</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">Error</span><span class="o">(</span><span class="n">e</span><span class="o">);</span> <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">increment</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">prev</span><span class="o">;</span>
+    <span class="k">do</span> <span class="o">{</span>
+      <span class="n">prev</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="no">VH</span><span class="o">.</span><span class="na">getVolatile</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">while</span> <span class="o">(!</span><span class="no">VH</span><span class="o">.</span><span class="na">compareAndSet</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">prev</span><span class="o">,</span> <span class="n">prev</span> <span class="o">+</span> <span class="mi">1</span><span class="o">));</span>
+    <span class="k">return</span> <span class="n">prev</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="31-内存语义">3.1 内存语义</h3>
+<p>不同于“互斥”，CAS 主要提供“原子性 + 指定的有序性”。HotSpot 在不同平台下映射为：</p>
+<ul>
+  <li>x86（TSO）：天然提供较强顺序性，<code class="language-plaintext highlighter-rouge">LOCK CMPXCHG</code> 隐含 acquire-release 语义；必要时配合 <code class="language-plaintext highlighter-rouge">LFENCE/SFENCE/MFENCE</code>。</li>
+  <li>ARMv8：使用 LL/SC 族指令 <code class="language-plaintext highlighter-rouge">LDAXR/STLXR</code>（带 acquire/release 语义）与 <code class="language-plaintext highlighter-rouge">DMB ish</code> 栅栏保证有序性。</li>
+</ul>
+
+<p>Java 语言层面，<code class="language-plaintext highlighter-rouge">volatile</code> 写具有“release”语义，读具有“acquire”语义；CAS 通常等价于“读-改-写的原子性 + acquire-release”。这保证了临界区内写入对随后持有同一变量可见。</p>
+
+<h3 id="32-aba-问题与对策">3.2 ABA 问题与对策</h3>
+<p>CAS 的经典陷阱是 ABA：值从 A→B→A，单次 CAS 无法察觉变化。对策包括：</p>
+<ul>
+  <li>版本戳（如 <code class="language-plaintext highlighter-rouge">AtomicStampedReference</code>）、标记指针（<code class="language-plaintext highlighter-rouge">AtomicMarkableReference</code>）。</li>
+  <li>结构性约束（避免重用节点）、配合 GC 的安全点检查降低风险。</li>
+</ul>
+
+<h3 id="33-多变量一致性">3.3 多变量一致性</h3>
+<p>CAS 天然只能覆盖单内存位置。多字段一致性可用：</p>
+<ul>
+  <li>粗粒度互斥（单锁包裹），简单可靠；</li>
+  <li>组合状态编码（如将两字段打包到 64 位 long）；</li>
+  <li>STM/事务日志（较重，工程中少见）。</li>
+</ul>
+
+<h2 id="4-lock-与-aqsclh-队列独占共享与条件队列">4. Lock 与 AQS：CLH 队列、独占/共享与条件队列</h2>
+
+<p>AQS（AbstractQueuedSynchronizer）是 <code class="language-plaintext highlighter-rouge">ReentrantLock</code>、<code class="language-plaintext highlighter-rouge">Semaphore</code>、<code class="language-plaintext highlighter-rouge">CountDownLatch</code>、<code class="language-plaintext highlighter-rouge">ReentrantReadWriteLock</code>、<code class="language-plaintext highlighter-rouge">StampedLock</code>（部分实现）等的基础设施。其核心是：</p>
+<ul>
+  <li>一个 <code class="language-plaintext highlighter-rouge">int state</code> 表示同步状态（独占/共享语义由子类定义）；</li>
+  <li>一个基于 CLH 的双向 FIFO 同步队列，失败线程入队并 <code class="language-plaintext highlighter-rouge">park</code>；</li>
+  <li>成功释放时按队头顺序 <code class="language-plaintext highlighter-rouge">unpark</code>，维持有界公平性。</li>
+</ul>
+
+<h3 id="41-独占与共享">4.1 独占与共享</h3>
+<ul>
+  <li>独占（Exclusive）：如 <code class="language-plaintext highlighter-rouge">ReentrantLock</code>。<code class="language-plaintext highlighter-rouge">tryAcquire/tryRelease</code> 由子类实现；重入通过把 <code class="language-plaintext highlighter-rouge">state</code> 作为重入计数。</li>
+  <li>共享（Shared）：如 <code class="language-plaintext highlighter-rouge">Semaphore</code>、<code class="language-plaintext highlighter-rouge">CountDownLatch</code>。共享获取可同时唤醒多个等待者。</li>
+</ul>
+
+<h3 id="42-公平-vs-非公平">4.2 公平 vs 非公平</h3>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Lock</span> <span class="n">fair</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ReentrantLock</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="nc">Lock</span> <span class="n">unf</span>  <span class="o">=</span> <span class="k">new</span> <span class="nc">ReentrantLock</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</code></pre></div></div>
+<ul>
+  <li>公平：严格遵循队列顺序，等待时间方差小，但吞吐稍低；</li>
+  <li>非公平：允许插队（<code class="language-plaintext highlighter-rouge">tryAcquire</code> 先试一次），吞吐更高，极端情况下存在饥饿风险。</li>
+</ul>
+
+<h3 id="43-条件队列condition">4.3 条件队列（Condition）</h3>
+<p><code class="language-plaintext highlighter-rouge">ConditionObject</code> 为每个条件维护独立等待队列：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">await()</code>：原子地释放主锁、入条件队列并 <code class="language-plaintext highlighter-rouge">park</code>；</li>
+  <li><code class="language-plaintext highlighter-rouge">signal()</code>：将条件队列的首节点转移回同步队列，等待重新竞争主锁。</li>
+</ul>
+
+<h3 id="44-aqs-获取释放独占骨架">4.4 AQS 获取/释放（独占）骨架</h3>
+<p>1) 快路径：CAS 修改 <code class="language-plaintext highlighter-rouge">state</code> 成功直接获得；
+2) 失败入队：按 CLH 入同步队列，<code class="language-plaintext highlighter-rouge">park</code> 自己；
+3) 被前驱释放 <code class="language-plaintext highlighter-rouge">unpark</code> 后，竞争重试；
+4) 释放：<code class="language-plaintext highlighter-rouge">tryRelease</code> 成功则唤醒后继。</p>
+
+<h2 id="5-平台与汇编视角x86-与-arm-的差异">5. 平台与汇编视角：x86 与 ARM 的差异</h2>
+
+<h3 id="51-x86tso">5.1 x86（TSO）</h3>
+<ul>
+  <li>原子指令：<code class="language-plaintext highlighter-rouge">LOCK XCHG/CMPXCHG/ADD</code> 等，<code class="language-plaintext highlighter-rouge">LOCK</code> 前缀保证跨核原子性与缓存一致性协议的正确传播。</li>
+  <li>自旋优化：热点代码会插入 <code class="language-plaintext highlighter-rouge">PAUSE</code>（<code class="language-plaintext highlighter-rouge">rep; nop</code>）降低功耗与总线竞争。</li>
+  <li>内存模型：TSO 比 Java 的 JMM 更强，编译器仍需在 volatile/CAS 周边插入恰当屏障以维持 JMM 语义。</li>
+</ul>
+
+<h3 id="52-armv8弱内存序">5.2 ARMv8（弱内存序）</h3>
+<ul>
+  <li>LL/SC：<code class="language-plaintext highlighter-rouge">LDXR/STXR</code>，带 acquire/release 版本 <code class="language-plaintext highlighter-rouge">LDAXR/STLXR</code>；失败返回标志，需循环重试。</li>
+  <li>内存屏障：<code class="language-plaintext highlighter-rouge">DMB ish</code>/<code class="language-plaintext highlighter-rouge">DSB</code>/<code class="language-plaintext highlighter-rouge">ISB</code> 控制可见性与排序。</li>
+  <li>Java 映射：VarHandle 的 acquire/release 泛化到上述指令与屏障组合。</li>
+</ul>
+
+<h2 id="6-不同锁形态的应用场景与选型">6. 不同锁形态的应用场景与选型</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">synchronized</code>：
+    <ul>
+      <li>优点：语法简单，异常安全，JIT 内联友好；JDK 近年大量优化，开销显著下降。</li>
+      <li>适用：绝大多数互斥场景，特别是短临界区、低到中等竞争强度。</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">ReentrantLock</code>：
+    <ul>
+      <li>优点：可中断、可定时、可选公平，配 <code class="language-plaintext highlighter-rouge">Condition</code> 多条件队列，诊断性更强。</li>
+      <li>适用：
+        <ul>
+          <li>需要可中断获取（避免死等 IO）；</li>
+          <li>需要定时超时放弃；</li>
+          <li>需要多个条件队列；</li>
+          <li>需要公平策略限制尾延时。</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">ReentrantReadWriteLock</code>：
+    <ul>
+      <li>读多写少、读路径可并行；注意“读锁降级、写锁升级”的语义与死锁风险。</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">StampedLock</code>：
+    <ul>
+      <li>乐观读避免锁竞态下的写者阻塞；需要二次校验，且不支持重入/条件队列，使用门槛更高。</li>
+    </ul>
+  </li>
+  <li>CAS/无锁结构：
+    <ul>
+      <li>原子类（<code class="language-plaintext highlighter-rouge">Atomic*</code>）、<code class="language-plaintext highlighter-rouge">LongAdder/LongAccumulator</code>（热点分散）在高并发计数上优于单点 CAS；</li>
+      <li>适用读多写少或对延迟极敏感的路径；需警惕 ABA 与活锁，必要时退避回退或限次自旋转阻塞。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="7-性能与可见性几个常见问题">7. 性能与可见性：几个常见问题</h2>
+
+<ul>
+  <li>自旋与阻塞的取舍：
+    <ul>
+      <li>临界区短、竞争偶发：倾向自旋（轻量级锁）；</li>
+      <li>临界区长、竞争激烈：尽快阻塞，减少 CPU 浪费与抖动（重量级路径/AQS 直接 <code class="language-plaintext highlighter-rouge">park</code>）。</li>
+    </ul>
+  </li>
+  <li>假共享（False Sharing）：
+    <ul>
+      <li>计数热点应使用 <code class="language-plaintext highlighter-rouge">LongAdder</code> 或通过 <code class="language-plaintext highlighter-rouge">@jdk.internal.vm.annotation.Contended</code>（或手工填充）隔离写热点，避免不同核心在同一 cache line 争用。</li>
+    </ul>
+  </li>
+  <li>粗细粒度：
+    <ul>
+      <li>业务上首先拆分为“无共享”的并行单元；无法拆分时，优先读写分离、分段锁/哈希分片；确需全局一致时再集中化。</li>
+    </ul>
+  </li>
+  <li>可见性与发布：
+    <ul>
+      <li>共享数据通过 <code class="language-plaintext highlighter-rouge">volatile</code>/CAS/锁保护发布；避免未初始化对象逸出；</li>
+      <li>使用 <code class="language-plaintext highlighter-rouge">final</code> 字段保证构造后安全发布的不可变性。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="8-代码片段与基准示例">8. 代码片段与基准示例</h2>
+
+<h3 id="81-synchronized-与-reentrantlock-对比">8.1 synchronized 与 ReentrantLock 对比</h3>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// synchronized 版</span>
+<span class="kd">class</span> <span class="nc">CounterS</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">x</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">inc</span><span class="o">()</span> <span class="o">{</span> <span class="n">x</span><span class="o">++;</span> <span class="o">}</span>
+  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">int</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">x</span><span class="o">;</span> <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// ReentrantLock 版（可中断/可定时）</span>
+<span class="kd">class</span> <span class="nc">CounterL</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">ReentrantLock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ReentrantLock</span><span class="o">();</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">x</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">inc</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span> <span class="n">x</span><span class="o">++;</span> <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span> <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span> <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span> <span class="k">return</span> <span class="n">x</span><span class="o">;</span> <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span> <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span> <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="82-longadder-抗热点计数">8.2 LongAdder 抗热点计数</h3>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">LongAdder</span> <span class="n">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LongAdder</span><span class="o">();</span>
+<span class="c1">// 并发线程直接 add，内部分片累加，读时汇总</span>
+<span class="n">adder</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="kt">long</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">adder</span><span class="o">.</span><span class="na">sum</span><span class="o">();</span>
+</code></pre></div></div>
+
+<h3 id="83-读写锁与条件队列">8.3 读写锁与条件队列</h3>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">RWCache</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">ReentrantReadWriteLock</span> <span class="n">rw</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ReentrantReadWriteLock</span><span class="o">();</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+  <span class="kd">public</span> <span class="no">V</span> <span class="nf">get</span><span class="o">(</span><span class="no">K</span> <span class="n">k</span><span class="o">){</span>
+    <span class="n">rw</span><span class="o">.</span><span class="na">readLock</span><span class="o">().</span><span class="na">lock</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span> <span class="k">return</span> <span class="n">map</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">k</span><span class="o">);}</span> <span class="k">finally</span> <span class="o">{</span> <span class="n">rw</span><span class="o">.</span><span class="na">readLock</span><span class="o">().</span><span class="na">unlock</span><span class="o">();</span> <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="no">K</span> <span class="n">k</span><span class="o">,</span> <span class="no">V</span> <span class="n">v</span><span class="o">){</span>
+    <span class="n">rw</span><span class="o">.</span><span class="na">writeLock</span><span class="o">().</span><span class="na">lock</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span> <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="n">v</span><span class="o">);}</span> <span class="k">finally</span> <span class="o">{</span> <span class="n">rw</span><span class="o">.</span><span class="na">writeLock</span><span class="o">().</span><span class="na">unlock</span><span class="o">();</span> <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="9-调优与诊断建议">9. 调优与诊断建议</h2>
+
+<ul>
+  <li>观测与基准：
+    <ul>
+      <li>JFR（Java Flight Recorder）采集阻塞/等待事件（<code class="language-plaintext highlighter-rouge">Java Monitor Blocked</code>、<code class="language-plaintext highlighter-rouge">Thread Park</code>）。</li>
+      <li>Async-profiler 观察 CPU 自旋热点、<code class="language-plaintext highlighter-rouge">Unsafe.park</code> 栈分布。</li>
+      <li>微基准使用 JMH，控制预热、线程数与绑定策略（pin 线程）。</li>
+    </ul>
+  </li>
+  <li>编译与运行参数（按需验证，不做一刀切）：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">-XX:+UseSpinWait</code>：在部分 CPU 上更友好的自旋指令（如插入 PAUSE）。</li>
+      <li><code class="language-plaintext highlighter-rouge">-XX:PreBlockSpin</code>（旧参数，现代 JDK 多已调整）：阻塞前自旋次数。</li>
+      <li>公平锁仅在尾延迟敏感时启用，常规吞吐优先用非公平。</li>
+    </ul>
+  </li>
+  <li>架构相关注意：
+    <ul>
+      <li>x86 上一般更容易获得稳定低抖动的 CAS 行为；</li>
+      <li>ARM 上注意弱内存序引入的可见性问题，尽量通过 <code class="language-plaintext highlighter-rouge">volatile</code>/VarHandle 语义化实现并行算法。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="10-关键要点回顾">10. 关键要点回顾</h2>
+
+<ul>
+  <li>锁信息存放在对象头的 <code class="language-plaintext highlighter-rouge">Mark Word</code> 中，随状态复用位段：无锁/轻量级/重量级（偏向锁在新 JDK 中已禁用/移除）。</li>
+  <li>CAS 是无锁算法基石，提供原子性与 acquire-release 有序性，但需防范 ABA、活锁与高冲突热点。</li>
+  <li>AQS 以 CLH 队列串联失败线程，统一提供独占/共享与条件队列，支撑 <code class="language-plaintext highlighter-rouge">ReentrantLock</code>/<code class="language-plaintext highlighter-rouge">Semaphore</code>/<code class="language-plaintext highlighter-rouge">CountDownLatch</code> 等。</li>
+  <li>x86 与 ARM 的实现差异主要体现在原子指令与内存屏障上，JVM 屏蔽了差异以兑现 JMM 语义。</li>
+  <li>工程选型优先简单与稳定：能用 <code class="language-plaintext highlighter-rouge">synchronized</code> 就别过早引入复杂锁；计数热点用 <code class="language-plaintext highlighter-rouge">LongAdder</code>；高争用尽量结构化拆分，而不是盲目自旋。</li>
+</ul>
+
+<hr />
+
+<p>附：进一步阅读</p>
+<ul>
+  <li>Java Language Specification（JLS）与 Java Memory Model（JMM）章节</li>
+  <li>Doug Lea：AQS 源码与论文</li>
+  <li>OpenJDK JEP 374：Disable and deprecate biased locking（JDK 15）</li>
+  <li>Java Concurrency in Practice（JCIP）</li>
+</ul>
+
+<hr />
+
+<h2 id="11-jit-与锁优化逃逸分析锁消除锁粗化">11. JIT 与锁优化：逃逸分析、锁消除、锁粗化</h2>
+
+<ul>
+  <li>逃逸分析（Escape Analysis）：JIT 判断对象是否只在当前线程可见。若“未逃逸”，可进行标量替换、栈上分配，并消除不必要的同步。</li>
+  <li>锁消除（Lock Elision）：当 JIT 确认同步对象只在单线程上下文使用时，移除 <code class="language-plaintext highlighter-rouge">synchronized</code>/轻量级锁操作。</li>
+  <li>锁粗化（Lock Coarsening）：当热点循环中频繁短暂加解锁时，JIT 会把多次锁合并到更外层，降低加解锁频率与内存屏障开销。</li>
+  <li>自适应自旋（Adaptive Spinning）：JVM 依据历史竞争状况与持锁线程运行状态动态调整自旋时长（结合 <code class="language-plaintext highlighter-rouge">park</code> 切换），避免盲目自旋或过早阻塞。</li>
+</ul>
+
+<p>工程建议：</p>
+<ul>
+  <li>不要刻意将很多微小操作拆成多个极短的同步块，给 JIT 锁粗化留下空间；</li>
+  <li>热路径上的锁对象尽量局部化，利于逃逸分析与消除。</li>
+</ul>
+
+<h2 id="12-aqs-的-node-与-waitstatus-详解">12. AQS 的 Node 与 waitStatus 详解</h2>
+
+<p>AQS 同步队列是双向链表（近似 CLH 的变体），核心节点字段：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">static</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Node</span> <span class="o">{</span>
+  <span class="c1">// 等待状态：</span>
+  <span class="c1">//  1 CANCELLED（已取消）</span>
+  <span class="c1">// -1 SIGNAL（前驱释放时需要唤醒本节点）</span>
+  <span class="c1">// -2 CONDITION（在条件队列中）</span>
+  <span class="c1">// -3 PROPAGATE（共享模式传播）</span>
+  <span class="kd">volatile</span> <span class="kt">int</span> <span class="n">waitStatus</span><span class="o">;</span>
+  <span class="kd">volatile</span> <span class="nc">Node</span> <span class="n">prev</span><span class="o">,</span> <span class="n">next</span><span class="o">;</span>
+  <span class="kd">volatile</span> <span class="nc">Thread</span> <span class="n">thread</span><span class="o">;</span>
+  <span class="c1">// 标记独占/共享模式</span>
+  <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Node</span> <span class="no">SHARED</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Node</span><span class="o">();</span>
+  <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Node</span> <span class="no">EXCLUSIVE</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>关键机制：</p>
+<ul>
+  <li>失败线程 CAS 入队，前驱的 <code class="language-plaintext highlighter-rouge">waitStatus</code> 置为 <code class="language-plaintext highlighter-rouge">SIGNAL</code>，当前驱释放时 <code class="language-plaintext highlighter-rouge">unpark</code> 后继；</li>
+  <li>取消（超时/中断）节点会被链路跳过，保持队列健康；</li>
+  <li>共享模式释放时使用 <code class="language-plaintext highlighter-rouge">PROPAGATE</code> 以继续唤醒后继共享获取者（如 <code class="language-plaintext highlighter-rouge">Semaphore</code>）。</li>
+</ul>
+
+<h2 id="13-jmm-内存屏障与-happens-before-速查">13. JMM 内存屏障与 happens-before 速查</h2>
+
+<ul>
+  <li>程序次序规则：同一线程内，语句按程序顺序 <code class="language-plaintext highlighter-rouge">hb</code>。</li>
+  <li>监视器锁：解锁 <code class="language-plaintext highlighter-rouge">hb</code> 于后续对同一锁的加锁。</li>
+  <li>volatile：对同一变量的写 <code class="language-plaintext highlighter-rouge">hb</code> 于后续读。</li>
+  <li>线程启动：<code class="language-plaintext highlighter-rouge">Thread.start()</code> 之前的操作 <code class="language-plaintext highlighter-rouge">hb</code> 于 <code class="language-plaintext highlighter-rouge">run()</code> 内。</li>
+  <li>线程终止：线程内操作 <code class="language-plaintext highlighter-rouge">hb</code> 于检测到其终止（<code class="language-plaintext highlighter-rouge">join</code>/<code class="language-plaintext highlighter-rouge">isAlive</code> 返回 false）。</li>
+  <li>中断：<code class="language-plaintext highlighter-rouge">interrupt()</code> 先行于被中断线程检测到中断（<code class="language-plaintext highlighter-rouge">isInterrupted</code>/<code class="language-plaintext highlighter-rouge">InterruptedException</code>）。</li>
+  <li>final 字段：构造函数对 <code class="language-plaintext highlighter-rouge">final</code> 字段的写 <code class="language-plaintext highlighter-rouge">hb</code> 于其他线程看到该对象引用后的读。</li>
+</ul>
+
+<p>内存屏障类别（抽象到硬件）：</p>
+<ul>
+  <li>LoadLoad, LoadStore, StoreStore, StoreLoad（其中 StoreLoad 最强，常在释放-获取边界上出现）。</li>
+</ul>
+
+<h2 id="14-常见并发坑与对策">14. 常见并发坑与对策</h2>
+
+<ul>
+  <li>双重检查锁（DCL）缺 <code class="language-plaintext highlighter-rouge">volatile</code>：实例引用未发布完全可见，务必对实例引用使用 <code class="language-plaintext highlighter-rouge">volatile</code> 或改用静态初始化。</li>
+  <li>锁顺序不一致导致死锁：为多资源加锁规定全局顺序，或使用 <code class="language-plaintext highlighter-rouge">tryLock</code> 带超时与回退策略。</li>
+  <li>条件丢失与虚假唤醒：<code class="language-plaintext highlighter-rouge">await()</code> 后必须用 <code class="language-plaintext highlighter-rouge">while</code> 重新检查条件，不要用 <code class="language-plaintext highlighter-rouge">if</code>。</li>
+  <li>吞掉中断：捕获 <code class="language-plaintext highlighter-rouge">InterruptedException</code> 后应恢复中断位或按语义处理，避免“中断失效”。</li>
+  <li>读写混用容器：高并发下不要在无保护的 <code class="language-plaintext highlighter-rouge">ArrayList/HashMap</code> 上写入；使用并发容器或外部锁。</li>
+  <li>误用 <code class="language-plaintext highlighter-rouge">notify()</code>：多条件/多消费者模型优先用 <code class="language-plaintext highlighter-rouge">Condition</code>，或使用 <code class="language-plaintext highlighter-rouge">notifyAll()</code> 的同时配合条件判断。</li>
+</ul>
+
+<h2 id="15-基准与测试建议">15. 基准与测试建议</h2>
+
+<ul>
+  <li>JMH 微基准：
+    <ul>
+      <li>使用 <code class="language-plaintext highlighter-rouge">@State</code> 控制共享程度；</li>
+      <li>充分预热（<code class="language-plaintext highlighter-rouge">@Warmup</code>）与多次迭代（<code class="language-plaintext highlighter-rouge">@Measurement</code>）；</li>
+      <li>使用 <code class="language-plaintext highlighter-rouge">Blackhole</code> 消除 DCE；</li>
+      <li>设定不同的并发度（<code class="language-plaintext highlighter-rouge">@Threads</code>）和绑定策略（避免线程迁移）。</li>
+    </ul>
+  </li>
+  <li>生产观测：
+    <ul>
+      <li>打开 JFR 事件（Monitor Blocked、Thread Park、Java Monitor Wait）；</li>
+      <li>使用 async-profiler 结合 <code class="language-plaintext highlighter-rouge">-e lock</code>/<code class="language-plaintext highlighter-rouge">-e cpu</code> 观察竞争与自旋热点；</li>
+      <li>采集等待时间分布（P50/P95/P99）而非仅均值。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="16-os-原语映射与实现细节">16. OS 原语映射与实现细节</h2>
+
+<ul>
+  <li>Linux：<code class="language-plaintext highlighter-rouge">park/unpark</code> → <code class="language-plaintext highlighter-rouge">futex(FUTEX_WAIT/FUTEX_WAKE)</code>；内核调度与优先级反转可能影响尾延迟（Java 层无优先级继承）。</li>
+  <li>macOS：基于 pthread 互斥量/条件变量；休眠/唤醒路径与时钟源会影响超时精度。</li>
+  <li>Windows：现代实现可映射到 <code class="language-plaintext highlighter-rouge">WaitOnAddress</code>/Slim Reader-Writer（SRW）等原语。</li>
+</ul>
+
+<p>结论：不同 OS 的调度策略与时钟、唤醒延迟差异会影响 AQS/Monitor 的尾延迟特征，服务端 SLO 设计需留冗余。</p>
+
+<h2 id="17-选型与落地清单checklist">17. 选型与落地清单（Checklist）</h2>
+
+<ul>
+  <li>同步原语选择：
+    <ul>
+      <li>首选 <code class="language-plaintext highlighter-rouge">synchronized</code>，需要可中断/多条件/定时再用 <code class="language-plaintext highlighter-rouge">ReentrantLock</code>；</li>
+      <li>读多写少：<code class="language-plaintext highlighter-rouge">ReentrantReadWriteLock</code> 或 <code class="language-plaintext highlighter-rouge">StampedLock</code>（谨慎使用）；</li>
+      <li>计数热点：<code class="language-plaintext highlighter-rouge">LongAdder</code> 优于单点 <code class="language-plaintext highlighter-rouge">AtomicLong</code>；</li>
+      <li>信号量/门闩：<code class="language-plaintext highlighter-rouge">Semaphore</code>/<code class="language-plaintext highlighter-rouge">CountDownLatch</code>，或升级 <code class="language-plaintext highlighter-rouge">Phaser</code>。</li>
+    </ul>
+  </li>
+  <li>结构性优化：
+    <ul>
+      <li>尽量无共享或分片（sharding）；</li>
+      <li>降低持锁时间（IO/阻塞移出临界区）；</li>
+      <li>缓存与批处理减少锁竞争频率。</li>
+    </ul>
+  </li>
+  <li>诊断运维：
+    <ul>
+      <li>监控阻塞时长与争用次数；</li>
+      <li>采集线程栈与锁持有者；</li>
+      <li>压测覆盖极端并发与抖动场景。</li>
+    </ul>
+  </li>
+</ul>
+
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=Java%20%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%EF%BC%9A%E4%BB%8E%20Lock%20%E5%88%B0%20AQS&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2017/05/21/Java-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E4%BB%8ELock%E5%88%B0AQS.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2017/05/21/Java-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E4%BB%8ELock%E5%88%B0AQS.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

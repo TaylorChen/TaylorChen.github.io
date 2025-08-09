@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>Web3 浏览器与钱包注入：EIP-1193/6963 与隐私实践</h1>
+    <p class="post-meta">2023-08-09 · Web3 · Web3 浏览器, 钱包, EIP-1193, 隐私</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>Web3 浏览器的要义是“让网页安全地调用用户的加密身份与链上资源”。核心落在 Provider 标准（EIP-1193）、多钱包发现（EIP-6963）与网络切换（EIP-3085/3326），同时还要面对隐私合规、反钓鱼、兼容性与多链适配等现实问题。本文从标准到工程实践，系统讲解如何构建“安全、可靠、好用”的 Web3 浏览器/前端。</p>
+
+<h2 id="1-eip-标准速查">1. EIP 标准速查</h2>
+<ul>
+  <li>EIP-1193：Provider 请求/事件接口；</li>
+  <li>EIP-6963：多钱包发现与选择；</li>
+  <li>EIP-3085：向钱包添加链配置；</li>
+  <li>EIP-3326：请求钱包切换链；</li>
+  <li>EIP-155（签名交易链ID）、EIP-712（结构化签名）。</li>
+</ul>
+
+<p>常用调用：</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">await</span> <span class="nx">provider</span><span class="p">.</span><span class="nf">request</span><span class="p">({</span> <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">eth_requestAccounts</span><span class="dl">'</span> <span class="p">})</span>
+<span class="k">await</span> <span class="nx">provider</span><span class="p">.</span><span class="nf">request</span><span class="p">({</span> <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">wallet_addEthereumChain</span><span class="dl">'</span><span class="p">,</span> <span class="na">params</span><span class="p">:</span> <span class="p">[{</span> <span class="na">chainId</span><span class="p">:</span><span class="dl">'</span><span class="s1">0x1</span><span class="dl">'</span><span class="p">,</span> <span class="na">rpcUrls</span><span class="p">:[</span><span class="dl">'</span><span class="s1">...</span><span class="dl">'</span><span class="p">],</span> <span class="na">chainName</span><span class="p">:</span><span class="dl">'</span><span class="s1">Ethereum</span><span class="dl">'</span><span class="p">,</span> <span class="na">nativeCurrency</span><span class="p">:{</span><span class="na">name</span><span class="p">:</span><span class="dl">'</span><span class="s1">ETH</span><span class="dl">'</span><span class="p">,</span><span class="na">symbol</span><span class="p">:</span><span class="dl">'</span><span class="s1">ETH</span><span class="dl">'</span><span class="p">,</span><span class="na">decimals</span><span class="p">:</span><span class="mi">18</span><span class="p">}</span> <span class="p">}]</span> <span class="p">})</span>
+<span class="k">await</span> <span class="nx">provider</span><span class="p">.</span><span class="nf">request</span><span class="p">({</span> <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">wallet_switchEthereumChain</span><span class="dl">'</span><span class="p">,</span> <span class="na">params</span><span class="p">:</span> <span class="p">[{</span> <span class="na">chainId</span><span class="p">:</span><span class="dl">'</span><span class="s1">0x1</span><span class="dl">'</span> <span class="p">}]</span> <span class="p">})</span>
+</code></pre></div></div>
+
+<h2 id="2-多钱包与注入eip-6963">2. 多钱包与注入（EIP-6963）</h2>
+<ul>
+  <li>发现：页面监听 <code class="language-plaintext highlighter-rouge">eip6963:announceProvider</code> 事件，聚合候选；</li>
+  <li>选择：弹出钱包列表，用户选择后注入该 Provider；</li>
+  <li>兼容：Fallback 到 <code class="language-plaintext highlighter-rouge">window.ethereum</code>。</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">document</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">eip6963:announceProvider</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">detail</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">detail</span><span class="p">;</span> <span class="c1">// { info, provider }</span>
+  <span class="nx">wallets</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nx">detail</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h2 id="3-权限与安全">3. 权限与安全</h2>
+<ul>
+  <li>权限最小化：仅在需要时请求账户与签名；</li>
+  <li>白名单域名与签名域隔离（SIWE domain binding）；</li>
+  <li>反钓鱼：明确签名提示含意，拦截 <code class="language-plaintext highlighter-rouge">setApprovalForAll</code> 弹窗的风险提示；</li>
+  <li>Sandboxing：对第三方脚本注入做 CSP 限制；</li>
+  <li>兼容 DNT/隐私：不上传可识别信息，客户端缓存敏感数据。</li>
+</ul>
+
+<h2 id="4-签名与交易">4. 签名与交易</h2>
+<ul>
+  <li>登录：SIWE（EIP-4361）签名会话；</li>
+  <li>交易：预估 Gas，失败提示与替代交易；</li>
+  <li>批量与 AA：账户抽象（EIP-4337），用 UserOp 合并多个动作；</li>
+  <li>非 EVM：签名格式差异（Solana/Polkadot），抽象 Provider 层。</li>
+</ul>
+
+<h2 id="5-多链与兼容性矩阵">5. 多链与兼容性矩阵</h2>
+<ul>
+  <li>EVM 兼容链：主网/L2（Arbitrum/Optimism/zkSync/Linea/Base/…）；</li>
+  <li>非 EVM：通过特定 SDK/适配器；</li>
+  <li>检查清单：链ID、单位、RPC 限流、交易池差异、确认规则；</li>
+  <li>错误处理：网络切换失败/链不支持 → 降级只读。</li>
+</ul>
+
+<h2 id="6-调试与监控">6. 调试与监控</h2>
+<ul>
+  <li>调试：启用 <code class="language-plaintext highlighter-rouge">eth_call</code> 与 <code class="language-plaintext highlighter-rouge">debug_traceTransaction</code>（权限谨慎）；</li>
+  <li>监控：钱包连接率、签名拒绝率、交易失败率、平均确认时间、非预期链切换次数；</li>
+  <li>前端埋点：区分 Provider 版本、钱包类型（扩展/移动/内嵌）。</li>
+</ul>
+
+<h2 id="7-用户体验优化">7. 用户体验优化</h2>
+<ul>
+  <li>首屏无需连接钱包（只读模式），用户操作再请求授权；</li>
+  <li>断线重连与会话恢复（SIWE + 短期 token）；</li>
+  <li>错误文案本地化与“下一步指引”；</li>
+  <li>一键复制错误详情到工单；</li>
+  <li>预加载常用合约 ABI 与代币列表；</li>
+  <li>慢链/高拥塞时的友好提示与替代方案（切 L2）。</li>
+</ul>
+
+<h2 id="8-反钓鱼与合规">8. 反钓鱼与合规</h2>
+<ul>
+  <li>域名与合约白名单：显示“已验证合约/域名”；</li>
+  <li>显示授权范围：<code class="language-plaintext highlighter-rouge">spender</code>/<code class="language-plaintext highlighter-rouge">tokenId</code>/<code class="language-plaintext highlighter-rouge">amount</code>；</li>
+  <li>风险评分：黑名单/社交举报/交易图谱；</li>
+  <li>法务：隐私政策、KYC/AML 适配（若涉及法币出入金）。</li>
+</ul>
+
+<h2 id="9-示例最小可用多钱包接入">9. 示例：最小可用多钱包接入</h2>
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createConfig</span><span class="p">,</span> <span class="nx">http</span><span class="p">,</span> <span class="nx">createStorage</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">wagmi</span><span class="dl">'</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">injected</span><span class="p">,</span> <span class="nx">walletConnect</span><span class="p">,</span> <span class="nx">coinbaseWallet</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">wagmi/connectors</span><span class="dl">'</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="nf">createConfig</span><span class="p">({</span>
+  <span class="na">chains</span><span class="p">:</span> <span class="p">[</span><span class="nx">mainnet</span><span class="p">,</span> <span class="nx">arbitrum</span><span class="p">,</span> <span class="nx">optimism</span><span class="p">],</span>
+  <span class="na">transports</span><span class="p">:</span> <span class="p">{</span>
+    <span class="p">[</span><span class="nx">mainnet</span><span class="p">.</span><span class="nx">id</span><span class="p">]:</span> <span class="nf">http</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://...</span><span class="dl">'</span><span class="p">),</span>
+    <span class="p">[</span><span class="nx">arbitrum</span><span class="p">.</span><span class="nx">id</span><span class="p">]:</span> <span class="nf">http</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://...</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">},</span>
+  <span class="na">connectors</span><span class="p">:</span> <span class="p">[</span><span class="nf">injected</span><span class="p">(),</span> <span class="nf">walletConnect</span><span class="p">({</span> <span class="na">projectId</span><span class="p">:</span><span class="dl">'</span><span class="s1">...</span><span class="dl">'</span> <span class="p">}),</span> <span class="nf">coinbaseWallet</span><span class="p">({</span> <span class="na">appName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">app</span><span class="dl">'</span> <span class="p">})],</span>
+  <span class="na">storage</span><span class="p">:</span> <span class="nf">createStorage</span><span class="p">({</span> <span class="na">storage</span><span class="p">:</span> <span class="nb">window</span><span class="p">.</span><span class="nx">localStorage</span> <span class="p">})</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h2 id="10-小结">10. 小结</h2>
+<p>一个好的 Web3 浏览器前端，既要“懂标准”也要“懂用户与风控”。以 EIP-1193/6963 为锚点构建 Provider 层，围绕权限/隐私/多链/监控/反钓鱼持续打磨，才能在复杂生态中提供长期可靠的体验。</p>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=Web3%20%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%8E%E9%92%B1%E5%8C%85%E6%B3%A8%E5%85%A5%EF%BC%9AEIP-1193/6963%20%E4%B8%8E%E9%9A%90%E7%A7%81%E5%AE%9E%E8%B7%B5&url=http://localhost:4000/web3/2023/08/09/Web3-%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%8E%E9%92%B1%E5%8C%85%E6%B3%A8%E5%85%A5%E6%A0%87%E5%87%86.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/web3/2023/08/09/Web3-%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%8E%E9%92%B1%E5%8C%85%E6%B3%A8%E5%85%A5%E6%A0%87%E5%87%86.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

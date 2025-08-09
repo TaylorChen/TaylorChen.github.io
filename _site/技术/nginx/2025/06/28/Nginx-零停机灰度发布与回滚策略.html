@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>Nginx 零停机灰度发布与回滚策略</h1>
+    <p class="post-meta">2025-06-28 · 技术 / Nginx · 技术, Nginx, 发布, 灰度</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>从运维架构视角，结合 Nginx 的多种路由能力（权重、Header/Cookie、子域名、子路径）与容器编排（Docker/Kubernetes），构建“低风险、可审计、可回滚”的上线流程。本文给出平滑发布步骤、生产级配置、容器化集成与回滚预案。</p>
+
+<h2 id="0-目标与原则">0. 目标与原则</h2>
+<ul>
+  <li>不中断：对外 0 失败率、0 连接重置；</li>
+  <li>可回滚：故障秒级回退；</li>
+  <li>可观测：全链路指标与日志可追溯；</li>
+  <li>可审计：变更有记录，可复现。</li>
+</ul>
+
+<hr />
+
+<h2 id="1-平滑发布通用步骤">1. 平滑发布（通用步骤）</h2>
+<p>1) 版本准备：构建 v2 镜像（含健康检查、版本信息接口），在 v1 旁路启动；
+2) 预热：v2 只接入探活与预热流量（本地缓存、JIT、连接池预连接）；
+3) 小流量灰度：按 1%/5%/10%/20%/50%/100% 切流，每步 5-15 分钟观察 SLI；
+4) 监控门禁：4xx/5xx、P95/P99、错误率、特定业务 KPI（下单/支付成功率）；
+5) 扩展面：流量达到 100% 后保持观察窗口（30-60 分钟）；
+6) 收尾：下线 v1 或保留一段时间作为热备用。</p>
+
+<blockquote>
+  <p>SLI/SLO 建议：错误率 &lt; 0.1%，P95 &lt; 目标阈值（如 300ms），下单成功率不下降。</p>
+</blockquote>
+
+<hr />
+
+<h2 id="2-nginx-路由策略">2. Nginx 路由策略</h2>
+<h3 id="21-权重切流">2.1 权重切流</h3>
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">svc_v1</span> <span class="p">{</span> <span class="kn">server</span> <span class="nf">10.0.0.1</span><span class="p">:</span><span class="mi">8080</span> <span class="s">max_fails=2</span> <span class="s">fail_timeout=10s</span><span class="p">;</span> <span class="p">}</span>
+<span class="k">upstream</span> <span class="s">svc_v2</span> <span class="p">{</span> <span class="kn">server</span> <span class="nf">10.0.0.2</span><span class="p">:</span><span class="mi">8080</span> <span class="s">max_fails=2</span> <span class="s">fail_timeout=10s</span><span class="p">;</span> <span class="p">}</span>
+<span class="k">map</span> <span class="nv">$upstream_choice</span> <span class="nv">$backend</span> <span class="p">{</span>
+  <span class="kn">default</span>      <span class="s">svc_v1</span><span class="p">;</span>
+  <span class="kn">v2</span>           <span class="s">svc_v2</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1"># 灰度权重由外部工具写入变量（例如 lua_shared_dict / env / include 片段）</span>
+<span class="k">map</span> <span class="nv">$cookie_gray</span> <span class="nv">$upstream_choice</span> <span class="p">{</span>
+  <span class="kn">default</span>      <span class="s">v1</span><span class="p">;</span>
+  <span class="kn">~*gray=1</span>     <span class="s">v2</span><span class="p">;</span>  <span class="c1"># 指定用户灰度</span>
+<span class="p">}</span>
+<span class="k">server</span> <span class="p">{</span>
+  <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
+    <span class="kn">proxy_next_upstream</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">http_502</span> <span class="s">http_503</span> <span class="s">http_504</span><span class="p">;</span> <span class="c1"># 故障向上游重试</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://</span><span class="nv">$backend</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="22-百分比灰度无-cookie">2.2 百分比灰度（无 Cookie）</h3>
+<p>借助 Nginx JavaScript（njs）或 lua，按哈希实现稳定的百分比切分：</p>
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 伪代码：基于 IP/用户ID 哈希到 0..99，&lt;10 命中 v2（10%）</span>
+</code></pre></div></div>
+<p>优势：用户命中稳定，不会在刷新间抖动；便于问题复现。</p>
+
+<h3 id="23-子路径子域名灰度">2.3 子路径/子域名灰度</h3>
+<ul>
+  <li>子路径：<code class="language-plaintext highlighter-rouge">/v2/</code> 仅路由到 v2，便于 A/B 对比；</li>
+  <li>子域名：<code class="language-plaintext highlighter-rouge">v2.api.example.com</code> 专供内测或机器人流量。</li>
+</ul>
+
+<hr />
+
+<h2 id="3-容器化集成">3. 容器化集成</h2>
+<h3 id="31-docker-compose蓝绿">3.1 Docker Compose（蓝/绿）</h3>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">nginx</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">nginx:1.25</span>
+    <span class="na">volumes</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">./nginx.conf:/etc/nginx/nginx.conf:ro"</span><span class="pi">]</span>
+    <span class="na">ports</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">80:80"</span><span class="pi">]</span>
+  <span class="na">app_v1</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">app:1.0.0</span>
+    <span class="na">healthcheck</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">test</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">CMD"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">curl"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-f"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">http://localhost:8080/health"</span><span class="pi">],</span> <span class="nv">interval</span><span class="pi">:</span> <span class="nv">5s</span><span class="pi">,</span> <span class="nv">retries</span><span class="pi">:</span> <span class="nv">5</span> <span class="pi">}</span>
+  <span class="na">app_v2</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">app:1.1.0</span>
+    <span class="na">healthcheck</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">test</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">CMD"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">curl"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-f"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">http://localhost:8080/health"</span><span class="pi">],</span> <span class="nv">interval</span><span class="pi">:</span> <span class="nv">5s</span><span class="pi">,</span> <span class="nv">retries</span><span class="pi">:</span> <span class="nv">5</span> <span class="pi">}</span>
+</code></pre></div></div>
+<ul>
+  <li>切换方式：通过替换 <code class="language-plaintext highlighter-rouge">map</code> 变量/包含片段，或修改 upstream 指向容器服务名；</li>
+  <li>回滚：即时切回 <code class="language-plaintext highlighter-rouge">app_v1</code>。</li>
+</ul>
+
+<h3 id="32-kubernetesingressservice">3.2 Kubernetes（Ingress/Service）</h3>
+<ul>
+  <li>Ingress-Nginx + 两个 Service（v1/v2），通过 <code class="language-plaintext highlighter-rouge">canary</code> 注解分流：
+    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">metadata</span><span class="pi">:</span>
+<span class="na">annotations</span><span class="pi">:</span>
+  <span class="na">nginx.ingress.kubernetes.io/canary</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+  <span class="na">nginx.ingress.kubernetes.io/canary-weight</span><span class="pi">:</span> <span class="s2">"</span><span class="s">10"</span> <span class="c1"># 10%</span>
+</code></pre></div>    </div>
+  </li>
+  <li>替代方案：使用 <code class="language-plaintext highlighter-rouge">nginx-ingress + njs/lua</code> 做更复杂的路由，或使用 <code class="language-plaintext highlighter-rouge">Gateway API</code>/<code class="language-plaintext highlighter-rouge">Service Mesh</code>（Istio/Linkerd）进行百分比灰度、熔断、重试与熔断。</li>
+</ul>
+
+<hr />
+
+<h2 id="4-策略矩阵与适用场景">4. 策略矩阵与适用场景</h2>
+<ul>
+  <li>权重路由：最通用，适合整体灰度；</li>
+  <li>Cookie 灰度：便于定向用户/业务方验证；</li>
+  <li>Header 灰度：CI/CD/自动化探测流量；</li>
+  <li>子路径/子域名：A/B 实验或大版本对照；</li>
+  <li>哈希百分比：稳定命中，适合逐步放量。</li>
+</ul>
+
+<hr />
+
+<h2 id="5-生产案例示意">5. 生产案例（示意）</h2>
+<ul>
+  <li>背景：交易系统网关，QPS 峰值 3w/s；</li>
+  <li>步骤：
+1) v2 部署完成，预热接口返回 200；
+2) Cookie 灰度给内部账号与监控机器人；
+3) 百分比灰度 1% -&gt; 5% -&gt; 10% -&gt; 20%（每步 10 分钟），观察错误率、P95、下单成功率；
+4) 50% -&gt; 100%，保持观察 30 分钟；
+5) 稳定后下线 v1，保留应急镜像与配置。</li>
+  <li>指标与日志：接入 Prometheus/Grafana，日志落 ES/ClickHouse，保留版本号与路由信息便于追踪。</li>
+</ul>
+
+<hr />
+
+<h2 id="6-回滚策略与演练">6. 回滚策略与演练</h2>
+<ul>
+  <li>触发条件：错误率 &gt; 0.2% 或 P95 恶化 30% 且持续 5 分钟；</li>
+  <li>动作：
+1) 立即将灰度比例设为 0（或 Cookie 开关关闭）；
+2) 恢复 v1 权重至 100%；
+3) 保持观察窗口（10-30 分钟），同时收集 v2 诊断材料；
+4) 进入问题单流程与修复迭代；</li>
+  <li>演练：季度至少一次“带压回滚”演练（非峰值时段），验证脚本与值守响应。</li>
+</ul>
+
+<hr />
+
+<h2 id="7-关键配置清单">7. 关键配置清单</h2>
+<ul>
+  <li>上游健康检查与 <code class="language-plaintext highlighter-rouge">proxy_next_upstream</code> 策略；</li>
+  <li><code class="language-plaintext highlighter-rouge">keepalive</code> 连接池，<code class="language-plaintext highlighter-rouge">proxy_http_version 1.1</code> 与关闭 <code class="language-plaintext highlighter-rouge">Connection: close</code>；</li>
+  <li>请求超时/重试上限（避免风暴）；</li>
+  <li>限流与熔断（njs/lua 或接入网关/Service Mesh）。</li>
+</ul>
+
+<hr />
+
+<h2 id="8-审计与自动化">8. 审计与自动化</h2>
+<ul>
+  <li>配置即代码（Git 管控），灰度参数来自集中配置；</li>
+  <li>CI/CD：合规检查（lint）、预热检查通过才允许放量；</li>
+  <li>ChatOps：发布与回滚都有机器人宣告与记录。</li>
+</ul>
+
+<hr />
+
+<h2 id="9-常见坑">9. 常见坑</h2>
+<ul>
+  <li>预热不足：v2 首次请求抖动；</li>
+  <li>粘性策略缺失：会话跨版本导致登录/购物车异常；</li>
+  <li>观测延迟太长：等到告警触发时已影响大量用户；</li>
+  <li>权限与合规：回滚权限受限导致响应慢。</li>
+</ul>
+
+<blockquote>
+  <p>结论：Nginx + 容器编排可实现高可靠的零停机灰度。把“参数化灰度 + 可观测 + 自动化回滚”做成流程与工具，才是长期可靠之道。</p>
+</blockquote>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=Nginx%20%E9%9B%B6%E5%81%9C%E6%9C%BA%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%B8%8E%E5%9B%9E%E6%BB%9A%E7%AD%96%E7%95%A5&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2025/06/28/Nginx-%E9%9B%B6%E5%81%9C%E6%9C%BA%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%B8%8E%E5%9B%9E%E6%BB%9A%E7%AD%96%E7%95%A5.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2025/06/28/Nginx-%E9%9B%B6%E5%81%9C%E6%9C%BA%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%B8%8E%E5%9B%9E%E6%BB%9A%E7%AD%96%E7%95%A5.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>Java Spring 事务传播与隔离级别陷阱</h1>
+    <p class="post-meta">2022-03-30 · 技术 / Java · 技术, Java, Spring, 事务</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>事务机制在软件开发中扮演举足轻重的角色。本文系统介绍数据库与分布式事务的原理与应用、隔离级别与典型并发现象示例，并结合 Spring 的传播机制与实现原理，最后从 CAP 视角给出大型系统中确保“相对一致性”的工程方案与实战蓝本。</p>
+
+<h3 id="一为何需要事务">一、为何需要事务</h3>
+<ul>
+  <li><strong>目标</strong>：在并发与故障条件下，保证数据正确性与可预期性。</li>
+  <li><strong>ACID</strong>：原子性、一致性、隔离性、持久性；工程上需在性能、可用性与一致性间权衡。</li>
+</ul>
+
+<h3 id="二数据库事务与隔离级别含示例">二、数据库事务与隔离级别（含示例）</h3>
+<ul>
+  <li><strong>常见隔离级别与现象</strong>
+    <ul>
+      <li><strong>Read Uncommitted</strong>：可能脏读；几乎不用。</li>
+      <li><strong>Read Committed (RC)</strong>：避免脏读；仍有不可重复读与幻读（PostgreSQL 默认）。</li>
+      <li><strong>Repeatable Read (RR)</strong>：同一事务内多次读取结果一致；InnoDB 的 RR 基于 MVCC + Next-Key Lock，普通一致性读看到“快照”，更新扫描加间隙锁抑制幻行（MySQL 默认）。</li>
+      <li><strong>Serializable</strong>：最强隔离；性能代价大，通常依赖锁或乐观并发控制。</li>
+    </ul>
+  </li>
+  <li><strong>并发现象最小示例</strong>
+    <ul>
+      <li>脏读（只在 RU）：
+        <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 会话A</span>
+<span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">account</span> <span class="k">SET</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">balance</span> <span class="o">-</span> <span class="mi">100</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">-- 未提交</span>
+
+<span class="c1">-- 会话B（RU）</span>
+<span class="k">SELECT</span> <span class="n">balance</span> <span class="k">FROM</span> <span class="n">account</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">-- 读到未提交数据（脏读）</span>
+</code></pre></div>        </div>
+      </li>
+      <li>不可重复读（RC）：
+        <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 会话A</span>
+<span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="n">balance</span> <span class="k">FROM</span> <span class="n">account</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">-- 读到 1000</span>
+
+<span class="c1">-- 会话B</span>
+<span class="k">BEGIN</span><span class="p">;</span> <span class="k">UPDATE</span> <span class="n">account</span> <span class="k">SET</span> <span class="n">balance</span> <span class="o">=</span> <span class="mi">900</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="k">COMMIT</span><span class="p">;</span>
+
+<span class="c1">-- 会话A</span>
+<span class="k">SELECT</span> <span class="n">balance</span> <span class="k">FROM</span> <span class="n">account</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">-- 再读到 900（不可重复读）</span>
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div>        </div>
+      </li>
+      <li>幻读（RC 或部分 RR 场景）：
+        <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 会话A</span>
+<span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">orders</span> <span class="k">WHERE</span> <span class="n">amount</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">;</span> <span class="c1">-- 返回 N 行</span>
+
+<span class="c1">-- 会话B</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">orders</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="mi">999</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span> <span class="k">COMMIT</span><span class="p">;</span>
+
+<span class="c1">-- 会话A</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">orders</span> <span class="k">WHERE</span> <span class="n">amount</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">;</span> <span class="c1">-- 返回 N+1 行（幻读）</span>
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li><strong>实现与注意</strong>
+    <ul>
+      <li><strong>MVCC</strong>：RC/RR 通过快照读减少锁冲突；RR 在 InnoDB 下对“锁定读/更新”使用 Next-Key Lock 抑制幻读。</li>
+      <li><strong>加锁读</strong>：<code class="language-plaintext highlighter-rouge">SELECT ... FOR UPDATE/LOCK IN SHARE MODE</code> 可确保当前读一致且参与加锁，抑制写冲突与幻读。</li>
+      <li><strong>建议</strong>：默认 RC/RR；强一致写路径（转账、库存）采用 RR + 加锁读，或使用可控的序列化/业务锁。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="三分布式事务模式与取舍">三、分布式事务模式与取舍</h3>
+<ul>
+  <li><strong>XA/2PC</strong>（协调器 + 参与者，两阶段提交）
+    <ul>
+      <li>优点：强一致；缺点：阻塞、对资源管理器要求高、性能与可用性差；云原生场景较少采用。</li>
+    </ul>
+  </li>
+  <li><strong>TCC</strong>（Try-Confirm-Cancel）
+    <ul>
+      <li>优点：业务可感知，接口粒度可控；缺点：实现复杂，需要补偿与悬挂/空回滚处理；适用于账务/库存等核心域。</li>
+    </ul>
+  </li>
+  <li><strong>Saga</strong>（编排/舞蹈）
+    <ul>
+      <li>优点：最终一致、扩展性好；缺点：中间态可见、补偿设计复杂；适用于电商下单等长链路。</li>
+    </ul>
+  </li>
+  <li><strong>可靠消息 + Outbox</strong>
+    <ul>
+      <li>优点：本地事务落库，与“待发消息”同库同事务，异步发布，消费端幂等；工程落地成熟。</li>
+      <li>缺点：引入异步与补偿复杂度；需要投递保证与去重。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="四spring-事务传播机制与实现原理">四、Spring 事务：传播机制与实现原理</h3>
+<ul>
+  <li><strong>实现原理</strong>
+    <ul>
+      <li>AOP 代理（JDK/CGLIB）拦截 <code class="language-plaintext highlighter-rouge">@Transactional</code> 方法，委派 <code class="language-plaintext highlighter-rouge">TransactionInterceptor</code>。</li>
+      <li><code class="language-plaintext highlighter-rouge">PlatformTransactionManager</code>（如 <code class="language-plaintext highlighter-rouge">DataSourceTransactionManager</code>/<code class="language-plaintext highlighter-rouge">JpaTransactionManager</code>）负责开启/提交/回滚。</li>
+      <li><code class="language-plaintext highlighter-rouge">TransactionSynchronizationManager</code> 用 ThreadLocal 绑定连接/资源与同步回调。</li>
+      <li>回滚规则：默认对 <code class="language-plaintext highlighter-rouge">RuntimeException</code>/<code class="language-plaintext highlighter-rouge">Error</code> 回滚；受检异常需显式 <code class="language-plaintext highlighter-rouge">rollbackFor</code>。</li>
+    </ul>
+  </li>
+  <li><strong>源码级实现细节（传播行为如何生效）</strong>
+    <ul>
+      <li>激活入口（配置）：<code class="language-plaintext highlighter-rouge">@EnableTransactionManagement</code> → <code class="language-plaintext highlighter-rouge">TransactionManagementConfigurationSelector</code> → 注册 <code class="language-plaintext highlighter-rouge">ProxyTransactionManagementConfiguration</code>
+        <ul>
+          <li>定义 <code class="language-plaintext highlighter-rouge">BeanFactoryTransactionAttributeSourceAdvisor</code>（切点）</li>
+          <li>使用 <code class="language-plaintext highlighter-rouge">AnnotationTransactionAttributeSource</code> 解析 <code class="language-plaintext highlighter-rouge">@Transactional</code></li>
+          <li>注入 <code class="language-plaintext highlighter-rouge">TransactionInterceptor</code>（拦截器）</li>
+        </ul>
+      </li>
+      <li>代理创建：基础设施自动代理器（如 <code class="language-plaintext highlighter-rouge">InfrastructureAdvisorAutoProxyCreator</code>）为匹配切点的方法创建 JDK/CGLIB 代理，解决横切逻辑织入</li>
+      <li>拦截主链：<code class="language-plaintext highlighter-rouge">TransactionInterceptor#invoke</code> → <code class="language-plaintext highlighter-rouge">TransactionAspectSupport#invokeWithinTransaction</code>
+1) 解析事务属性：<code class="language-plaintext highlighter-rouge">TransactionAttributeSource#getTransactionAttribute</code>
+2) 解析事务管理器：<code class="language-plaintext highlighter-rouge">determineTransactionManager</code>（支持 <code class="language-plaintext highlighter-rouge">transactionManager</code> 指定）
+3) 按传播语义开/加入事务：<code class="language-plaintext highlighter-rouge">createTransactionIfNecessary</code> → <code class="language-plaintext highlighter-rouge">PlatformTransactionManager#getTransaction</code>
+4) 调用业务方法：<code class="language-plaintext highlighter-rouge">invocation.proceed()</code>
+5) 正常则 <code class="language-plaintext highlighter-rouge">commit</code>，异常走 <code class="language-plaintext highlighter-rouge">completeTransactionAfterThrowing</code> 判定回滚（<code class="language-plaintext highlighter-rouge">TransactionAttribute#rollbackOn(Throwable)</code>，默认仅回滚 <code class="language-plaintext highlighter-rouge">RuntimeException</code>/<code class="language-plaintext highlighter-rouge">Error</code>）</li>
+      <li>传播决策核心：<code class="language-plaintext highlighter-rouge">AbstractPlatformTransactionManager#getTransaction(TransactionDefinition)</code>
+        <ul>
+          <li>若存在事务（<code class="language-plaintext highlighter-rouge">isExistingTransaction</code>）：
+            <ul>
+              <li><code class="language-plaintext highlighter-rouge">PROPAGATION_REQUIRED</code>/<code class="language-plaintext highlighter-rouge">SUPPORTS</code>/<code class="language-plaintext highlighter-rouge">MANDATORY</code>：加入当前事务（共享连接与同步）</li>
+              <li><code class="language-plaintext highlighter-rouge">PROPAGATION_REQUIRES_NEW</code>：<code class="language-plaintext highlighter-rouge">suspend</code> 挂起当前事务 → <code class="language-plaintext highlighter-rouge">doBegin</code> 开新事务 → 结束后 <code class="language-plaintext highlighter-rouge">resume</code></li>
+              <li><code class="language-plaintext highlighter-rouge">PROPAGATION_NOT_SUPPORTED</code>：<code class="language-plaintext highlighter-rouge">suspend</code> 挂起，以非事务方式执行 → <code class="language-plaintext highlighter-rouge">resume</code></li>
+              <li><code class="language-plaintext highlighter-rouge">PROPAGATION_NEVER</code>：存在事务直接抛 <code class="language-plaintext highlighter-rouge">IllegalTransactionStateException</code></li>
+              <li><code class="language-plaintext highlighter-rouge">PROPAGATION_NESTED</code>：如支持保存点（<code class="language-plaintext highlighter-rouge">useSavepointForNestedTransaction</code>）则在当前事务 <code class="language-plaintext highlighter-rouge">createSavepoint</code>，失败回滚到保存点；否则可能抛 <code class="language-plaintext highlighter-rouge">NestedTransactionNotSupportedException</code></li>
+            </ul>
+          </li>
+          <li>若不存在事务：
+            <ul>
+              <li><code class="language-plaintext highlighter-rouge">REQUIRED</code>/<code class="language-plaintext highlighter-rouge">REQUIRES_NEW</code>/<code class="language-plaintext highlighter-rouge">NESTED</code>：<code class="language-plaintext highlighter-rouge">doBegin</code> 开启新事务（<code class="language-plaintext highlighter-rouge">NESTED</code> 在无外部事务时等价于新事务）</li>
+              <li><code class="language-plaintext highlighter-rouge">SUPPORTS</code>：非事务执行</li>
+              <li><code class="language-plaintext highlighter-rouge">MANDATORY</code>：抛 <code class="language-plaintext highlighter-rouge">IllegalTransactionStateException</code></li>
+              <li><code class="language-plaintext highlighter-rouge">NOT_SUPPORTED</code>/<code class="language-plaintext highlighter-rouge">NEVER</code>：非事务执行</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>数据源事务实现（典型）：<code class="language-plaintext highlighter-rouge">DataSourceTransactionManager</code>
+        <ul>
+          <li>开启：<code class="language-plaintext highlighter-rouge">doBegin</code> 获取连接并配置隔离级别、<code class="language-plaintext highlighter-rouge">setReadOnly(true)</code>、<code class="language-plaintext highlighter-rouge">setAutoCommit(false)</code>，绑定 <code class="language-plaintext highlighter-rouge">ConnectionHolder</code> 至 <code class="language-plaintext highlighter-rouge">TransactionSynchronizationManager</code></li>
+          <li>挂起/恢复：<code class="language-plaintext highlighter-rouge">doSuspend</code>/<code class="language-plaintext highlighter-rouge">doResume</code> 解绑/重新绑定资源</li>
+          <li>提交/回滚：<code class="language-plaintext highlighter-rouge">doCommit</code>/<code class="language-plaintext highlighter-rouge">doRollback</code>；NESTED 通过 <code class="language-plaintext highlighter-rouge">SavepointManager</code> 创建/回滚保存点</li>
+        </ul>
+      </li>
+      <li>资源与同步：<code class="language-plaintext highlighter-rouge">TransactionSynchronizationManager</code>
+        <ul>
+          <li>线程级别绑定资源：<code class="language-plaintext highlighter-rouge">bindResource</code>/<code class="language-plaintext highlighter-rouge">unbindResource</code>（如 <code class="language-plaintext highlighter-rouge">DataSource → ConnectionHolder</code>）</li>
+          <li>暴露上下文：<code class="language-plaintext highlighter-rouge">isActualTransactionActive</code>、<code class="language-plaintext highlighter-rouge">getCurrentTransactionName</code>、<code class="language-plaintext highlighter-rouge">isCurrentTransactionReadOnly</code></li>
+          <li>注册同步回调：<code class="language-plaintext highlighter-rouge">registerSynchronization</code>（JPA/Hibernate flush、MQ 出库回调等借此挂接）</li>
+        </ul>
+      </li>
+      <li>隔离与只读映射：<code class="language-plaintext highlighter-rouge">TransactionDefinition</code> → JDBC <code class="language-plaintext highlighter-rouge">Connection#setTransactionIsolation</code> 与 <code class="language-plaintext highlighter-rouge">setReadOnly</code>（是否真正生效取决于驱动与数据库）</li>
+      <li>关键类型速览：<code class="language-plaintext highlighter-rouge">TransactionAttribute</code>/<code class="language-plaintext highlighter-rouge">RuleBasedTransactionAttribute</code>（回滚规则）、<code class="language-plaintext highlighter-rouge">RollbackRuleAttribute</code>、<code class="language-plaintext highlighter-rouge">TransactionStatus</code>（事务状态/保存点控制）</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="jpahibernate-flush-时机与事务边界">JPA/Hibernate Flush 时机与事务边界</h4>
+<ul>
+  <li><strong>Flush 不等于提交</strong>：Flush 将持久化上下文（一级缓存）中的变更同步到数据库，但仍处于当前数据库事务内，直到 <code class="language-plaintext highlighter-rouge">commit</code>。</li>
+  <li><strong>触发时机</strong>（Hibernate FlushModeType.A 0UTO 默认）：
+    <ul>
+      <li>查询前：为保证查询结果与当前持久化上下文一致，可能在执行查询前先 flush（同表/相关实体时）。</li>
+      <li>显式调用：<code class="language-plaintext highlighter-rouge">EntityManager.flush()</code>/<code class="language-plaintext highlighter-rouge">Session.flush()</code>。</li>
+      <li>事务完成前：在 <code class="language-plaintext highlighter-rouge">commit</code> 前自动 flush。</li>
+    </ul>
+  </li>
+  <li><strong>Flush 模式</strong>：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">AUTO</code>（默认）：必要时自动 flush（查询前/提交前）。</li>
+      <li><code class="language-plaintext highlighter-rouge">COMMIT</code>：延迟到提交前再 flush（可能减少中途多次 flush）。</li>
+      <li><code class="language-plaintext highlighter-rouge">MANUAL</code>：仅在显式调用 <code class="language-plaintext highlighter-rouge">flush()</code> 时触发。</li>
+    </ul>
+  </li>
+  <li><strong>与 Spring 只读事务的关系</strong>：
+    <ul>
+      <li>Spring 在使用 Hibernate 时，<code class="language-plaintext highlighter-rouge">@Transactional(readOnly = true)</code> 通常通过方言（如 <code class="language-plaintext highlighter-rouge">HibernateJpaDialect</code>）将会话 flush 模式降为 <code class="language-plaintext highlighter-rouge">MANUAL</code>，减少不必要的脏检查与 flush；这只是“优化提示”，并不强制禁止写入。</li>
+      <li>仍需数据库权限控制与代码自律（如不在只读事务中执行写操作）。</li>
+    </ul>
+  </li>
+  <li><strong>一致性影响</strong>：由于 AUTO 模式下查询可能触发 flush，很多约束/唯一键冲突会在“查询时”或“提交前”抛出，而非在调用 <code class="language-plaintext highlighter-rouge">persist()</code> 当下，测试时需注意断言位置。</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Transactional</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">demo</span><span class="o">(</span><span class="nc">EntityManager</span> <span class="n">em</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">user</span><span class="o">.</span><span class="na">setEmail</span><span class="o">(</span><span class="s">"dup@example.com"</span><span class="o">);</span>
+  <span class="n">em</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
+  <span class="c1">// 这里未必立即抛异常</span>
+  <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"select u from User u where u.email = :e"</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"e"</span><span class="o">,</span> <span class="s">"someone@example.com"</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">getResultList</span><span class="o">();</span> <span class="c1">// 若查询触发 flush，唯一索引冲突可能在此处抛出</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="openentitymanagerinview-模式影响与建议">OpenEntityManagerInView 模式影响与建议</h4>
+<ul>
+  <li><strong>原理</strong>：<code class="language-plaintext highlighter-rouge">OpenEntityManagerInViewFilter/Interceptor</code> 在 Web 请求整个生命周期内绑定 <code class="language-plaintext highlighter-rouge">EntityManager</code> 到线程，使得 Controller/View 层在 Service 事务结束后仍可进行延迟加载，避免 <code class="language-plaintext highlighter-rouge">LazyInitializationException</code>。</li>
+  <li><strong>风险</strong>：
+    <ul>
+      <li>模糊事务边界：在“视图渲染期”继续访问数据库，容易形成 N+1 查询与不可预期的长连接占用。</li>
+      <li>可观测性降低：难以定位慢查询发生在业务层还是视图层。</li>
+      <li>写路径混入：若无约束，视图层也可能触发写相关 flush（尽管少见，但应避免）。</li>
+    </ul>
+  </li>
+  <li><strong>Spring Boot 默认</strong>：<code class="language-plaintext highlighter-rouge">spring.jpa.open-in-view</code> 在多数版本默认 <code class="language-plaintext highlighter-rouge">true</code>，官方已在 2.x/3.x 强烈提示谨慎使用。</li>
+  <li><strong>建议</strong>：
+    <ul>
+      <li>对写请求或核心域接口，设置 <code class="language-plaintext highlighter-rouge">spring.jpa.open-in-view=false</code>，在 Service 层完成 DTO 裁剪/投影映射与必要的 fetch join。</li>
+      <li>对读多的页面，如确需开启，务必配合 <code class="language-plaintext highlighter-rouge">@Transactional(readOnly = true)</code>、限制查询数量、启用二级缓存/查询缓存谨慎优化。</li>
+      <li>通过 <code class="language-plaintext highlighter-rouge">EntityGraph</code>/fetch join/投影（如 Spring Data JPA interface-based projections）解决懒加载需求。</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># application.yml</span>
+<span class="na">spring</span><span class="pi">:</span>
+  <span class="na">jpa</span><span class="pi">:</span>
+    <span class="na">open-in-view</span><span class="pi">:</span> <span class="kc">false</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 通过 fetch join 在事务内一次性加载所需数据</span>
+<span class="nd">@Query</span><span class="o">(</span><span class="s">"select o from Order o join fetch o.items where o.id = :id"</span><span class="o">)</span>
+<span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="nf">findWithItems</span><span class="o">(</span><span class="nd">@Param</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">);</span>
+</code></pre></div></div>
+
+<h4 id="调用链流程图简化">调用链流程图（简化）</h4>
+
+<pre><code class="language-mermaid">sequenceDiagram
+  autonumber
+  participant Client
+  participant Proxy as AOP Proxy
+  participant TI as TransactionInterceptor
+  participant TAS as TransactionAttributeSource
+  participant TM as PlatformTransactionManager
+  participant Biz as BusinessMethod
+
+  Client-&gt;&gt;Proxy: 调用 @Transactional 方法
+  Proxy-&gt;&gt;TI: invoke()
+  TI-&gt;&gt;TAS: 解析事务属性
+  TI-&gt;&gt;TM: getTransaction(def)
+  TM--&gt;&gt;TI: TransactionStatus（可能挂起/新建/加入）
+  TI-&gt;&gt;Biz: proceed()
+  Biz--&gt;&gt;TI: 返回或抛异常
+  alt 正常返回
+    TI-&gt;&gt;TM: commit(status)
+  else 异常
+    TI-&gt;&gt;TM: rollback(status)（按 rollbackOn 判定）
+  end
+  TI--&gt;&gt;Proxy: 返回结果
+  Proxy--&gt;&gt;Client: 返回结果
+</code></pre>
+
+<h4 id="传播决策流程核心分支">传播决策流程（核心分支）</h4>
+
+<pre><code class="language-mermaid">flowchart TD
+  A[进入 getTransaction] --&gt; B{是否存在事务}
+  B -- 否 --&gt; C{传播属性}
+  C -- REQUIRED/REQUIRES_NEW/NESTED --&gt; D[doBegin 新事务]
+  C -- SUPPORTS/NOT_SUPPORTED/NEVER --&gt; E[非事务执行]
+  C -- MANDATORY --&gt; F[抛 IllegalTransactionStateException]
+  B -- 是 --&gt; G{传播属性}
+  G -- REQUIRED/SUPPORTS/MANDATORY --&gt; H[加入当前事务]
+  G -- REQUIRES_NEW --&gt; I[suspend 挂起 -&gt; doBegin 新事务]
+  G -- NOT_SUPPORTED --&gt; J[suspend 挂起 -&gt; 非事务]
+  G -- NEVER --&gt; K[抛 IllegalTransactionStateException]
+  G -- NESTED --&gt; L[createSavepoint 保存点]
+</code></pre>
+
+<h4 id="精简源码片段引用spring-framework">精简源码片段引用（Spring Framework）</h4>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// org.springframework.transaction.interceptor.TransactionInterceptor</span>
+<span class="kd">public</span> <span class="nc">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="nc">MethodInvocation</span> <span class="n">invocation</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>
+    <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span> <span class="o">=</span> <span class="nc">AopUtils</span><span class="o">.</span><span class="na">getTargetClass</span><span class="o">(</span><span class="n">invocation</span><span class="o">.</span><span class="na">getThis</span><span class="o">());</span>
+    <span class="k">return</span> <span class="nf">invokeWithinTransaction</span><span class="o">(</span><span class="n">invocation</span><span class="o">.</span><span class="na">getMethod</span><span class="o">(),</span> <span class="n">targetClass</span><span class="o">,</span> <span class="nl">invocation:</span><span class="o">:</span><span class="n">proceed</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// org.springframework.transaction.interceptor.TransactionAspectSupport</span>
+<span class="kd">protected</span> <span class="nc">Object</span> <span class="nf">invokeWithinTransaction</span><span class="o">(</span><span class="nc">Method</span> <span class="n">method</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span><span class="o">,</span>
+                                         <span class="nc">InvocationCallback</span> <span class="n">invocation</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>
+    <span class="nc">TransactionAttributeSource</span> <span class="n">tas</span> <span class="o">=</span> <span class="n">getTransactionAttributeSource</span><span class="o">();</span>
+    <span class="nc">TransactionAttribute</span> <span class="n">txAttr</span> <span class="o">=</span> <span class="o">(</span><span class="n">tas</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">tas</span><span class="o">.</span><span class="na">getTransactionAttribute</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">)</span> <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="nc">PlatformTransactionManager</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">determineTransactionManager</span><span class="o">(</span><span class="n">txAttr</span><span class="o">);</span>
+    <span class="nc">TransactionInfo</span> <span class="n">txInfo</span> <span class="o">=</span> <span class="n">createTransactionIfNecessary</span><span class="o">(</span><span class="n">tm</span><span class="o">,</span> <span class="n">txAttr</span><span class="o">,</span> <span class="n">methodIdentification</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">));</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="nc">Object</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">invocation</span><span class="o">.</span><span class="na">proceedWithInvocation</span><span class="o">();</span>
+        <span class="n">commitTransactionAfterReturning</span><span class="o">(</span><span class="n">txInfo</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">ret</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">completeTransactionAfterThrowing</span><span class="o">(</span><span class="n">txInfo</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+        <span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">cleanupTransactionInfo</span><span class="o">(</span><span class="n">txInfo</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// org.springframework.transaction.support.AbstractPlatformTransactionManager</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="nc">TransactionStatus</span> <span class="nf">getTransaction</span><span class="o">(</span><span class="nc">TransactionDefinition</span> <span class="n">definition</span><span class="o">)</span>
+        <span class="kd">throws</span> <span class="nc">TransactionException</span> <span class="o">{</span>
+    <span class="nc">Object</span> <span class="n">transaction</span> <span class="o">=</span> <span class="n">doGetTransaction</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">isExistingTransaction</span><span class="o">(</span><span class="n">transaction</span><span class="o">))</span> <span class="o">{</span>
+        <span class="c1">// 根据传播行为: REQUIRED/SUPPORTS/MANDATORY/REQUIRES_NEW/NOT_SUPPORTED/NEVER/NESTED</span>
+        <span class="k">return</span> <span class="nf">handleExistingTransaction</span><span class="o">(</span><span class="n">definition</span><span class="o">,</span> <span class="n">transaction</span><span class="o">,</span> <span class="n">debugEnabled</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// 无事务，根据传播行为决定 doBegin 或非事务/异常</span>
+    <span class="k">return</span> <span class="nf">startTransaction</span><span class="o">(</span><span class="n">definition</span><span class="o">,</span> <span class="n">transaction</span><span class="o">,</span> <span class="n">debugEnabled</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// org.springframework.jdbc.datasource.DataSourceTransactionManager</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doBegin</span><span class="o">(</span><span class="nc">Object</span> <span class="n">transaction</span><span class="o">,</span> <span class="nc">TransactionDefinition</span> <span class="n">definition</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Connection</span> <span class="n">con</span> <span class="o">=</span> <span class="nc">DataSourceUtils</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">dataSource</span><span class="o">);</span>
+    <span class="n">con</span><span class="o">.</span><span class="na">setAutoCommit</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+    <span class="n">prepareTransactionalConnection</span><span class="o">(</span><span class="n">con</span><span class="o">,</span> <span class="n">definition</span><span class="o">);</span> <span class="c1">// 隔离级别/只读</span>
+    <span class="nc">DataSourceTransactionObject</span> <span class="n">txObject</span> <span class="o">=</span> <span class="o">(</span><span class="nc">DataSourceTransactionObject</span><span class="o">)</span> <span class="n">transaction</span><span class="o">;</span>
+    <span class="n">txObject</span><span class="o">.</span><span class="na">setConnectionHolder</span><span class="o">(</span><span class="k">new</span> <span class="nc">ConnectionHolder</span><span class="o">(</span><span class="n">con</span><span class="o">),</span> <span class="kc">true</span><span class="o">);</span>
+    <span class="nc">TransactionSynchronizationManager</span><span class="o">.</span><span class="na">bindResource</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">dataSource</span><span class="o">,</span> <span class="n">txObject</span><span class="o">.</span><span class="na">getConnectionHolder</span><span class="o">());</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>版本注记：上述调用链在 Spring Framework 5.3.x 与 6.x 之间主体一致；个别方法签名与内部重构可能略有差异，但关键职责与流程相同。</p>
+</blockquote>
+
+<ul>
+  <li><strong>传播行为（常用）</strong>
+    <ul>
+      <li><strong>REQUIRED（默认）</strong>：有则加入，无则新建；通用首选。</li>
+      <li><strong>REQUIRES_NEW</strong>：挂起外部事务，新建新事务；常用于审计/日志/可靠消息，避免与外层同生共死。</li>
+      <li><strong>SUPPORTS</strong>：有则加入，无则非事务。</li>
+      <li><strong>MANDATORY</strong>：必须在事务内，否则异常。</li>
+      <li><strong>NOT_SUPPORTED</strong>：挂起事务，以非事务方式执行；适合大查询/报表。</li>
+      <li><strong>NEVER</strong>：存在事务则抛异常。</li>
+      <li><strong>NESTED</strong>：保存点；内层失败可局部回滚（需 JDBC Savepoint 与 <code class="language-plaintext highlighter-rouge">DataSourceTransactionManager</code> 支持；JPA 不支持真嵌套）。</li>
+    </ul>
+  </li>
+  <li><strong>关键示例</strong>
+    <ul>
+      <li>REQUIRED 与 REQUIRES_NEW：
+        <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderService</span> <span class="o">{</span>
+  <span class="nd">@Transactional</span> <span class="c1">// REQUIRED</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">placeOrder</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">inventoryService</span><span class="o">.</span><span class="na">deduct</span><span class="o">();</span>
+    <span class="n">auditService</span><span class="o">.</span><span class="na">record</span><span class="o">();</span> <span class="c1">// 方法上标注 REQUIRES_NEW，独立提交</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>        </div>
+      </li>
+      <li>NESTED 局部回滚：
+        <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Transactional</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">batchCreate</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Item</span><span class="o">&gt;</span> <span class="n">items</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">for</span> <span class="o">(</span><span class="nc">Item</span> <span class="n">item</span> <span class="o">:</span> <span class="n">items</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">userService</span><span class="o">.</span><span class="na">createOneNested</span><span class="o">(</span><span class="n">item</span><span class="o">);</span> <span class="c1">// @Transactional(propagation = NESTED)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li><strong>常见陷阱</strong>
+    <ul>
+      <li>自调用不生效（同类内方法互调绕过代理）；将被调方法提取到另一 <code class="language-plaintext highlighter-rouge">@Service</code> 或注入自身代理。</li>
+      <li><code class="language-plaintext highlighter-rouge">private/final</code> 方法、构造器不拦截；异步/新线程无事务上下文。</li>
+      <li>多数据源需独立 <code class="language-plaintext highlighter-rouge">TransactionManager</code> 或采用分布式事务模式。</li>
+      <li><code class="language-plaintext highlighter-rouge">readOnly=true</code> 仅作优化提示，不保证不写；仍需权限与代码约束。</li>
+      <li><code class="language-plaintext highlighter-rouge">NESTED</code> 仅在底层事务管理器支持保存点时才是真嵌套（如 <code class="language-plaintext highlighter-rouge">DataSourceTransactionManager</code>）；<code class="language-plaintext highlighter-rouge">JpaTransactionManager</code> 不支持嵌套，可能抛异常或退化为新事务策略。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="五大型系统一致性策略结合-cap">五、大型系统一致性策略（结合 CAP）</h3>
+<ul>
+  <li><strong>CAP 取舍</strong>：分布式系统必须容忍分区（P），在一致性（C）与可用性（A）间取舍。
+    <ul>
+      <li><strong>CP 优先</strong>：撮合引擎、资金账本、强一致库存；采用单主/共识、严格限流与降级，牺牲可用性换正确性。</li>
+      <li><strong>AP 优先</strong>：订单、推荐、搜索、报表；采用最终一致、补偿/重试、幂等、读写分离、缓存旁路。</li>
+    </ul>
+  </li>
+  <li><strong>工程基线</strong>
+    <ul>
+      <li>本地事务 + 出库表（Outbox）+ MQ</li>
+      <li>幂等：幂等键/唯一索引/幂等表、去重缓存、乐观锁（version/timestamp）</li>
+      <li>显式状态机：订单/库存/支付状态跃迁，防止“写两份不同真相”</li>
+      <li>读模型：CQRS/物化视图；前台读可用性优先，后台对账纠偏</li>
+      <li>重试与时序：至少一次投递 + 幂等消费，必要时按业务键分区保证顺序</li>
+      <li>热点与锁：场景化选择悲观/乐观/分布式锁，控制锁粒度与超时</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="六实战蓝本落地建议">六、实战蓝本（落地建议）</h3>
+<ul>
+  <li>
+    <p><strong>可靠消息 + Outbox 工作流</strong>
+1) 业务服务本地事务内：写业务数据 + 写 <code class="language-plaintext highlighter-rouge">outbox</code>（状态 PENDING）
+2) 提交后由发布器轮询/CDC 发布 MQ；成功标记 SENT
+3) 消费者：用“消息ID 唯一索引/去重表”保证幂等；处理成功后标记完成
+4) 失败自动重试（指数退避）+ 死信队列 + 人工干预</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Transactional</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">createOrder</span><span class="o">(</span><span class="nc">CreateOrderCmd</span> <span class="n">cmd</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">orderRepo</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+  <span class="n">outboxRepo</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="nc">Outbox</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"OrderCreated"</span><span class="o">,</span> <span class="n">payload</span><span class="o">,</span> <span class="n">msgId</span><span class="o">));</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li><strong>Saga（编排型）</strong>：编排器持久化 Saga 状态，顺序调用步骤；失败按反向补偿逐一回滚。</li>
+  <li><strong>TCC 接口</strong>：资源服务提供 <code class="language-plaintext highlighter-rouge">try/reserve</code>、<code class="language-plaintext highlighter-rouge">confirm</code>、<code class="language-plaintext highlighter-rouge">cancel</code>；实现幂等、空回滚与悬挂处理。</li>
+</ul>
+
+<h3 id="七测试与验证建议">七、测试与验证建议</h3>
+<ul>
+  <li>隔离级别：集成测试开两连接/两线程，用 <code class="language-plaintext highlighter-rouge">CountDownLatch</code> 控制交错，验证 RC/RR 行为与锁持有。</li>
+  <li>传播机制：SpringBootTest + Testcontainers，验证 <code class="language-plaintext highlighter-rouge">REQUIRES_NEW</code> 独立提交、<code class="language-plaintext highlighter-rouge">NESTED</code> 保存点回滚。</li>
+  <li>一致性链路：本地起 MQ（Kafka/RabbitMQ），模拟网络抖动、重复投递、乱序，核验幂等。</li>
+  <li>观测性：为每个事务/消息打 traceId、msgId，收集提交时延、重试次数、DLQ 速率等指标。</li>
+</ul>
+
+<h3 id="八实施注意">八、实施注意</h3>
+<ul>
+  <li>严格控制事务边界与时长：仅包裹必要的 DB 写入与同库查询，不包远程调用/外部 IO。</li>
+  <li>明确每条链路的目标一致性等级与降级策略。</li>
+  <li>把“补偿与对账”作为一等公民：对账任务、自动巡检、纠偏脚本。</li>
+</ul>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=Java%20Spring%20%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

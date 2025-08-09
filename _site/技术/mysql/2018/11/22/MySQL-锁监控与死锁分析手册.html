@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>MySQL 锁监控与死锁分析手册</h1>
+    <p class="post-meta">2018-11-22 · 技术 / MySQL · 技术, MySQL, 锁, 死锁</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>如何系统化监控行锁/间隙锁与快速定位死锁？本文提供可复现脚本、标准化视图与操作手册。</p>
+
+<h2 id="1-死锁复现rr-下-next-key">1. 死锁复现（RR 下 Next-Key）</h2>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t_lock</span><span class="p">(</span>
+  <span class="n">id</span> <span class="nb">INT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">k</span>  <span class="nb">INT</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="n">idx_k</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">t_lock</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">20</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">30</span><span class="p">);</span>
+</code></pre></div></div>
+<p>会话A：</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="n">tx_isolation</span><span class="o">=</span><span class="s1">'REPEATABLE-READ'</span><span class="p">;</span> <span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t_lock</span> <span class="k">WHERE</span> <span class="n">k</span> <span class="k">BETWEEN</span> <span class="mi">10</span> <span class="k">AND</span> <span class="mi">30</span> <span class="k">FOR</span> <span class="k">UPDATE</span><span class="p">;</span> <span class="c1">-- 锁住[10,30]</span>
+</code></pre></div></div>
+<p>会话B：</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SET</span> <span class="n">tx_isolation</span><span class="o">=</span><span class="s1">'REPEATABLE-READ'</span><span class="p">;</span> <span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">t_lock</span> <span class="k">SET</span> <span class="n">k</span><span class="o">=</span><span class="mi">11</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="c1">-- 等待A释放</span>
+<span class="c1">-- 回到会话A：</span>
+<span class="k">UPDATE</span> <span class="n">t_lock</span> <span class="k">SET</span> <span class="n">k</span><span class="o">=</span><span class="mi">21</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span> <span class="c1">-- 互等 -&gt; 死锁</span>
+</code></pre></div></div>
+
+<h2 id="2-死锁日志解读">2. 死锁日志解读</h2>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SHOW</span> <span class="n">ENGINE</span> <span class="n">INNODB</span> <span class="n">STATUS</span><span class="err">\</span><span class="k">G</span>
+</code></pre></div></div>
+<p>关注：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">LATEST DETECTED DEADLOCK</code> 中 <code class="language-plaintext highlighter-rouge">WE ROLL BACK TRANSACTION</code> 指出被回滚事务；</li>
+  <li><code class="language-plaintext highlighter-rouge">lock_mode X locks rec but not gap</code> / <code class="language-plaintext highlighter-rouge">locks gap before rec</code> 定位间隙锁；</li>
+  <li><code class="language-plaintext highlighter-rouge">index idx_k of table</code> 对应的索引与范围。</li>
+</ul>
+
+<h2 id="3-在线监控">3. 在线监控</h2>
+<ul>
+  <li>8.0：<code class="language-plaintext highlighter-rouge">performance_schema.data_locks / data_lock_waits</code> 关联 <code class="language-plaintext highlighter-rouge">threads</code> 得到阻塞链；</li>
+  <li>5.7：<code class="language-plaintext highlighter-rouge">information_schema.innodb_locks / lock_waits</code>（较旧）。</li>
+</ul>
+
+<h2 id="4-自动化抓取脚本示意">4. 自动化抓取脚本（示意）</h2>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">l</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> <span class="n">w</span><span class="p">.</span><span class="o">*</span>
+<span class="k">FROM</span> <span class="n">performance_schema</span><span class="p">.</span><span class="n">data_lock_waits</span> <span class="n">w</span>
+<span class="k">JOIN</span> <span class="n">performance_schema</span><span class="p">.</span><span class="n">data_locks</span> <span class="n">l</span>
+  <span class="k">ON</span> <span class="n">w</span><span class="p">.</span><span class="n">BLOCKING_ENGINE_LOCK_ID</span> <span class="o">=</span> <span class="n">l</span><span class="p">.</span><span class="n">ENGINE_LOCK_ID</span><span class="p">;</span>
+</code></pre></div></div>
+<p>周期抓取 + 告警（阻塞&gt;5s）。</p>
+
+<h2 id="5-规避策略">5. 规避策略</h2>
+<ul>
+  <li>精确索引，避免大范围扫描引发大量 gap 锁；</li>
+  <li>将写入拆分为更细粒度范围；</li>
+  <li>业务侧重试+幂等；</li>
+  <li>读写分离，长事务落只读副本。</li>
+</ul>
+
+<h2 id="6-死锁成因全景结合-innodb-锁模型">6. 死锁成因全景（结合 InnoDB 锁模型）</h2>
+<p>死锁的四个必要条件：互斥使用、占有并等待、不可剥夺、循环等待。InnoDB 在行级与间隙级锁语义下，以下模式最易触发循环等待：</p>
+
+<ul>
+  <li>不一致的访问顺序：
+    <ul>
+      <li>事务A更新 A→B，事务B更新 B→A；或一个通过二级索引回表更新，另一个直接按主键更新，锁顺序不同。</li>
+    </ul>
+  </li>
+  <li>范围更新引入 Next-Key/Gap Lock：
+    <ul>
+      <li>在 RR 下，<code class="language-plaintext highlighter-rouge">SELECT ... FOR UPDATE/UPDATE/DELETE</code> 会对命中记录及其间隙加锁，多个事务在相邻范围内插入/更新易互等。</li>
+    </ul>
+  </li>
+  <li>唯一键检查 + 插入意向锁：
+    <ul>
+      <li>插入唯一键前需要在唯一索引区间做 Next-Key 检查；与并发范围更新/去重查询交错形成环路。</li>
+    </ul>
+  </li>
+  <li>二级索引与回表：
+    <ul>
+      <li>一方以二级索引扫描并回表，另一方以主键路径进入，组合出的锁申请序列不一致。</li>
+    </ul>
+  </li>
+  <li>外键检查：
+    <ul>
+      <li>父/子表在不同顺序读写，外键检查需要额外 S 锁/间隙锁，改变锁顺序。</li>
+    </ul>
+  </li>
+  <li>自增锁与热点：
+    <ul>
+      <li>大并发插入时，旧模式下 AUTO-INC 锁可能放大等待链；热点值导致索引页竞争与页分裂叠加。</li>
+    </ul>
+  </li>
+  <li>缺索引与大事务：
+    <ul>
+      <li>无索引范围扫描扩大锁集合；慢 SQL/长事务持锁时间长，死锁概率上升。</li>
+    </ul>
+  </li>
+</ul>
+
+<p>典型两会话交错示意：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 场景1：访问顺序不一致</span>
+<span class="c1">-- 会话A</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">t</span> <span class="k">SET</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="o">+</span><span class="mi">1</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="c1">-- 锁 id=1</span>
+<span class="k">UPDATE</span> <span class="n">t</span> <span class="k">SET</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="o">+</span><span class="mi">1</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span> <span class="c1">-- 等待会话B释放</span>
+
+<span class="c1">-- 会话B</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">t</span> <span class="k">SET</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="o">+</span><span class="mi">1</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span> <span class="c1">-- 锁 id=2</span>
+<span class="k">UPDATE</span> <span class="n">t</span> <span class="k">SET</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="o">+</span><span class="mi">1</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="c1">-- 等待会话A释放 -&gt; 环</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 场景2：RR 下范围更新 + 插入唯一键</span>
+<span class="c1">-- 会话A</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">t</span> <span class="k">SET</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span> <span class="k">WHERE</span> <span class="n">idx</span> <span class="k">BETWEEN</span> <span class="mi">10</span> <span class="k">AND</span> <span class="mi">20</span><span class="p">;</span> <span class="c1">-- Next-Key 锁</span>
+
+<span class="c1">-- 会话B</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">t</span><span class="p">(</span><span class="n">uq</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="p">...)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'X'</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="p">...);</span> <span class="c1">-- 唯一检查 + 插入意向</span>
+<span class="c1">-- 两边在唯一索引/二级索引与主键上的锁互等</span>
+</code></pre></div></div>
+
+<h2 id="7-事务隔离级别与锁行为innodb-语义">7. 事务隔离级别与锁行为（InnoDB 语义）</h2>
+<ul>
+  <li>Read Uncommitted（读未提交）：几乎不用；当前读仍会加锁，允许脏读。</li>
+  <li>Read Committed（读已提交）：一致性读不加锁；大多数场景不使用 Gap Lock（外键/唯一检查仍可能使用），死锁概率低于 RR。</li>
+  <li>Repeatable Read（可重复读，默认）：一致性读用 MVCC；当前读采用 Next-Key Lock 防幻读，范围操作更易死锁。</li>
+  <li>Serializable（可串行化）：读也加锁，吞吐大降，除非强隔离需求。</li>
+</ul>
+
+<p>要点：</p>
+<ul>
+  <li>普通 SELECT（快照读）不加行锁；<code class="language-plaintext highlighter-rouge">FOR UPDATE/LOCK IN SHARE MODE/UPDATE/DELETE</code> 属于当前读会加锁。</li>
+  <li>RC 相比 RR 减少间隙锁；RR 下 Next-Key 是默认策略。</li>
+  <li>参数参考：<code class="language-plaintext highlighter-rouge">innodb_autoinc_lock_mode=2</code> 降低自增锁争用；<code class="language-plaintext highlighter-rouge">innodb_deadlock_detect</code> 控制检测器；<code class="language-plaintext highlighter-rouge">innodb_lock_wait_timeout</code> 控制等待上限。</li>
+</ul>
+
+<h2 id="8-innodb-内部死锁处理机制源码视角">8. InnoDB 内部死锁处理机制（源码视角）</h2>
+<p>InnoDB 锁与事务核心位于 <code class="language-plaintext highlighter-rouge">storage/innobase</code>：</p>
+<ul>
+  <li>锁子系统（lock_sys）：表锁 <code class="language-plaintext highlighter-rouge">LOCK_TABLE</code>、记录锁 <code class="language-plaintext highlighter-rouge">LOCK_REC</code>；模式 S/IS、X/IX、AUTO-INC、INSERT INTENTION；记录锁细分 Record/GAP/Next-Key。</li>
+  <li>事务结构（<code class="language-plaintext highlighter-rouge">trx_t</code>）：持有锁集合、等待中的锁 <code class="language-plaintext highlighter-rouge">trx-&gt;lock.wait_lock</code>、undo 信息。</li>
+  <li>锁入队：<code class="language-plaintext highlighter-rouge">lock_rec_add_to_queue()</code> / <code class="language-plaintext highlighter-rouge">lock_table_add_to_queue()</code> 将请求加入等待队列。</li>
+  <li>死锁检测：等待入队时，基于等待图进行环检测（<code class="language-plaintext highlighter-rouge">lock0lock.cc</code> 等）。从当前等待事务出发，遍历“阻塞我的锁→持锁事务→该事务正在等待的锁”，若回到起点即形成环。</li>
+  <li>牺牲者选择：按代价（已修改行数/undo 量/事务年龄/持有锁数量等）选择最小代价事务回滚，向其返回 1213，其余唤醒继续执行。</li>
+  <li>超时路径：未开检测器或无环，等待至 <code class="language-plaintext highlighter-rouge">innodb_lock_wait_timeout</code> 抛 1205。</li>
+</ul>
+
+<p>伪代码抽象：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>on_lock_wait(trx, lock_req):
+  if deadlock_detect_on and detect_cycle_from(trx):
+    victim = choose_lowest_cost_trx()
+    rollback(victim)
+    wake_up_waiters()
+  else:
+    wait_until_granted_or_timeout()
+</code></pre></div></div>
+
+<p>诊断入口：<code class="language-plaintext highlighter-rouge">SHOW ENGINE INNODB STATUS\G</code> 会输出最近一次死锁的等待链；设置 <code class="language-plaintext highlighter-rouge">innodb_print_all_deadlocks=ON</code> 可将所有死锁写入错误日志（生产谨慎）。</p>
+
+<h2 id="9-系统化诊断步骤生产可用">9. 系统化诊断步骤（生产可用）</h2>
+<p>1) 快速取证：</p>
+<ul>
+  <li>执行 <code class="language-plaintext highlighter-rouge">SHOW ENGINE INNODB STATUS\G</code>，定位 LATEST DETECTED DEADLOCK。</li>
+  <li>抓取两个（或以上）事务的 SQL、索引名、锁模式（<code class="language-plaintext highlighter-rouge">locks rec but not gap</code>/<code class="language-plaintext highlighter-rouge">locks gap before rec</code>）。</li>
+</ul>
+
+<p>2) 在线视图：</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">performance_schema</span><span class="p">.</span><span class="n">data_lock_waits</span><span class="p">;</span> <span class="c1">-- 等待边</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">performance_schema</span><span class="p">.</span><span class="n">data_locks</span><span class="p">;</span>      <span class="c1">-- 锁明细</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">sys</span><span class="p">.</span><span class="n">schema_lock_waits</span> <span class="k">LIMIT</span> <span class="mi">50</span><span class="p">;</span>     <span class="c1">-- 友好视图</span>
+</code></pre></div></div>
+
+<p>3) 执行计划核验：</p>
+<ul>
+  <li>对死锁 SQL 逐条 <code class="language-plaintext highlighter-rouge">EXPLAIN</code>，确认是否走了不同索引、是否回表、是否大范围扫描。</li>
+</ul>
+
+<p>4) 事务画像：</p>
+<ul>
+  <li>检查是否存在跨请求长事务、事务内外部 IO、批量扫描；确认提交点是否靠后。</li>
+</ul>
+
+<p>5) 复现与回归：</p>
+<ul>
+  <li>用最小化数据集在两个会话复现；将复现脚本纳入回归库。</li>
+</ul>
+
+<h2 id="10-工程实践如何避免死锁">10. 工程实践：如何避免死锁</h2>
+<ul>
+  <li>统一访问顺序（首要）：
+    <ul>
+      <li>规定跨表/跨索引的访问次序（如按主键升序 A→B→C），避免交叉顺序。</li>
+    </ul>
+  </li>
+  <li>拆小事务，尽早提交：
+    <ul>
+      <li>批量更新分批提交；把只读校验前置；缩短持锁窗口。</li>
+    </ul>
+  </li>
+  <li>索引到位，路径一致：
+    <ul>
+      <li>where 条件命中索引，尽量落到 Record Lock；必要时 <code class="language-plaintext highlighter-rouge">FORCE INDEX</code> 统一路径，减少“二级索引回表 vs 主键直达”的差异。</li>
+    </ul>
+  </li>
+  <li>隔离级别策略：
+    <ul>
+      <li>OLTP 优先 RC（若业务允许），RR 场景要避免范围更新；或将“读→算→改”改为“精确定位→改”。</li>
+    </ul>
+  </li>
+  <li>善用 8.0 特性：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">FOR UPDATE SKIP LOCKED</code> 跳过已锁行避免互等；<code class="language-plaintext highlighter-rouge">NOWAIT</code> 立即失败，应用快速重试。</li>
+    </ul>
+  </li>
+  <li>热点打散与自增锁：
+    <ul>
+      <li>设计上分片热点键；配置 <code class="language-plaintext highlighter-rouge">innodb_autoinc_lock_mode=2</code> 减少 AUTO-INC 锁争用。</li>
+    </ul>
+  </li>
+  <li>事务内禁止外部 IO：
+    <ul>
+      <li>避免 RPC/磁盘慢操作扩大持锁时间。</li>
+    </ul>
+  </li>
+  <li>失败重试与幂等：
+    <ul>
+      <li>捕获 1213/1205 指数退避重试；以唯一键/业务幂等键确保多次提交安全。</li>
+    </ul>
+  </li>
+  <li>代码层策略化：
+    <ul>
+      <li>收敛到统一 DAO/仓储层，内置锁序策略与“精确更新”模板；CR 强制检查。</li>
+    </ul>
+  </li>
+  <li>监控预警与演练：
+    <ul>
+      <li>建立锁等待指标阈值；压测期开启 <code class="language-plaintext highlighter-rouge">innodb_print_all_deadlocks</code>，以现场日志反推 SQL 与索引设计。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="11-可复现实战案例">11. 可复现实战案例</h2>
+<p>案例A：二级索引范围更新 vs 主键更新</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t_a</span><span class="p">(</span>
+  <span class="n">id</span> <span class="nb">BIGINT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">k</span>  <span class="nb">INT</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="n">idx_k</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">t_a</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">20</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">30</span><span class="p">);</span>
+
+<span class="c1">-- 会话A（走二级索引）</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">t_a</span> <span class="k">SET</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span> <span class="k">WHERE</span> <span class="n">k</span> <span class="k">BETWEEN</span> <span class="mi">10</span> <span class="k">AND</span> <span class="mi">30</span><span class="p">;</span> <span class="c1">-- Next-Key + 回表</span>
+
+<span class="c1">-- 会话B（走主键）</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">t_a</span> <span class="k">SET</span> <span class="n">k</span><span class="o">=</span><span class="mi">25</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span> <span class="c1">-- Record Lock</span>
+<span class="c1">-- 两者在主键回表记录与二级索引范围上互相等待</span>
+</code></pre></div></div>
+
+<p>修复建议：</p>
+<ul>
+  <li>先用覆盖索引挑出主键集合，再按主键升序逐条精准 UPDATE；或在 RC 下改造范围操作；或对 B 强制走相同索引路径；或用 <code class="language-plaintext highlighter-rouge">SKIP LOCKED</code> 处理任务类更新。</li>
+</ul>
+
+<p>案例B：唯一键插入与范围更新</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">t_b</span><span class="p">(</span>
+  <span class="n">id</span> <span class="nb">BIGINT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">uq</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="k">UNIQUE</span><span class="p">,</span>
+  <span class="n">k</span>  <span class="nb">INT</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="n">idx_k</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span>
+
+<span class="c1">-- 会话A</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">t_b</span> <span class="k">SET</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span> <span class="k">WHERE</span> <span class="n">k</span> <span class="k">BETWEEN</span> <span class="mi">100</span> <span class="k">AND</span> <span class="mi">200</span><span class="p">;</span> <span class="c1">-- Next-Key</span>
+
+<span class="c1">-- 会话B</span>
+<span class="k">START</span> <span class="n">TRANSACTION</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">t_b</span><span class="p">(</span><span class="n">uq</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'U-1'</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span> <span class="c1">-- 唯一检查 + 插入意向</span>
+</code></pre></div></div>
+
+<p>修复建议：</p>
+<ul>
+  <li>将范围更新拆小、改精确更新；或让插入避开竞争区间；或业务上统一顺序（先完成更新再插入）。</li>
+</ul>
+
+<h2 id="12-参数与配置建议">12. 参数与配置建议</h2>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">innodb_deadlock_detect=ON</code>：可快速打断死锁；极端热点写场景可评估关闭并配合短超时+重试。</li>
+  <li><code class="language-plaintext highlighter-rouge">innodb_lock_wait_timeout</code>：OLTP 建议 5–15s；务必配合应用层重试。</li>
+  <li><code class="language-plaintext highlighter-rouge">innodb_print_all_deadlocks=ON</code>：压测/排障阶段开启，生产慎用。</li>
+  <li><code class="language-plaintext highlighter-rouge">innodb_autoinc_lock_mode=2</code>：大并发插入友好。</li>
+  <li>隔离级别：OLTP 倾向 RC；需要 RR 时务必配合锁序策略与索引精确化。</li>
+</ul>
+
+<h2 id="13-上线前检查清单checklist">13. 上线前检查清单（Checklist）</h2>
+<ul>
+  <li>是否定义并落地了“锁序白皮书”（跨表/跨索引）？</li>
+  <li>核心更新/删除是否命中索引并路径一致？</li>
+  <li>是否避免事务内外部 IO，定位了提交点？</li>
+  <li>是否为写操作设计幂等键并实现重试策略？</li>
+  <li>是否建立了锁等待/死锁指标与告警阈值？</li>
+  <li>是否准备了“死锁复现脚本”作为回归用例？</li>
+</ul>
+
+<h2 id="14-常用命令速查">14. 常用命令速查</h2>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SHOW</span> <span class="n">ENGINE</span> <span class="n">INNODB</span> <span class="n">STATUS</span><span class="err">\</span><span class="k">G</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">performance_schema</span><span class="p">.</span><span class="n">data_lock_waits</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">sys</span><span class="p">.</span><span class="n">schema_lock_waits</span> <span class="k">LIMIT</span> <span class="mi">50</span><span class="p">;</span>
+<span class="k">EXPLAIN</span> <span class="n">FORMAT</span><span class="o">=</span><span class="n">JSON</span> <span class="o">&lt;</span><span class="n">your</span> <span class="k">SQL</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>错误码：1213（Deadlock found）需重试；1205（Lock wait timeout）需优化或重试。</p>
+</blockquote>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=MySQL%20%E9%94%81%E7%9B%91%E6%8E%A7%E4%B8%8E%E6%AD%BB%E9%94%81%E5%88%86%E6%9E%90%E6%89%8B%E5%86%8C&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2018/11/22/MySQL-%E9%94%81%E7%9B%91%E6%8E%A7%E4%B8%8E%E6%AD%BB%E9%94%81%E5%88%86%E6%9E%90%E6%89%8B%E5%86%8C.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2018/11/22/MySQL-%E9%94%81%E7%9B%91%E6%8E%A7%E4%B8%8E%E6%AD%BB%E9%94%81%E5%88%86%E6%9E%90%E6%89%8B%E5%86%8C.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

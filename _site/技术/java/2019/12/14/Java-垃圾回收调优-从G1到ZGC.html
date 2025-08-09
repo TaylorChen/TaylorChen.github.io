@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>Java 垃圾回收调优：从 G1 到 ZGC</h1>
+    <p class="post-meta">2019-12-14 · 技术 / Java · 技术, Java, GC, G1, ZGC</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>延迟敏感系统如何选择 GC？如何系统地读懂 GC 日志并做出有效调优？本文从 JVM 基础、STW 机制、垃圾回收算法、收集器演进到实战调优，给出可落地的方法与示例。</p>
+
+<h2 id="1-jvm-内存模型与-stwsafepoint-基础">1. JVM 内存模型与 STW/Safepoint 基础</h2>
+
+<p>在 HotSpot 下，内存大体分为：</p>
+<ul>
+  <li>Java 堆（年轻代/老年代，G1/ZGC 采用 Region/分页结构）</li>
+  <li>线程栈（每线程独立）</li>
+  <li>元空间（Metaspace，用于类元数据）</li>
+  <li>本地内存（如直接缓冲区、JIT 代码缓存等）</li>
+</ul>
+
+<p>两个重要的分配/复制概念：</p>
+<ul>
+  <li>TLAB（Thread-Local Allocation Buffer）：线程本地的堆分配缓冲，减少分配锁竞争。</li>
+  <li>PLAB（Parallel/Promotion LAB）：年轻代向老年代晋升时的并行复制缓冲。</li>
+</ul>
+
+<p>Stop-The-World（STW）是 GC 暂停所有 Java 线程的时刻。JVM 通过 Safepoint 实现可停位置控制（比如方法调用边界、循环回边、异常处理器等），在进入关键阶段（如初始标记、重新标记、对象移动/重定位）时触发短暂停顿。理解 STW 有助于判断“为什么延迟尖刺发生在这个阶段”。</p>
+
+<p>观测 STW 的现代方式（JDK9+）：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-Xlog</span>:safepoint,classhisto<span class="k">*</span><span class="o">=</span>off:file<span class="o">=</span>safepoints.log:tags,uptime <span class="nt">-Xlog</span>:gc<span class="k">*</span>:file<span class="o">=</span>gc.log:time,uptime,level,tags ...
+</code></pre></div></div>
+
+<p>关键指标：暂停时长（p95/p99/p999）、分配速率、晋升速率、RSet 扫描成本、引用处理（Reference Processing）、类卸载、字符串去重等耗时分布。</p>
+
+<h2 id="2-垃圾回收算法与屏障技术">2. 垃圾回收算法与屏障技术</h2>
+
+<p>HotSpot 基础算法与实现要点：</p>
+<ul>
+  <li>可达性分析：从 GC Roots（线程栈、静态引用、JNI 句柄等）做遍历。</li>
+  <li>三色标记（白/灰/黑）+ 写屏障/读屏障：保证并发标记/移动时的正确性。</li>
+  <li>标记-清除（Mark-Sweep）：快，但会产生碎片。</li>
+  <li>标记-整理（Mark-Compact）：消除碎片，但需要对象移动（常伴随 STW 或并发移动）。</li>
+  <li>复制（Copying）：典型用于年轻代（Eden→Survivor），快且局部性好。</li>
+  <li>分代假说：大多数对象“朝生夕死”，少数对象“越活越老”。</li>
+</ul>
+
+<p>引用语义（强/软/弱/虚）与终结（finalize/Cleaner）在 GC 中有独立处理阶段。引用处理过重时常见“长尾暂停”，建议：避免 Finalizer、使用 <code class="language-plaintext highlighter-rouge">java.lang.ref.Cleaner</code> 并限制队列堆积。</p>
+
+<h2 id="3-收集器演进路线">3. 收集器演进路线</h2>
+
+<ul>
+  <li>Serial/Parallel（Throughput 收集器）
+    <ul>
+      <li>关注吞吐，允许较长 STW；适合批处理、计算密集型、少交互的服务。</li>
+      <li>关键项：<code class="language-plaintext highlighter-rouge">-XX:+UseParallelGC</code>、<code class="language-plaintext highlighter-rouge">-XX:ParallelGCThreads</code>、<code class="language-plaintext highlighter-rouge">-XX:NewRatio</code>。</li>
+    </ul>
+  </li>
+  <li>CMS（Concurrent Mark Sweep）
+    <ul>
+      <li>并发标记，降低暂停，但有碎片与“Concurrent Mode Failure”。</li>
+      <li>JDK9 起废弃，JDK14 移除。仅在历史系统中遇到，不建议新项目使用。</li>
+    </ul>
+  </li>
+  <li>G1（Garbage-First）
+    <ul>
+      <li>基于 Region 的分代收集器。分为 Young、Concurrent Marking、Mixed 周期，按收益选择回收集（Collections Set）。</li>
+      <li>关键概念：Region（含 Humongous 大对象）、RSet/卡表（Remembered Set）、IHOP（Initiating Heap Occupancy Percent）。</li>
+      <li>优点：更可预测的暂停目标；可并发标记与分阶段回收。</li>
+      <li>常见瓶颈：RSet 扫描（卡表爆炸）、Humongous 对象回收不及时、Evacuation Failure（to-space/exhausted）。</li>
+    </ul>
+  </li>
+  <li>Shenandoah（Red Hat）与 ZGC（Oracle）
+    <ul>
+      <li>共同目标：并发压缩/移动，极低暂停（亚毫秒到个位数毫秒级）。</li>
+      <li>屏障差异：Shenandoah 使用 Brooks Pointer + 写屏障；ZGC 使用“有色指针（Colored Pointers）”+ 读屏障，配合多阶段重标记/重定位。</li>
+      <li>ZGC 建议 JDK17+，JDK21 起支持分代 ZGC（<code class="language-plaintext highlighter-rouge">-XX:+ZGenerational</code>）。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="4-选择收集器的思路">4. 选择收集器的思路</h2>
+
+<ul>
+  <li>吞吐优先（批处理/离线计算）：Parallel GC。</li>
+  <li>延迟优先（在线服务/交易系统）：G1（JDK11+），更高要求可选 ZGC（JDK17+/21+）。</li>
+  <li>小堆（&lt;4G）且并发不高：G1 也能给出稳定暂停；ZGC 在极小堆下优势不明显。</li>
+</ul>
+
+<h2 id="5-调优方法论可落地流程">5. 调优方法论（可落地流程）</h2>
+
+<p>1) 设定 SLO：如 p99 暂停 &lt; 200ms，或 CPU/吞吐目标。
+2) 固定运行基线：容器/宿主 CPU/NUMA/THP 设置、JDK 版本、<code class="language-plaintext highlighter-rouge">-Xms = -Xmx</code>、<code class="language-plaintext highlighter-rouge">-XX:+AlwaysPreTouch</code>。
+3) 打开观测：GC/JFR/应用指标。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="se">\</span>
+  <span class="nt">-Xms8g</span> <span class="nt">-Xmx8g</span> <span class="nt">-XX</span>:+AlwaysPreTouch <span class="se">\</span>
+  <span class="nt">-Xlog</span>:gc<span class="k">*</span>,safepoint:file<span class="o">=</span>gc.log:time,uptime,level,tags <span class="se">\</span>
+  <span class="nt">-XX</span>:ActiveProcessorCount<span class="o">=</span>8   <span class="c"># 容器 CPU 配额感知（必要时）</span>
+</code></pre></div></div>
+
+<p>4) 建立压测基线：记录分配速率（Allocation Rate）、晋升速率（Promotion Rate）、混合回收频次、Humongous 分配率、RSet 扫描耗时。
+5) 定位瓶颈：</p>
+<ul>
+  <li>暂停超标多数发生在 Initial-Mark/Remark？→ 检查引用处理/类卸载/卡表维护。</li>
+  <li>Mixed 过于频繁？→ IHOP 偏低或老年代增长过快。</li>
+  <li>Evacuation Failure？→ to-space 不足，Region 预留或对象过大。
+6) 逐步调整参数与代码，单一变量、对比压测，保留实验记录。</li>
+</ul>
+
+<h2 id="6-g1-实战参数与解释">6. G1 实战参数与解释</h2>
+
+<p>常用启动模板（JDK11+/17+）：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="se">\</span>
+  <span class="nt">-XX</span>:+UseG1GC <span class="se">\</span>
+  <span class="nt">-Xms8g</span> <span class="nt">-Xmx8g</span> <span class="se">\</span>
+  <span class="nt">-XX</span>:MaxGCPauseMillis<span class="o">=</span>200 <span class="se">\</span>
+  <span class="nt">-XX</span>:InitiatingHeapOccupancyPercent<span class="o">=</span>45 <span class="se">\</span>
+  <span class="nt">-XX</span>:G1ReservePercent<span class="o">=</span>20 <span class="se">\</span>
+  <span class="nt">-XX</span>:G1HeapRegionSize<span class="o">=</span>4m <span class="se">\</span>
+  <span class="nt">-XX</span>:G1NewSizePercent<span class="o">=</span>20 <span class="nt">-XX</span>:G1MaxNewSizePercent<span class="o">=</span>40 <span class="se">\</span>
+  <span class="nt">-XX</span>:SurvivorRatio<span class="o">=</span>8 <span class="nt">-XX</span>:MaxTenuringThreshold<span class="o">=</span>8 <span class="se">\</span>
+  <span class="nt">-XX</span>:+ParallelRefProcEnabled <span class="se">\</span>
+  <span class="nt">-XX</span>:+UseStringDeduplication <span class="se">\</span>
+  <span class="nt">-Xlog</span>:gc<span class="k">*</span>,gc+heap<span class="o">=</span>debug,gc+age<span class="o">=</span>trace:file<span class="o">=</span>gc.log:time,uptime,level,tags
+</code></pre></div></div>
+
+<p>调参要点：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">MaxGCPauseMillis</code>：目标暂停时间。过低会引发更频繁 GC 与更重的并发负担。</li>
+  <li><code class="language-plaintext highlighter-rouge">IHOP</code>：老年代占用触发并发标记阈值。负载有爆发时可调高（如 45→55），减少并发标记重叠时间。</li>
+  <li><code class="language-plaintext highlighter-rouge">G1ReservePercent</code>：预留 to-space，减少 Evacuation Failure 风险。</li>
+  <li><code class="language-plaintext highlighter-rouge">G1HeapRegionSize</code>：Region 大小影响 Humongous 阈值（&gt; 50% Region 即为 Humongous）。对象略大时可适当增大 Region，减少 Humongous 分配。</li>
+  <li>新生代比例与晋升阈值：平衡吞吐与老年代压力，避免 Survivor 放不下导致早晋升。</li>
+</ul>
+
+<p>常见告警与应对：</p>
+<ul>
+  <li>Mixed 过密：上调 IHOP、降低 <code class="language-plaintext highlighter-rouge">G1MixedGCLiveThresholdPercent</code>、限制 <code class="language-plaintext highlighter-rouge">G1MixedGCCountTarget</code>。</li>
+  <li>Evacuation Failure（to-space exhausted）：增大堆/预留比例、减少大对象、错峰分配高峰。</li>
+  <li>RSet 过大：排查跨区大量写入热点（缓存结构、共享对象），优化对象图或拆分。</li>
+</ul>
+
+<h2 id="7-zgc-实战参数与解释jdk1721">7. ZGC 实战参数与解释（JDK17+/21+）</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="se">\</span>
+  <span class="nt">-XX</span>:+UseZGC <span class="se">\</span>
+  <span class="nt">-Xms8g</span> <span class="nt">-Xmx8g</span> <span class="se">\</span>
+  <span class="nt">-XX</span>:ConcGCThreads<span class="o">=</span>2 <span class="se">\</span>
+  <span class="nt">-XX</span>:ZUncommitDelay<span class="o">=</span>300 <span class="se">\</span>
+  <span class="nt">-Xlog</span>:gc<span class="k">*</span>,safepoint:file<span class="o">=</span>gc.log:time,uptime,level,tags
+</code></pre></div></div>
+
+<p>要点：</p>
+<ul>
+  <li>ZGC 通过读屏障与有色指针实现并发移动，对暂停极其敏感的在线业务非常友好。</li>
+  <li>内存回收的“拆借/归还”速度与分配速率密切相关。<code class="language-plaintext highlighter-rouge">ZUncommitDelay</code> 可控制未使用页面的回退时机。</li>
+  <li>JDK21+: <code class="language-plaintext highlighter-rouge">-XX:+ZGenerational</code> 以降低短命对象对并发标记的干扰（分代 ZGC）。</li>
+</ul>
+
+<p>何时不必用 ZGC：小堆、高分配峰值但暂停目标在百毫秒级时，G1 往往足够且更易调参。</p>
+
+<h2 id="8-gc-日志快速解读示例g1">8. GC 日志快速解读示例（G1）</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[3.456s][info][gc,start     ] GC(12) Pause Young (Normal) (G1 Evacuation Pause)
+[3.456s][info][gc,heap      ] GC(12) Eden regions: 24-&gt;0(20)
+[3.456s][info][gc,heap      ] GC(12) Survivor regions: 3-&gt;4
+[3.456s][info][gc,heap      ] GC(12) Old regions: 120-&gt;123
+[3.460s][info][gc,phases    ] GC(12) Evacuate Collection Set: 3.2ms
+[3.462s][info][gc           ] GC(12) Pause Young (Normal) (G1 Evacuation Pause) 512M-&gt;498M(8G) 6.1ms
+</code></pre></div></div>
+
+<p>关注点：</p>
+<ul>
+  <li>暂停类型（Young/Mixed）、暂停时长、堆前后使用、Region 变化。</li>
+  <li>Evacuation 耗时是否成为主因；Old 增长是否过快（晋升压力）。</li>
+</ul>
+
+<p>更多细节可打开 <code class="language-plaintext highlighter-rouge">gc+age=trace</code> 观察对象年龄分布，辅助设置 <code class="language-plaintext highlighter-rouge">MaxTenuringThreshold</code>。</p>
+
+<h2 id="9-代码层面的可操作优化">9. 代码层面的可操作优化</h2>
+
+<ul>
+  <li>降低短命对象创建：复用 <code class="language-plaintext highlighter-rouge">StringBuilder</code>/<code class="language-plaintext highlighter-rouge">ByteArrayOutputStream</code>、批量处理、避免无谓装箱/拆箱与流式中间对象。</li>
+  <li>控制大对象：避免一次性构造超大 <code class="language-plaintext highlighter-rouge">byte[]</code>/<code class="language-plaintext highlighter-rouge">String</code>，对网络/IO 使用分片与缓冲；必要时改用直接内存并限制 <code class="language-plaintext highlighter-rouge">-XX:MaxDirectMemorySize</code>。</li>
+  <li>减少跨代/跨区写入：将热点可变状态下沉到局部，避免共享大图结构被频繁修改导致卡表膨胀。</li>
+  <li>善用 <code class="language-plaintext highlighter-rouge">ThreadLocal</code> 存放临时缓冲（谨防线程池泄漏，务必清理）。</li>
+  <li>让逃逸分析生效：内联/标量替换通常受益于“简单可分析”的代码路径（避免过度反射、动态代理链）。</li>
+</ul>
+
+<h2 id="10-两个简短实战案例">10. 两个简短实战案例</h2>
+
+<ul>
+  <li>案例 A：在线 API（G1，8C/16G）
+    <ul>
+      <li>目标：p99 暂停 &lt; 200ms；现状：Mixed 频繁、p99 380ms。</li>
+      <li>调整：<code class="language-plaintext highlighter-rouge">IHOP 45→55</code>，<code class="language-plaintext highlighter-rouge">G1ReservePercent 10→20</code>，限制 Humongous（将 2.5MiB 的 JSON 拼接拆分为流式写出）。</li>
+      <li>结果：Mixed 降 35%，p99 降至 160ms。</li>
+    </ul>
+  </li>
+  <li>案例 B：低延迟撮合（ZGC，16C/32G）
+    <ul>
+      <li>目标：单次暂停 &lt; 10ms；现状：G1 在 Remark 尖刺 30ms。</li>
+      <li>迁移 ZGC 并控制直接内存峰值，JDK17→21 开启 <code class="language-plaintext highlighter-rouge">-XX:+ZGenerational</code>。</li>
+      <li>结果：暂停 p99 约 1.2ms，尖刺消失；同时注意到读屏障开销，CPU 略增 4%。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="11-生产部署与容器注意事项">11. 生产部署与容器注意事项</h2>
+
+<ul>
+  <li>固定堆并预触达：<code class="language-plaintext highlighter-rouge">-Xms = -Xmx</code>、<code class="language-plaintext highlighter-rouge">-XX:+AlwaysPreTouch</code>，减少缺页与首次触达抖动。</li>
+  <li>容器配额：JDK8u191+ 或 JDK10+ 对 cgroup 友好；必要时 <code class="language-plaintext highlighter-rouge">-XX:ActiveProcessorCount</code> 显式指定。JDK8 老版本需 <code class="language-plaintext highlighter-rouge">-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</code>。</li>
+  <li>关闭透明大页（THP）、合理设置 NUMA（大型物理机）。</li>
+  <li>日志与剖析：GC 日志、JFR（<code class="language-plaintext highlighter-rouge">-XX:StartFlightRecording=...</code>）、async-profiler 定位分配热点。</li>
+</ul>
+
+<h2 id="12-快速配方卡">12. 快速“配方卡”</h2>
+
+<ul>
+  <li>吞吐优先：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">-XX:+UseParallelGC -Xms16g -Xmx16g -XX:ParallelGCThreads=&lt;cpu&gt;</code></li>
+    </ul>
+  </li>
+  <li>稳定低延迟（通用在线服务）：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=45 -XX:G1ReservePercent=20</code></li>
+    </ul>
+  </li>
+  <li>极低暂停：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">-XX:+UseZGC [-XX:+ZGenerational] -Xms/-Xmx 固定</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="13-参考命令与工具">13. 参考命令与工具</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 统一 GC 日志（JDK9+）</span>
+java <span class="nt">-Xlog</span>:gc<span class="k">*</span>,gc+heap<span class="o">=</span>debug,gc+age<span class="o">=</span>trace:file<span class="o">=</span>gc.log:time,uptime,level,tags ...
+
+<span class="c"># 在线触发与诊断</span>
+jcmd &lt;pid&gt; GC.run
+jcmd &lt;pid&gt; GC.heap_info
+jcmd &lt;pid&gt; VM.uptime
+
+<span class="c"># 快速观测分配/晋升（JDK8 仍常用）</span>
+jstat <span class="nt">-gcutil</span> &lt;pid&gt; 1000 20 | <span class="nb">cat</span>
+</code></pre></div></div>
+
+<hr />
+
+<p>如果要把一件事做对：先测量，再改变。GC 调优亦然。优先明确 SLO 与约束，打开观测，建立基线，然后用一两条假设驱动的改动去验证。让数据告诉你应该选 Parallel、G1 还是 ZGC。</p>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=Java%20%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98%EF%BC%9A%E4%BB%8E%20G1%20%E5%88%B0%20ZGC&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

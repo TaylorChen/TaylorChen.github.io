@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>Nginx Ingress 在 Kubernetes 的高可用配置</h1>
+    <p class="post-meta">2023-12-05 · 技术 / Nginx · 技术, Nginx, Kubernetes</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>在 K8s 中落地 Ingress-Nginx 时，如何配置高可用、弹性与灰度？本文给出实操 YAML、金丝雀流量与压测/演练手册。</p>
+
+<h2 id="1-基础部署示例">1. 基础部署（示例）</h2>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Ingress</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="na">kubernetes.io/ingress.class</span><span class="pi">:</span> <span class="s">nginx</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">host</span><span class="pi">:</span> <span class="s">demo.example.com</span>
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">paths</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">path</span><span class="pi">:</span> <span class="s">/</span>
+        <span class="na">pathType</span><span class="pi">:</span> <span class="s">Prefix</span>
+        <span class="na">backend</span><span class="pi">:</span>
+          <span class="na">service</span><span class="pi">:</span>
+            <span class="na">name</span><span class="pi">:</span> <span class="s">web-svc</span>
+            <span class="na">port</span><span class="pi">:</span>
+              <span class="na">number</span><span class="pi">:</span> <span class="m">80</span>
+</code></pre></div></div>
+
+<h2 id="2-金丝雀灰度">2. 金丝雀灰度</h2>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="na">nginx.ingress.kubernetes.io/canary</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+    <span class="na">nginx.ingress.kubernetes.io/canary-weight</span><span class="pi">:</span> <span class="s2">"</span><span class="s">20"</span> <span class="c1"># 20%</span>
+</code></pre></div></div>
+
+<h2 id="3-ha-形态">3. HA 形态</h2>
+<ul>
+  <li>DaemonSet + hostNetwork + externalTrafficPolicy=Local，保持源地址；</li>
+  <li>或 Service L4 LB + 多副本 Ingress Controller。</li>
+</ul>
+
+<h2 id="4-压测与演练">4. 压测与演练</h2>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">fortio/vegeta</code> 压测 10-30 分钟，观察 2xx/4xx/5xx 与 P95；</li>
+  <li>演练：杀死节点/Pod、模拟 LB 抖动，验证会话粘性与重试策略。</li>
+</ul>
+
+<h2 id="5-拓扑与调度反亲和跨区扩散pdb容忍">5. 拓扑与调度（反亲和/跨区扩散/PDB/容忍）</h2>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="na">replicaCount</span><span class="pi">:</span> <span class="m">3</span>
+  <span class="na">affinity</span><span class="pi">:</span>
+    <span class="na">podAntiAffinity</span><span class="pi">:</span>
+      <span class="na">requiredDuringSchedulingIgnoredDuringExecution</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">labelSelector</span><span class="pi">:</span>
+            <span class="na">matchLabels</span><span class="pi">:</span>
+              <span class="na">app.kubernetes.io/name</span><span class="pi">:</span> <span class="s">ingress-nginx</span>
+              <span class="na">app.kubernetes.io/component</span><span class="pi">:</span> <span class="s">controller</span>
+          <span class="na">topologyKey</span><span class="pi">:</span> <span class="s">kubernetes.io/hostname</span>
+  <span class="na">topologySpreadConstraints</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">maxSkew</span><span class="pi">:</span> <span class="m">1</span>
+      <span class="na">topologyKey</span><span class="pi">:</span> <span class="s">topology.kubernetes.io/zone</span>
+      <span class="na">whenUnsatisfiable</span><span class="pi">:</span> <span class="s">ScheduleAnyway</span>
+      <span class="na">labelSelector</span><span class="pi">:</span>
+        <span class="na">matchLabels</span><span class="pi">:</span>
+          <span class="na">app.kubernetes.io/name</span><span class="pi">:</span> <span class="s">ingress-nginx</span>
+          <span class="na">app.kubernetes.io/component</span><span class="pi">:</span> <span class="s">controller</span>
+  <span class="na">tolerations</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">key</span><span class="pi">:</span> <span class="s2">"</span><span class="s">node-role.kubernetes.io/ingress"</span>
+      <span class="na">operator</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Exists"</span>
+      <span class="na">effect</span><span class="pi">:</span> <span class="s2">"</span><span class="s">NoSchedule"</span>
+</code></pre></div></div>
+
+<p>PodDisruptionBudget（避免滚动/维护时一次性驱逐）：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">policy/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PodDisruptionBudget</span>
+<span class="na">metadata</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">name</span><span class="pi">:</span> <span class="nv">ingress-nginx-pdb</span><span class="pi">,</span> <span class="nv">namespace</span><span class="pi">:</span> <span class="nv">ingress-nginx</span> <span class="pi">}</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">minAvailable</span><span class="pi">:</span> <span class="m">1</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app.kubernetes.io/name</span><span class="pi">:</span> <span class="s">ingress-nginx</span>
+      <span class="na">app.kubernetes.io/component</span><span class="pi">:</span> <span class="s">controller</span>
+</code></pre></div></div>
+
+<h2 id="6-升级与优雅收敛">6. 升级与优雅收敛</h2>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="na">updateStrategy</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">type</span><span class="pi">:</span> <span class="nv">RollingUpdate</span> <span class="pi">}</span>
+  <span class="na">minReadySeconds</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">terminationGracePeriodSeconds</span><span class="pi">:</span> <span class="m">60</span>
+  <span class="na">config</span><span class="pi">:</span>
+    <span class="na">worker-shutdown-timeout</span><span class="pi">:</span> <span class="s2">"</span><span class="s">30s"</span>
+    <span class="na">proxy-next-upstream</span><span class="pi">:</span> <span class="s2">"</span><span class="s">error</span><span class="nv"> </span><span class="s">timeout</span><span class="nv"> </span><span class="s">http_502</span><span class="nv"> </span><span class="s">http_503</span><span class="nv"> </span><span class="s">http_504"</span>
+    <span class="na">proxy-next-upstream-tries</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2"</span>
+    <span class="na">proxy-read-timeout</span><span class="pi">:</span> <span class="s2">"</span><span class="s">30s"</span>
+    <span class="na">proxy-send-timeout</span><span class="pi">:</span> <span class="s2">"</span><span class="s">30s"</span>
+</code></pre></div></div>
+
+<p>要点：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">minReadySeconds</code> 确保就绪后才接流量；<code class="language-plaintext highlighter-rouge">worker-shutdown-timeout</code> 提供连接迁移时间。</li>
+  <li>与上游的重试与超时上限要保守，防止风暴。</li>
+</ul>
+
+<h2 id="7-容量与弹性hpa">7. 容量与弹性（HPA）</h2>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="na">metrics</span><span class="pi">:</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">serviceMonitor</span><span class="pi">:</span>
+      <span class="na">enabled</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">autoscaling</span><span class="pi">:</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">minReplicas</span><span class="pi">:</span> <span class="m">3</span>
+    <span class="na">maxReplicas</span><span class="pi">:</span> <span class="m">20</span>
+    <span class="na">targetCPUUtilizationPercentage</span><span class="pi">:</span> <span class="m">60</span>
+    <span class="na">targetMemoryUtilizationPercentage</span><span class="pi">:</span> <span class="m">70</span>
+</code></pre></div></div>
+
+<p>建议：基于 CPU/内存或自定义 QPS/连接数指标（需自定义 Metrics Adapter）弹性扩缩容。</p>
+
+<h2 id="8-上游容错与连接复用">8. 上游容错与连接复用</h2>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="na">config</span><span class="pi">:</span>
+    <span class="na">keep-alive-requests</span><span class="pi">:</span> <span class="s2">"</span><span class="s">1000"</span>                <span class="c1"># client &lt;-&gt; ingress 长连接复用上限</span>
+    <span class="na">upstream-keepalive-connections</span><span class="pi">:</span> <span class="s2">"</span><span class="s">512"</span>      <span class="c1"># ingress &lt;-&gt; upstream 空闲长连接上限</span>
+    <span class="na">max-worker-connections</span><span class="pi">:</span> <span class="s2">"</span><span class="s">65536"</span>
+    <span class="na">retries</span><span class="pi">:</span> <span class="s2">"</span><span class="s">1"</span>
+    <span class="na">retry-non-idempotent</span><span class="pi">:</span> <span class="s2">"</span><span class="s">false"</span>
+</code></pre></div></div>
+
+<p>注意：若上游有会话亲和（如登录态），需与 <code class="language-plaintext highlighter-rouge">session-cookie</code>/一致性哈希配合，避免跨请求状态混淆。</p>
+
+<h2 id="9-可观测与演练清单扩展">9. 可观测与演练清单（扩展）</h2>
+
+<ul>
+  <li>指标：活动连接、<code class="language-plaintext highlighter-rouge">$upstream_response_time</code> 分位数、5xx 率、队列与 fd 用量。</li>
+  <li>日志：统一 JSON 格式，保留版本/路由/上游信息，便于问题回溯。</li>
+  <li>演练：
+    <ul>
+      <li>杀 Pod/节点；</li>
+      <li>人为提升上游错误，验证 <code class="language-plaintext highlighter-rouge">proxy-next-upstream</code>；</li>
+      <li>LB 抖动/跨区故障；</li>
+      <li>扩缩容/滚动升级下的会话粘性与连接复用表现。</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=Nginx%20Ingress%20%E5%9C%A8%20Kubernetes%20%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2023/12/05/Nginx-Ingress-%E5%9C%A8Kubernetes%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2023/12/05/Nginx-Ingress-%E5%9C%A8Kubernetes%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

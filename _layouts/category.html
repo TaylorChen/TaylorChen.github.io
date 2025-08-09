@@ -4,18 +4,45 @@ layout: default
 
 <h1>分类：{{ page.category }}</h1>
 {% assign cat_path = page.category | split: '/' %}
-<ul>
+{% assign depth = cat_path | size %}
+
+<ul class="post-list">
   {% for post in site.posts %}
-    {% assign match = true %}
-    {% for idx in (0..cat_path.size-1) %}
-      {% if post.categories.size <= idx or post.categories[idx] != cat_path[idx] %}
-        {% assign match = false %}
+    {% if post.categories and post.categories.size > 0 %}
+      {% if depth == 1 %}
+        {% comment %} 顶级分类：展示该顶级及其所有子类 {% endcomment %}
+        {% if post.categories[0] == cat_path[0] %}
+          <li>
+            <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
+            <h3>
+              <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+            </h3>
+            {% if site.show_excerpts %}
+              {{ post.excerpt }}
+            {% endif %}
+          </li>
+        {% endif %}
+      {% else %}
+        {% comment %} 二级及以上：要求前缀逐级匹配（当前实现到二级） {% endcomment %}
+        {% assign ok = true %}
+        {% if post.categories.size < depth %}
+          {% assign ok = false %}
+        {% else %}
+          {% if post.categories[0] != cat_path[0] %}{% assign ok = false %}{% endif %}
+          {% if ok and depth > 1 and post.categories[1] != cat_path[1] %}{% assign ok = false %}{% endif %}
+        {% endif %}
+        {% if ok %}
+          <li>
+            <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
+            <h3>
+              <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+            </h3>
+            {% if site.show_excerpts %}
+              {{ post.excerpt }}
+            {% endif %}
+          </li>
+        {% endif %}
       {% endif %}
-    {% endfor %}
-    {% if match %}
-      <li>
-        <a href="{{ post.url }}">{{ post.title }}</a> ({{ post.date | date: "%Y-%m-%d" }})
-      </li>
     {% endif %}
   {% endfor %}
 </ul>

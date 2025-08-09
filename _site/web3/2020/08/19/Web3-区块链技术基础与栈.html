@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>Web3 的链上基础：共识、状态机与扩容栈</h1>
+    <p class="post-meta">2020-08-19 · Web3 · 区块链, 共识, Layer2, 状态机</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>区块链是“可验证状态机复制”（Replicated State Machine）。要把 DApp 做稳，必须理解状态如何被转换、共识如何达成、数据如何被持久化与对外可读。本文从状态机、共识、存储与扩容（L2/DA）出发，构建一条可实践的技术路径，并附带节点与索引的工程建议。</p>
+
+<h2 id="1-状态机与区块">1. 状态机与区块</h2>
+<ul>
+  <li>交易（Tx）是对状态的变更请求；</li>
+  <li>区块是时间窗口内的交易集合；</li>
+  <li>状态机：<code class="language-plaintext highlighter-rouge">state_{n+1} = transition(state_n, block_txs)</code>，其中 <code class="language-plaintext highlighter-rouge">transition</code> 由虚拟机（EVM/WASM）与合约逻辑决定；</li>
+  <li>真实性：通过 Merkle/Patricia Trie/Verkle commitment，为状态/交易/收据生成可校验根。</li>
+</ul>
+
+<h2 id="2-共识算法与容错">2. 共识算法与容错</h2>
+<ul>
+  <li>PoW：算力竞争，安全性来源于经济成本与难度调节；</li>
+  <li>PoS：权益质押 + 随机选举/委员会 BFT；</li>
+  <li>BFT 家族（Tendermint/HotStuff）：低延迟、确定性最终性，容忍 f 个拜占庭节点需总数 ≥ 3f+1；</li>
+  <li>最终性（Finality）：概率型（PoW） vs. 确定性（BFT/PoS 的检查点最终性）；</li>
+  <li>安全-去中心化-性能“铁三角”权衡。</li>
+</ul>
+
+<h2 id="3-存储与索引">3. 存储与索引</h2>
+<ul>
+  <li>账户/存储：以太坊账户模型、合约存储槽；</li>
+  <li>索引：事件（logs）作为可订阅变更源；</li>
+  <li>历史访问：归档节点（Erigon）与快照；</li>
+  <li>自建索引：消息队列 + ETL（ClickHouse/PostgreSQL），支持分页、聚合与时间序列；</li>
+  <li>校对：按区块高度对账，处理链重组（reorg）。</li>
+</ul>
+
+<h2 id="4-扩容layer2-与数据可用性da">4. 扩容：Layer2 与数据可用性（DA）</h2>
+<ul>
+  <li>Rollup：Optimistic（欺诈证明）与 ZK（有效性证明）；</li>
+  <li>Validium：链下数据可用性，吞吐更高但信任更强；</li>
+  <li>DA 层：Celestia/EigenDA 作为数据发布层，L2 提交证明到 L1；</li>
+  <li>桥接安全：原生桥/轻客户端桥/流动性桥的风险比较。</li>
+</ul>
+
+<h2 id="5-读写路径与最终一致">5. 读写路径与最终一致</h2>
+<ul>
+  <li>写：<code class="language-plaintext highlighter-rouge">tx -&gt; mempool -&gt; proposer -&gt; block -&gt; consensus</code>；</li>
+  <li>读：<code class="language-plaintext highlighter-rouge">RPC（视图函数）</code> + <code class="language-plaintext highlighter-rouge">索引器（事件订阅）</code>；</li>
+  <li>一致性：UI 上呈现“确认数/最终性状态”，避免用户误解；</li>
+  <li>重组处理：短暂回滚时，索引器需要撤销并重放受影响区块。</li>
+</ul>
+
+<h2 id="6-节点与网络">6. 节点与网络</h2>
+<ul>
+  <li>客户端：Geth/Nethermind/Erigon；</li>
+  <li>RPC 网关：Infura/Alchemy/self-hosted Nginx 负载；</li>
+  <li>P2P：节点发现、区块/交易传播；</li>
+  <li>指标与日志：区块延迟、孤块率、重组率、peer 数量；</li>
+  <li>安全：私钥隔离、远程签名（HSM/Signer）。</li>
+</ul>
+
+<h2 id="7-工程与运维建议">7. 工程与运维建议</h2>
+<ul>
+  <li>多供应商 RPC 容灾，指数退避与幂等机制；</li>
+  <li>节点同步：快速同步/快照/检查点；</li>
+  <li>资源：IO/CPU/网络的均衡，SSD 与队列深度；</li>
+  <li>压测：fork 主网、回放真实负载；</li>
+  <li>成本：根据读写比例选择 L2/缓存/索引器策略。</li>
+</ul>
+
+<h2 id="8-代码与命令片段">8. 代码与命令片段</h2>
+<ul>
+  <li>使用 <code class="language-plaintext highlighter-rouge">ethers.js</code> 订阅事件并写入数据库：
+    <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">provider</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ethers</span><span class="p">.</span><span class="nc">JsonRpcProvider</span><span class="p">(</span><span class="nx">RPC</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">iface</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ethers</span><span class="p">.</span><span class="nc">Interface</span><span class="p">(</span><span class="nx">abi</span><span class="p">)</span>
+<span class="nx">provider</span><span class="p">.</span><span class="nf">on</span><span class="p">({</span> <span class="na">address</span><span class="p">:</span> <span class="nx">CONTRACT</span><span class="p">,</span> <span class="na">topics</span><span class="p">:</span> <span class="p">[</span><span class="nx">iface</span><span class="p">.</span><span class="nf">getEventTopic</span><span class="p">(</span><span class="dl">'</span><span class="s1">Transfer</span><span class="dl">'</span><span class="p">)]</span> <span class="p">},</span> <span class="p">(</span><span class="nx">log</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span>
+<span class="kd">const</span> <span class="nx">evt</span> <span class="o">=</span> <span class="nx">iface</span><span class="p">.</span><span class="nf">decodeEventLog</span><span class="p">(</span><span class="dl">'</span><span class="s1">Transfer</span><span class="dl">'</span><span class="p">,</span> <span class="nx">log</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="nx">log</span><span class="p">.</span><span class="nx">topics</span><span class="p">)</span>
+<span class="c1">// 写入数据库，带 blockNumber/txHash，便于去重与回滚</span>
+<span class="p">})</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Geth 启动与快照：
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>geth <span class="nt">--http</span> <span class="nt">--http</span>.api eth,net,web3 <span class="nt">--syncmode</span> snap <span class="nt">--datadir</span> /data/geth
+</code></pre></div>    </div>
+  </li>
+  <li>Erigon 归档节点（示）：
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>erigon <span class="nt">--chain</span> mainnet <span class="nt">--http</span> <span class="nt">--http</span>.api<span class="o">=</span>eth,debug,net,web3 <span class="nt">--datadir</span> /data/erigon
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="9-小结">9. 小结</h2>
+<p>链上是“慢且稳”的全局真相，链下是“快且灵活”的读取与分析。将状态转换、共识与数据可用性理解清楚，配合合理的索引与缓存，才能在可用性与可信度之间取得平衡。选择成熟 L1 + 合适 L2，减少自研链的复杂性，是当下工程落地的主路径。</p>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=Web3%20%E7%9A%84%E9%93%BE%E4%B8%8A%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%85%B1%E8%AF%86%E3%80%81%E7%8A%B6%E6%80%81%E6%9C%BA%E4%B8%8E%E6%89%A9%E5%AE%B9%E6%A0%88&url=http://localhost:4000/web3/2020/08/19/Web3-%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%A0%88.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/web3/2020/08/19/Web3-%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%A0%88.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

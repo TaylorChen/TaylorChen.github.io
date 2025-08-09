@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-09T11:28:00+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">TayloyChen Blog</title><subtitle>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><entry><title type="html">关于AI应用的思考</title><link href="http://localhost:4000/ai/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83.html" rel="alternate" type="text/html" title="关于AI应用的思考" /><published>2025-08-02T00:00:00+08:00</published><updated>2025-08-02T00:00:00+08:00</updated><id>http://localhost:4000/ai/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83</id><content type="html" xml:base="http://localhost:4000/ai/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83.html"><![CDATA[<h2 id="关于ai应用的思考">关于AI应用的思考</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-09T18:36:31+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">TayloyChen Blog</title><subtitle>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><entry><title type="html">关于AI应用的思考</title><link href="http://localhost:4000/ai/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83.html" rel="alternate" type="text/html" title="关于AI应用的思考" /><published>2025-08-02T00:00:00+08:00</published><updated>2025-08-02T00:00:00+08:00</updated><id>http://localhost:4000/ai/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83</id><content type="html" xml:base="http://localhost:4000/ai/2025/08/02/%E5%85%B3%E4%BA%8EAI%E5%BA%94%E7%94%A8%E7%9A%84%E6%80%9D%E8%80%83.html"><![CDATA[<h2 id="关于ai应用的思考">关于AI应用的思考</h2>
 
 <h3 id="与ia共创">与IA共创</h3>
 <h4 id="1-梯人纵发展">1. 梯人纵发展</h4>
@@ -40,7 +40,271 @@
 <h4 id="2-已验证问题库">2. 已验证问题库</h4>
 <p>把你那些能够用尽AI潜力的，好的提示次（prompt） 和 交互技巧分门别类记录好，方便下次继续使用。</p>
 
-<p><strong>当新的模型发布之后，不要只光看测评、不要迷信测评，可以直接用待解决问题库的问题，扔给新模型或者新工具，看看之前的问题是否能够得到解决（是骡子是马拉出来溜溜）。</strong></p>]]></content><author><name></name></author><category term="AI" /><summary type="html"><![CDATA[关于AI应用的思考]]></summary></entry><entry><title type="html">定期追更的项目</title><link href="http://localhost:4000/%E5%B7%A5%E5%85%B7/2025/05/13/%E5%85%85%E5%88%86%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E4%B9%8Bgithub.html" rel="alternate" type="text/html" title="定期追更的项目" /><published>2025-05-13T00:00:00+08:00</published><updated>2025-05-13T00:00:00+08:00</updated><id>http://localhost:4000/%E5%B7%A5%E5%85%B7/2025/05/13/%E5%85%85%E5%88%86%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E4%B9%8Bgithub</id><content type="html" xml:base="http://localhost:4000/%E5%B7%A5%E5%85%B7/2025/05/13/%E5%85%85%E5%88%86%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E4%B9%8Bgithub.html"><![CDATA[<h3 id="定期追更的项目">定期追更的项目：</h3>
+<p><strong>当新的模型发布之后，不要只光看测评、不要迷信测评，可以直接用待解决问题库的问题，扔给新模型或者新工具，看看之前的问题是否能够得到解决（是骡子是马拉出来溜溜）。</strong></p>]]></content><author><name></name></author><category term="AI" /><summary type="html"><![CDATA[关于AI应用的思考]]></summary></entry><entry><title type="html">Nginx Ingress 高并发场景优化实践</title><link href="http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2025/07/01/Nginx-Ingress-%E9%AB%98%E5%B9%B6%E5%8F%91%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96%E5%AE%9E%E8%B7%B5.html" rel="alternate" type="text/html" title="Nginx Ingress 高并发场景优化实践" /><published>2025-07-01T00:00:00+08:00</published><updated>2025-07-01T00:00:00+08:00</updated><id>http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2025/07/01/Nginx-Ingress-%E9%AB%98%E5%B9%B6%E5%8F%91%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96%E5%AE%9E%E8%B7%B5</id><content type="html" xml:base="http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2025/07/01/Nginx-Ingress-%E9%AB%98%E5%B9%B6%E5%8F%91%E5%9C%BA%E6%99%AF%E4%BC%98%E5%8C%96%E5%AE%9E%E8%B7%B5.html"><![CDATA[<p>在高并发/高吞吐场景下，Ingress-Nginx 的瓶颈往往在四处：连接与端口、文件句柄、握手与 TIME_WAIT、日志 I/O。本文给出值可直接落地的 Helm <code class="language-plaintext highlighter-rouge">values.yaml</code> 片段、Linux 内核参数、日志轮转 sidecar、压测与观测清单。</p>
+
+<h2 id="1-云负载均衡clbnlb容量">1. 云负载均衡（CLB/NLB）容量</h2>
+<ul>
+  <li>选择性能容量型/增强型实例，并调高带宽上限；入口成为系统上限的概率远高于后端。</li>
+  <li>自建 CLB 后通过注解/固定 <code class="language-plaintext highlighter-rouge">loadBalancerIP</code> 复用为 Ingress 入口。</li>
+</ul>
+
+<h2 id="2-linux-内核参数容器内以-initcontainer-动态设置">2. Linux 内核参数（容器内以 initContainer 动态设置）</h2>
+
+<p>Helm <code class="language-plaintext highlighter-rouge">values.yaml</code>：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="na">extraInitContainers</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">sysctl</span>
+      <span class="na">image</span><span class="pi">:</span> <span class="s">busybox</span>
+      <span class="na">imagePullPolicy</span><span class="pi">:</span> <span class="s">IfNotPresent</span>
+      <span class="na">securityContext</span><span class="pi">:</span>
+        <span class="na">privileged</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">command</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">sh</span>
+        <span class="pi">-</span> <span class="s">-c</span>
+        <span class="pi">-</span> <span class="pi">|</span>
+          <span class="s">sysctl -w net.core.somaxconn=65535</span>
+          <span class="s">sysctl -w net.ipv4.ip_local_port_range="1024 65535"</span>
+          <span class="s">sysctl -w net.ipv4.tcp_tw_reuse=1</span>
+          <span class="s">sysctl -w fs.file-max=1048576</span>
+</code></pre></div></div>
+
+<p>说明：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">somaxconn</code> 提升监听队列，缓解 SYN/accept 队列溢出。</li>
+  <li><code class="language-plaintext highlighter-rouge">ip_local_port_range</code> 扩大源端口范围，降低端口耗尽风险。</li>
+  <li><code class="language-plaintext highlighter-rouge">tcp_tw_reuse</code> 在客户端侧端口紧张时复用 TIME_WAIT（谨慎，仍以观测为准）。</li>
+  <li><code class="language-plaintext highlighter-rouge">fs.file-max</code> 与容器 <code class="language-plaintext highlighter-rouge">ulimit</code>/<code class="language-plaintext highlighter-rouge">worker_rlimit_nofile</code> 对齐。</li>
+</ul>
+
+<h2 id="3-ingress-nginx-配置连接与工作线程">3. Ingress-Nginx 配置（连接与工作线程）</h2>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="na">config</span><span class="pi">:</span>
+    <span class="na">keep-alive-requests</span><span class="pi">:</span> <span class="s2">"</span><span class="s">1000"</span>                 <span class="c1"># client &lt;-&gt; ingress 单连接可承载请求数</span>
+    <span class="na">upstream-keepalive-connections</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2000"</span>      <span class="c1"># ingress &lt;-&gt; upstream 空闲长连接上限</span>
+    <span class="na">max-worker-connections</span><span class="pi">:</span> <span class="s2">"</span><span class="s">65536"</span>             <span class="c1"># 每 worker 可开的最大连接数</span>
+</code></pre></div></div>
+
+<p>要点：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">keep-alive-requests</code> 过高可能导致扩容后负载不均；建议结合压测观察。</li>
+  <li><code class="language-plaintext highlighter-rouge">upstream-keepalive-connections</code> 是空闲连接上限（非总连接数）；按 worker 数乘算总上限。</li>
+</ul>
+
+<h2 id="4-日志落盘与轮转降低高并发下-stdout-cpu-开销">4. 日志落盘与轮转（降低高并发下 stdout CPU 开销）</h2>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">controller</span><span class="pi">:</span>
+  <span class="na">config</span><span class="pi">:</span>
+    <span class="na">access-log-path</span><span class="pi">:</span> <span class="s">/var/log/nginx/nginx_access.log</span>
+    <span class="na">error-log-path</span><span class="pi">:</span> <span class="s">/var/log/nginx/nginx_error.log</span>
+  <span class="na">extraVolumes</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">log</span>
+      <span class="na">emptyDir</span><span class="pi">:</span> <span class="pi">{}</span>
+  <span class="na">extraVolumeMounts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">log</span>
+      <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/var/log/nginx</span>
+  <span class="na">extraContainers</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">logrotate</span>
+      <span class="na">image</span><span class="pi">:</span> <span class="s">imroc/logrotate:latest</span>
+      <span class="na">imagePullPolicy</span><span class="pi">:</span> <span class="s">IfNotPresent</span>
+      <span class="na">env</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">LOGROTATE_FILE_PATTERN</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/var/log/nginx/nginx_*.log"</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">LOGROTATE_FILESIZE</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">100M"</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">LOGROTATE_FILENUM</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">3"</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">CRON_EXPR</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">*/1</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*"</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">CROND_LOGLEVEL</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">8"</span>
+      <span class="na">volumeMounts</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">log</span>
+          <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/var/log/nginx</span>
+</code></pre></div></div>
+
+<h2 id="5-端到端压测与观测">5. 端到端压测与观测</h2>
+<ul>
+  <li>压测：<code class="language-plaintext highlighter-rouge">wrk</code>（HTTP/1.x）、<code class="language-plaintext highlighter-rouge">h2load</code>（HTTP/2/3）、<code class="language-plaintext highlighter-rouge">vegeta/fortio</code>；建议 10–30 分钟稳定压测并观测收敛。</li>
+  <li>指标：活动连接、连接错误、<code class="language-plaintext highlighter-rouge">$upstream_response_time</code> 分位数、5xx 率、<code class="language-plaintext highlighter-rouge">worker_connections</code> 使用率、TIME_WAIT 总数、端口使用率。</li>
+  <li>日志：使用 JSON 格式，记录上游地址、上游时延、路由信息，便于定位热点与异常。</li>
+</ul>
+
+<h2 id="6-常见排障路径">6. 常见排障路径</h2>
+<ul>
+  <li>端口耗尽：增大 <code class="language-plaintext highlighter-rouge">ip_local_port_range</code>，提升上游 keepalive，排查异常关闭；观测 <code class="language-plaintext highlighter-rouge">ss -s</code>。</li>
+  <li>队列溢出/5xx：调大 <code class="language-plaintext highlighter-rouge">somaxconn</code> 与 <code class="language-plaintext highlighter-rouge">backlog</code>，核查上游超时/重试策略，查丢包。</li>
+  <li>CPU 飙升：stdout I/O 抖动，切换日志落盘+轮转；或减少日志字段。</li>
+</ul>
+
+<hr />
+
+<p>参考链接：</p>
+<ul>
+  <li>高并发场景优化（外部实践指南）：<a href="https://imroc.cc/tke/networking/ingress-nginx/high-concurrency"><code class="language-plaintext highlighter-rouge">https://imroc.cc/tke/networking/ingress-nginx/high-concurrency</code></a></li>
+</ul>]]></content><author><name></name></author><category term="技术" /><category term="Nginx" /><category term="技术" /><category term="Nginx" /><category term="Kubernetes" /><category term="并发" /><summary type="html"><![CDATA[在高并发/高吞吐场景下，Ingress-Nginx 的瓶颈往往在四处：连接与端口、文件句柄、握手与 TIME_WAIT、日志 I/O。本文给出值可直接落地的 Helm values.yaml 片段、Linux 内核参数、日志轮转 sidecar、压测与观测清单。]]></summary></entry><entry><title type="html">Nginx 零停机灰度发布与回滚策略</title><link href="http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2025/06/28/Nginx-%E9%9B%B6%E5%81%9C%E6%9C%BA%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%B8%8E%E5%9B%9E%E6%BB%9A%E7%AD%96%E7%95%A5.html" rel="alternate" type="text/html" title="Nginx 零停机灰度发布与回滚策略" /><published>2025-06-28T00:00:00+08:00</published><updated>2025-06-28T00:00:00+08:00</updated><id>http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2025/06/28/Nginx-%E9%9B%B6%E5%81%9C%E6%9C%BA%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%B8%8E%E5%9B%9E%E6%BB%9A%E7%AD%96%E7%95%A5</id><content type="html" xml:base="http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2025/06/28/Nginx-%E9%9B%B6%E5%81%9C%E6%9C%BA%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%B8%8E%E5%9B%9E%E6%BB%9A%E7%AD%96%E7%95%A5.html"><![CDATA[<p>从运维架构视角，结合 Nginx 的多种路由能力（权重、Header/Cookie、子域名、子路径）与容器编排（Docker/Kubernetes），构建“低风险、可审计、可回滚”的上线流程。本文给出平滑发布步骤、生产级配置、容器化集成与回滚预案。</p>
+
+<h2 id="0-目标与原则">0. 目标与原则</h2>
+<ul>
+  <li>不中断：对外 0 失败率、0 连接重置；</li>
+  <li>可回滚：故障秒级回退；</li>
+  <li>可观测：全链路指标与日志可追溯；</li>
+  <li>可审计：变更有记录，可复现。</li>
+</ul>
+
+<hr />
+
+<h2 id="1-平滑发布通用步骤">1. 平滑发布（通用步骤）</h2>
+<p>1) 版本准备：构建 v2 镜像（含健康检查、版本信息接口），在 v1 旁路启动；
+2) 预热：v2 只接入探活与预热流量（本地缓存、JIT、连接池预连接）；
+3) 小流量灰度：按 1%/5%/10%/20%/50%/100% 切流，每步 5-15 分钟观察 SLI；
+4) 监控门禁：4xx/5xx、P95/P99、错误率、特定业务 KPI（下单/支付成功率）；
+5) 扩展面：流量达到 100% 后保持观察窗口（30-60 分钟）；
+6) 收尾：下线 v1 或保留一段时间作为热备用。</p>
+
+<blockquote>
+  <p>SLI/SLO 建议：错误率 &lt; 0.1%，P95 &lt; 目标阈值（如 300ms），下单成功率不下降。</p>
+</blockquote>
+
+<hr />
+
+<h2 id="2-nginx-路由策略">2. Nginx 路由策略</h2>
+<h3 id="21-权重切流">2.1 权重切流</h3>
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">svc_v1</span> <span class="p">{</span> <span class="kn">server</span> <span class="nf">10.0.0.1</span><span class="p">:</span><span class="mi">8080</span> <span class="s">max_fails=2</span> <span class="s">fail_timeout=10s</span><span class="p">;</span> <span class="p">}</span>
+<span class="k">upstream</span> <span class="s">svc_v2</span> <span class="p">{</span> <span class="kn">server</span> <span class="nf">10.0.0.2</span><span class="p">:</span><span class="mi">8080</span> <span class="s">max_fails=2</span> <span class="s">fail_timeout=10s</span><span class="p">;</span> <span class="p">}</span>
+<span class="k">map</span> <span class="nv">$upstream_choice</span> <span class="nv">$backend</span> <span class="p">{</span>
+  <span class="kn">default</span>      <span class="s">svc_v1</span><span class="p">;</span>
+  <span class="kn">v2</span>           <span class="s">svc_v2</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1"># 灰度权重由外部工具写入变量（例如 lua_shared_dict / env / include 片段）</span>
+<span class="k">map</span> <span class="nv">$cookie_gray</span> <span class="nv">$upstream_choice</span> <span class="p">{</span>
+  <span class="kn">default</span>      <span class="s">v1</span><span class="p">;</span>
+  <span class="kn">~*gray=1</span>     <span class="s">v2</span><span class="p">;</span>  <span class="c1"># 指定用户灰度</span>
+<span class="p">}</span>
+<span class="k">server</span> <span class="p">{</span>
+  <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
+    <span class="kn">proxy_next_upstream</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">http_502</span> <span class="s">http_503</span> <span class="s">http_504</span><span class="p">;</span> <span class="c1"># 故障向上游重试</span>
+    <span class="kn">proxy_pass</span> <span class="s">http://</span><span class="nv">$backend</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="22-百分比灰度无-cookie">2.2 百分比灰度（无 Cookie）</h3>
+<p>借助 Nginx JavaScript（njs）或 lua，按哈希实现稳定的百分比切分：</p>
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 伪代码：基于 IP/用户ID 哈希到 0..99，&lt;10 命中 v2（10%）</span>
+</code></pre></div></div>
+<p>优势：用户命中稳定，不会在刷新间抖动；便于问题复现。</p>
+
+<h3 id="23-子路径子域名灰度">2.3 子路径/子域名灰度</h3>
+<ul>
+  <li>子路径：<code class="language-plaintext highlighter-rouge">/v2/</code> 仅路由到 v2，便于 A/B 对比；</li>
+  <li>子域名：<code class="language-plaintext highlighter-rouge">v2.api.example.com</code> 专供内测或机器人流量。</li>
+</ul>
+
+<hr />
+
+<h2 id="3-容器化集成">3. 容器化集成</h2>
+<h3 id="31-docker-compose蓝绿">3.1 Docker Compose（蓝/绿）</h3>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">nginx</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">nginx:1.25</span>
+    <span class="na">volumes</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">./nginx.conf:/etc/nginx/nginx.conf:ro"</span><span class="pi">]</span>
+    <span class="na">ports</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">80:80"</span><span class="pi">]</span>
+  <span class="na">app_v1</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">app:1.0.0</span>
+    <span class="na">healthcheck</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">test</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">CMD"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">curl"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-f"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">http://localhost:8080/health"</span><span class="pi">],</span> <span class="nv">interval</span><span class="pi">:</span> <span class="nv">5s</span><span class="pi">,</span> <span class="nv">retries</span><span class="pi">:</span> <span class="nv">5</span> <span class="pi">}</span>
+  <span class="na">app_v2</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">app:1.1.0</span>
+    <span class="na">healthcheck</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">test</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">CMD"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">curl"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-f"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">http://localhost:8080/health"</span><span class="pi">],</span> <span class="nv">interval</span><span class="pi">:</span> <span class="nv">5s</span><span class="pi">,</span> <span class="nv">retries</span><span class="pi">:</span> <span class="nv">5</span> <span class="pi">}</span>
+</code></pre></div></div>
+<ul>
+  <li>切换方式：通过替换 <code class="language-plaintext highlighter-rouge">map</code> 变量/包含片段，或修改 upstream 指向容器服务名；</li>
+  <li>回滚：即时切回 <code class="language-plaintext highlighter-rouge">app_v1</code>。</li>
+</ul>
+
+<h3 id="32-kubernetesingressservice">3.2 Kubernetes（Ingress/Service）</h3>
+<ul>
+  <li>Ingress-Nginx + 两个 Service（v1/v2），通过 <code class="language-plaintext highlighter-rouge">canary</code> 注解分流：
+    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">metadata</span><span class="pi">:</span>
+<span class="na">annotations</span><span class="pi">:</span>
+  <span class="na">nginx.ingress.kubernetes.io/canary</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+  <span class="na">nginx.ingress.kubernetes.io/canary-weight</span><span class="pi">:</span> <span class="s2">"</span><span class="s">10"</span> <span class="c1"># 10%</span>
+</code></pre></div>    </div>
+  </li>
+  <li>替代方案：使用 <code class="language-plaintext highlighter-rouge">nginx-ingress + njs/lua</code> 做更复杂的路由，或使用 <code class="language-plaintext highlighter-rouge">Gateway API</code>/<code class="language-plaintext highlighter-rouge">Service Mesh</code>（Istio/Linkerd）进行百分比灰度、熔断、重试与熔断。</li>
+</ul>
+
+<hr />
+
+<h2 id="4-策略矩阵与适用场景">4. 策略矩阵与适用场景</h2>
+<ul>
+  <li>权重路由：最通用，适合整体灰度；</li>
+  <li>Cookie 灰度：便于定向用户/业务方验证；</li>
+  <li>Header 灰度：CI/CD/自动化探测流量；</li>
+  <li>子路径/子域名：A/B 实验或大版本对照；</li>
+  <li>哈希百分比：稳定命中，适合逐步放量。</li>
+</ul>
+
+<hr />
+
+<h2 id="5-生产案例示意">5. 生产案例（示意）</h2>
+<ul>
+  <li>背景：交易系统网关，QPS 峰值 3w/s；</li>
+  <li>步骤：
+1) v2 部署完成，预热接口返回 200；
+2) Cookie 灰度给内部账号与监控机器人；
+3) 百分比灰度 1% -&gt; 5% -&gt; 10% -&gt; 20%（每步 10 分钟），观察错误率、P95、下单成功率；
+4) 50% -&gt; 100%，保持观察 30 分钟；
+5) 稳定后下线 v1，保留应急镜像与配置。</li>
+  <li>指标与日志：接入 Prometheus/Grafana，日志落 ES/ClickHouse，保留版本号与路由信息便于追踪。</li>
+</ul>
+
+<hr />
+
+<h2 id="6-回滚策略与演练">6. 回滚策略与演练</h2>
+<ul>
+  <li>触发条件：错误率 &gt; 0.2% 或 P95 恶化 30% 且持续 5 分钟；</li>
+  <li>动作：
+1) 立即将灰度比例设为 0（或 Cookie 开关关闭）；
+2) 恢复 v1 权重至 100%；
+3) 保持观察窗口（10-30 分钟），同时收集 v2 诊断材料；
+4) 进入问题单流程与修复迭代；</li>
+  <li>演练：季度至少一次“带压回滚”演练（非峰值时段），验证脚本与值守响应。</li>
+</ul>
+
+<hr />
+
+<h2 id="7-关键配置清单">7. 关键配置清单</h2>
+<ul>
+  <li>上游健康检查与 <code class="language-plaintext highlighter-rouge">proxy_next_upstream</code> 策略；</li>
+  <li><code class="language-plaintext highlighter-rouge">keepalive</code> 连接池，<code class="language-plaintext highlighter-rouge">proxy_http_version 1.1</code> 与关闭 <code class="language-plaintext highlighter-rouge">Connection: close</code>；</li>
+  <li>请求超时/重试上限（避免风暴）；</li>
+  <li>限流与熔断（njs/lua 或接入网关/Service Mesh）。</li>
+</ul>
+
+<hr />
+
+<h2 id="8-审计与自动化">8. 审计与自动化</h2>
+<ul>
+  <li>配置即代码（Git 管控），灰度参数来自集中配置；</li>
+  <li>CI/CD：合规检查（lint）、预热检查通过才允许放量；</li>
+  <li>ChatOps：发布与回滚都有机器人宣告与记录。</li>
+</ul>
+
+<hr />
+
+<h2 id="9-常见坑">9. 常见坑</h2>
+<ul>
+  <li>预热不足：v2 首次请求抖动；</li>
+  <li>粘性策略缺失：会话跨版本导致登录/购物车异常；</li>
+  <li>观测延迟太长：等到告警触发时已影响大量用户；</li>
+  <li>权限与合规：回滚权限受限导致响应慢。</li>
+</ul>
+
+<blockquote>
+  <p>结论：Nginx + 容器编排可实现高可靠的零停机灰度。把“参数化灰度 + 可观测 + 自动化回滚”做成流程与工具，才是长期可靠之道。</p>
+</blockquote>]]></content><author><name></name></author><category term="技术" /><category term="Nginx" /><category term="技术" /><category term="Nginx" /><category term="发布" /><category term="灰度" /><summary type="html"><![CDATA[从运维架构视角，结合 Nginx 的多种路由能力（权重、Header/Cookie、子域名、子路径）与容器编排（Docker/Kubernetes），构建“低风险、可审计、可回滚”的上线流程。本文给出平滑发布步骤、生产级配置、容器化集成与回滚预案。]]></summary></entry><entry><title type="html">定期追更的项目</title><link href="http://localhost:4000/%E5%B7%A5%E5%85%B7/2025/05/13/%E5%85%85%E5%88%86%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E4%B9%8Bgithub.html" rel="alternate" type="text/html" title="定期追更的项目" /><published>2025-05-13T00:00:00+08:00</published><updated>2025-05-13T00:00:00+08:00</updated><id>http://localhost:4000/%E5%B7%A5%E5%85%B7/2025/05/13/%E5%85%85%E5%88%86%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E4%B9%8Bgithub</id><content type="html" xml:base="http://localhost:4000/%E5%B7%A5%E5%85%B7/2025/05/13/%E5%85%85%E5%88%86%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E4%B9%8Bgithub.html"><![CDATA[<h3 id="定期追更的项目">定期追更的项目：</h3>
 <h4 id="1-weekly科技爱好者周刊">1. <a href="https://github.com/ruanyf/weekly">Weekly（科技爱好者周刊）</a></h4>
 <h4 id="2-hellogithub月刊">2. <a href="https://github.com/521xueweihan/HelloGitHub/tree/master">《HelloGitHub》月刊</a></h4>
 
@@ -158,14 +422,12 @@
   </li>
 </ul>
 
-<p><img src="/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg" alt="Image" /></p>]]></content><author><name></name></author><category term="AI" /><summary type="html"><![CDATA[AI 辅助编程中的 LLM 选择最佳实践]]></summary></entry><entry><title type="html">AI 辅助编程中的 LLM 选择最佳实践</title><link href="http://localhost:4000/%E6%80%9D%E8%80%83/2025/05/03/%E5%AE%9E%E6%97%B6%E5%8F%8D%E6%80%9D%E4%BC%98%E5%8C%96%E7%AE%A1%E7%90%86%E8%83%BD%E5%8A%9B.html" rel="alternate" type="text/html" title="AI 辅助编程中的 LLM 选择最佳实践" /><published>2025-05-03T00:00:00+08:00</published><updated>2025-05-03T00:00:00+08:00</updated><id>http://localhost:4000/%E6%80%9D%E8%80%83/2025/05/03/%E5%AE%9E%E6%97%B6%E5%8F%8D%E6%80%9D%E4%BC%98%E5%8C%96%E7%AE%A1%E7%90%86%E8%83%BD%E5%8A%9B</id><content type="html" xml:base="http://localhost:4000/%E6%80%9D%E8%80%83/2025/05/03/%E5%AE%9E%E6%97%B6%E5%8F%8D%E6%80%9D%E4%BC%98%E5%8C%96%E7%AE%A1%E7%90%86%E8%83%BD%E5%8A%9B.html"><![CDATA[<h2 id="实时反思优化管理能力">实时反思，优化管理能力</h2>
+<p><img src="/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg" alt="Image" /></p>]]></content><author><name></name></author><category term="AI" /><summary type="html"><![CDATA[AI 辅助编程中的 LLM 选择最佳实践]]></summary></entry><entry><title type="html">实时反思优化管理能力</title><link href="http://localhost:4000/%E6%80%9D%E8%80%83/2025/05/03/%E5%AE%9E%E6%97%B6%E5%8F%8D%E6%80%9D%E4%BC%98%E5%8C%96%E7%AE%A1%E7%90%86%E8%83%BD%E5%8A%9B.html" rel="alternate" type="text/html" title="实时反思优化管理能力" /><published>2025-05-03T00:00:00+08:00</published><updated>2025-05-03T00:00:00+08:00</updated><id>http://localhost:4000/%E6%80%9D%E8%80%83/2025/05/03/%E5%AE%9E%E6%97%B6%E5%8F%8D%E6%80%9D%E4%BC%98%E5%8C%96%E7%AE%A1%E7%90%86%E8%83%BD%E5%8A%9B</id><content type="html" xml:base="http://localhost:4000/%E6%80%9D%E8%80%83/2025/05/03/%E5%AE%9E%E6%97%B6%E5%8F%8D%E6%80%9D%E4%BC%98%E5%8C%96%E7%AE%A1%E7%90%86%E8%83%BD%E5%8A%9B.html"><![CDATA[<h2 id="实时反思优化管理能力">实时反思，优化管理能力</h2>
 
 <p>回顾工作这么多年，从开始的基本的coding工作开始，一线资深研发到后来的技术决策者，再到后来的创业。这些工作过程中我体会到在技术管理方面有很多道理在人生道路上也一样。总结归纳为用三个词来形容：父母心、为人真诚、反思精进，这些也是我一直再坚守执行的。</p>
 
 <h3 id="1-父母心">1. 父母心</h3>
 <p>在最近两年家里有了小朋友，在照顾小朋友的同时会去学习如何照顾、怎么哄睡、怎么做辅食、对于一些游戏怎么交小朋友去做、平时在互动的过程中如何用精简的指令让小朋友明白你的表达是什么(特别是在还不太会说话阶段)，这些都是从书中去学习，过程中越觉得其中的理念跟管理相同。书里面所讲的不是数理化，而是一个人最根本的东西：好奇心、同理心、韧性、乐观、与遇到问题用不放弃。这里面也会谈到一个话题就是作为家长对于子女的期待是什么？是出人头地吗？放到现在这个时代背景下，大部分父母应该都不会是这个答案。我的答案也很简单就是有积极向上的价值观，长大了有自己独立思考的能力，即便没有大人的依靠，依然能够很好的过自己的生活。</p>
-
-<p>在公司如果成为团队负责人或者是技术管理者，情况应该类似。交付业务价值固然重要，但是我们真的只为交付业务价值吗？除了给团队赋能、让团队到个人能得到技术上的提升。作为技术管理者我们还队其个人的职业发展、甚至对团队成员待人处事也有很大的影响。与此同时还需要有一颗父母之心，如果你做得好，就可以把团队成员的潜力激发出来，让他们成为更好的自己。</p>
 
 <h3 id="2-为人真诚">2. 为人真诚</h3>
 <p>为人真诚，众多的管理方法都更像是术，而在这些技术之上是道的层面。这个真诚既是我们对自己真诚，也是我们对身边所有人都保持真诚的态度。说到真诚，我觉得它趋于一种价值观判断，甚至是道德要求，这部分无论在工作还是生活上都是相同的。</p>
@@ -180,7 +442,6 @@
 <p>无论从事什么工作，最开始的部分都是从基础做起，遇到一些跨界的伙伴更是如此。回顾自己工作更是如此，能够逐渐成长、成熟起来，能够独挡一面，不断优化自己的能力，其实离不开反思精进这个方法。这个里面涉及到最基本的一个话题就是认知，让我不断反思的动力，其实是源于我想成为一个什么样子的人（这个很重要，真的很重要）。我一直相信人生是长跑，再难的事情也挡不住多年的专注与死磕，这里很重要的一个点就是一定要实践。这种模式就是：实践、认识、再实践、再认识的过程，循环往复以至无穷，而实践和认识之每一循环的内容，都比较地进到了高一级的程度。很多事情想做好，都不容易的，所以也希望你身处顺境时正视自己，遇到挫折时不被外界干扰。</p>
 
 <h4 id="最后">最后</h4>
-
 <p>关于人生的意义。随着工作和生活阅历的增加以及年龄的增长，看多了一些身边的人情冷暖，生老病死。现在想来，我觉得每一个人在人生的不同阶段会有不一样的诉求。我还是觉得一个人活在世上应该不断努力不断精进，但是目的不是出人头地，而是自我实现和这一路的风景。</p>
 
 <p>如果你现在就要离开这个世界，闭上眼睛回顾这一生你会想起些什么呢？那个时候你会想起的事情和人才是你现在应该珍惜的。</p>
@@ -321,238 +582,4 @@
 <p>生活和工作中我们需要主动去面对和take一些事情。很多人认为这是心态问题，其实这是能力问题。<strong>主动与不主动，生命资源相差30倍。在工作中，主动思考和行动的能力尤其重要，主动承担能力和责任之外的事情，本身就是一个非常好的锻炼和成长机会，不要总担心自己的能力不够，害怕没把事情做好，其实不管你最终有没有把这件事情做成，但在做的过程中就是一次非常好的锻炼机会，用了公司的资源，成长了自己的能力，这是一个很划算的事情。</strong> 主动者每天都在日拱一卒，被动者每天都在左右徘徊。这个象限在现实情况下普遍存在，主动一些会让一些不可能成为可能，经历过这样几次之后，你可能在能力上会有很大的提升，在后面做决策和选择时，胜率就会加大，这也是最佳实践。</p>
 
 <h4 id="5-把手弄脏">5. 把手弄脏</h4>
-<p>在目前阶段获取资讯或者知识的方式很多，知识在传递的过程中也会发生一些变化(理解偏差)，加上知识的输出者也不不可能把所有细节和方法论都讲出来，这也不太现实。我们在理解这些知识后切记隔岸观火，把这些知识和输出直接用在实际的场景中。<strong>我们一定要结合实际情况，深入理解事情的逻辑和本质，适当的结合和改造、优化，切记空有一套方法论。在软件研发领域，可能你已经是研发小组长、研发Leader，但是对于一线的一些问题必须去了解，知根知底。一定要 do something ，而不是 own stomething。</strong></p>]]></content><author><name></name></author><category term="成长" /><summary type="html"><![CDATA[最佳实践的理解]]></summary></entry><entry><title type="html">二八法则的一些思考</title><link href="http://localhost:4000/%E6%80%9D%E8%80%83/2024/03/25/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83.html" rel="alternate" type="text/html" title="二八法则的一些思考" /><published>2024-03-25T00:00:00+08:00</published><updated>2024-03-25T00:00:00+08:00</updated><id>http://localhost:4000/%E6%80%9D%E8%80%83/2024/03/25/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83</id><content type="html" xml:base="http://localhost:4000/%E6%80%9D%E8%80%83/2024/03/25/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83.html"><![CDATA[<p>关于二八法则的另外一种叫法是80/20法则，或者叫关键少数法则。在生活工作方各方面都有体现：</p>
-
-<p>在经济学领域，全球最富有的20%的人口，控制着世界收入的82.7%。</p>
-
-<p>在软件领域，可以应用于优化软件工作，通过修复报告最多的错误的前20%，给定系统中80%的相关错误将被消除。</p>
-
-<p>在运动锻炼上，20%的练习和习惯影响着80%的结果，受训者不应该专注于多种训练。</p>
-
-<p>将二八法则落实到行动上，简单整理了如下方法</p>
-
-<p><strong>做有复利积累的事情</strong></p>
-
-<p>复利特别在经济学领域比较常用，例如做量化一般也会评估复利的长期收益(常说的利滚利)。最常见的复利即资产，即可以自行为持有人带来收益的东西，资产本身是固化的劳动，而靠其赚到的钱又可以固化为资产，从而以指数增长的方式增殖。当然，任何可以积累的东西都是具有复利效应：知识是可以积累下来的，积累的知识帮助做出更高概率正确的决策，带来更大的视野，从而有需求及动力学习更多知识；个人IP影响力是可以积累的，更高的影响力带来更大的曝光，接触更多优秀的人，有更多合作机会，反过来又增强个人的影响力。</p>
-
-<p><strong>极致聚焦，做减法</strong></p>
-
-<p>现实中每个人的精力有限，不太可能可以做所有的事情，要通过分析和评估来确定哪些是产生最大价值的关键因素。旦识别出关键因素，就需要对它们进行优先排序。这意味着要将资源和精力集中在那些最能产生效益的领域。识别并剔除那些消耗时间、金钱和资源但收益甚微的活动。在决策过程中，尽量减少不必要的选项和复杂性。通过简化流程，可以提高效率并减少错误。有效地利用资源，提高效率和产出。</p>
-
-<p><strong>战略优于战术</strong></p>
-
-<p>程序员应该都有感受，写代码最重要的是前面的思考的环节，写只占据很少时间，若思考不清晰，后续会有无尽的debug负担；做产品也一样，我个人看来，商业模式&gt;流量策略&gt;具体开发，商业模式定义了是否解决的是痛点问题，该问题是否给用户带来价值从而用户有付费意愿，该问题定义清楚后，流量策略和具体开发则是水到渠成的事情，而渠道的重要性往往要高于具体开发。</p>
-
-<p><strong>发挥自己的比较优势</strong></p>
-
-<p>社会分工之所以存在，是因为每个人有其比较优势，各自做擅长的事情并合作，会提升整体效率。对个人来说，发挥自己的比较优势，只做那 20% 自己擅长的或有热情的事情（热情本身也会变为擅长），其他事情则是最大程度自动化或者外包出去。当前AI能力如此强大，各细分领域服务极度充沛，特定问题付费解决可节省大量人力，成本远低于自己浪费时间。</p>]]></content><author><name></name></author><category term="思考" /><summary type="html"><![CDATA[关于二八法则的另外一种叫法是80/20法则，或者叫关键少数法则。在生活工作方各方面都有体现：]]></summary></entry><entry><title type="html">实用Mac软件推荐列表</title><link href="http://localhost:4000/%E5%B7%A5%E5%85%B7/2023/12/19/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html" rel="alternate" type="text/html" title="实用Mac软件推荐列表" /><published>2023-12-19T00:00:00+08:00</published><updated>2023-12-19T00:00:00+08:00</updated><id>http://localhost:4000/%E5%B7%A5%E5%85%B7/2023/12/19/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8</id><content type="html" xml:base="http://localhost:4000/%E5%B7%A5%E5%85%B7/2023/12/19/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html"><![CDATA[<p><strong>Apps</strong></p>
-
-<p><strong>日常使用</strong></p>
-
-<p>ClashX Pro：科学上网</p>
-
-<p>只有先科学上网，才能装后面的</p>
-
-<p>Notion：笔记输入 + 博客输出的工具</p>
-
-<p>Chrome：浏览器</p>
-
-<p>Xnip：截图工具</p>
-
-<p>1password 7：密码管理工具</p>
-
-<p>其它的也用过，还是这个原生 App 比较流畅</p>
-
-<p>CleanMyMac X：Mac优化清理工具</p>
-
-<p>Warp WindTerm iTerm2：终端</p>
-
-<p>Alfred：本地搜索、应用启动、剪贴板 📋</p>
-
-<p>MarkEdit: Mac上开源markdown编辑器</p>
-
-<p><strong>效率神器</strong></p>
-
-<p>Karabiner-Elements：键盘键位修改神器</p>
-
-<p>一些配置 <a href="https://gist.github.com/ycjcl868/3933cb65acedb5d771855dee927781d8">karabiner.json</a> ，主要是改 HHKB 和 Apple Keyboard</p>
-
-<p><a href="https://dida365.com/">滴答清单</a> ：任务和规划时间（GTD）的应用</p>
-
-<p><a href="https://flomoapp.com/">flomo</a> ：快速记录一些想法</p>
-
-<p><a href="https://github.com/ripperhe/Bob/releases">Bob 社区版</a> ：划词翻译和截图翻译工具</p>
-
-<p>支持多个翻译聚合还挺方便的</p>
-
-<p><a href="https://inputsource.pro/">Input Source Pro</a> ：不同应用、不同网站自动切换输入法</p>
-
-<p><a href="https://y.qq.com/">QQ Music</a> ：网络音乐服务产品</p>
-
-<p><a href="https://srf.baidu.com/input/mac.html">百度五笔输入法</a></p>
-
-<p>试过 Mac 上各类的五笔输入，还是这个好用</p>
-
-<p><a href="https://netnewswire.com/">NetNewsWire</a> ：开源、免费、全平台的 RSS 订阅、阅读</p>
-
-<p>订阅 <a href="https://github.com/ycjcl868/feeds/blob/master/index.opml">index.opml</a></p>
-
-<p><a href="https://www.macbartender.com/Bartender4/">Bartender 4</a> ：菜单栏应用图标管理工具</p>
-
-<p>管理挺方便，就是 Mac 屏中间刘海那块没适配好</p>
-
-<p>OpenInTerminal：从 Finder 一键打开 Terminal</p>
-
-<p>之前的 Go2Shell 似乎不维护了，就用了这个</p>
-
-<p><a href="https://iina.io/">IINA</a> ：媒体播放器</p>
-
-<p><a href="https://getkap.co/">Kap</a> ：开源录屏工具</p>
-
-<p>可转成 gif、mp4，支持插件</p>
-
-<p>新 Mac 生成 gif 基本是秒级导出</p>
-
-<p><a href="https://www.taskpaper.com/">TaskPaper</a> ：文本编辑器模式的任务管理工具（GTD）</p>
-
-<p>经常用来管理工作上需要长期跟进的事，和滴答清单结合使用</p>
-
-<p>Mindnode</p>
-
-<p><a href="https://telegram.org/">Telegram</a> ：相对匿名安全的聊天软件</p>
-
-<p><a href="https://cubox.pro/">Cubox</a> ：一站式信息收集、阅读、管理和回顾</p>
-
-<p>碎片化阅读时代的文章、视频收集器</p>
-
-<p><a href="https://kyome.io/runcat/index.html?lang=en">RunCat</a> ：在任务栏奔跑的猫</p>
-
-<p>猫奔跑的速度会随着CPU使用率提升而越来越快（新 Mac 怎么开发都没看猫奔跑过）</p>
-
-<p><a href="https://magnet.crowdcafe.com/">Magnet</a> ：窗口管理</p>
-
-<p><a href="https://github.com/MonitorControl/MonitorControl">MonitorControl</a> ：显示器亮度调节</p>
-
-<p><a href="https://apps.apple.com/jp/app/standup/id1439378680?l=en&amp;mt=12">StandUp</a> ：提醒站立</p>
-
-<p><a href="https://medium.com/@mariociabarra/wifriedx-in-depth-look-at-yosemite-wifi-and-awdl-airdrop-41a93eb22e48">WiFriedX</a> ：关闭 AWDL/AirDrop，优化 M1 系列 Mac 的 Wifi 连接</p>
-
-<p> </p>
-
-<p><strong>开发使用</strong></p>
-
-<p><a href="https://code.visualstudio.com/">VSCode</a> ：代码编辑器</p>
-
-<p>通过自带的 <a href="https://code.visualstudio.com/docs/editor/settings-sync">Settings Sync</a> 功能一键同步</p>
-
-<p><a href="https://github.com/git-up/GitUp">GitUp</a> ：Git GUI 软件</p>
-
-<p>比 SourceTree 等软件要简洁，日常开发中基本没有做不了 GUI 操作</p>
-
-<p><a href="https://www.sublimetext.com/">Sublime Text</a> ：文本编辑器</p>
-
-<p>准确来讲，经常用这个编辑器快速做一些纪要</p>
-
-<p>DataGrip：数据库开发工具</p>
-
-<p>Goland：Gopher 开发工具</p>
-
-<p>Dash：API 文档和代码片段管理</p>
-
-<p>一直在用，找 API 文档和用法太方便了</p>
-
-<p><a href="https://www.postman.com/">Postman</a> ：API 调试神器</p>
-
-<p><a href="https://github.com/oldj/SwitchHosts">SwitchHosts</a> ：管理、切换多个hosts 方案的工具</p>
-
-<p>QuickLook 预览插件</p>
-
-<p><a href="http://www.sagtau.com/quicklookjson.html">quicklook-json</a></p>
-
-<p><a href="https://github.com/toland/qlmarkdown">qlmarkdown</a></p>
-
-<p><a href="https://github.com/Marginal/QLVideo">QLVideo</a></p>
-
-<p> </p>
-
-<p><strong>System Configuration</strong></p>
-
-<p>触摸板三指拖拽</p>
-
-<p>系统设置 → 辅助功能 → 指针控制 → 触控板选项 → 启用拖移（三指拖移）</p>
-
-<p>退格键响应速度</p>
-
-<p>系统设置 → 键盘，按键重复 调到最快、重复前延迟调最短</p>
-
-<p><a href="https://gist.github.com/laispace/666dd7b27e9116faece6?permalink_comment_id=3686810#gistcomment-3686810">Github clone 加速</a></p>
-
-<p>屏保 <a href="https://aerialscreensaver.github.io/">Aerial</a></p>
-
-<p> </p>
-
-<p><strong>Dev</strong></p>
-
-<p>brew</p>
-
-<p>on-my-zsh</p>
-
-<p>fzf</p>
-
-<p>autojump</p>
-
-<p><a href="https://github.com/jesseduffield/lazygit">lazygit</a> ：命令行版 Git GUI</p>
-
-<p><a href="https://github.com/BurntSushi/ripgrep">ripgrep</a> ：快速搜索文件/目录中包含的字符串</p>
-
-<p>bat</p>
-
-<p><a href="https://cli.github.com/">gh</a></p>
-
-<p><a href="https://github.com/profclems/glab">glab</a></p>
-
-<p><a href="https://github.com/TheYkk/git-switcher">git-switcher</a></p>
-
-<p>graphviz</p>
-
-<p>Node.js 相关</p>
-
-<p>fnm</p>
-
-<p>node 16 似乎用不了 node-gyp-build</p>
-
-<p>Python 相关</p>
-
-<p>pyenv</p>
-
-<p>Java 相关</p>
-
-<p><a href="https://github.com/jenv/jenv">jenv</a></p>
-
-<p>Go</p>
-
-<p>modd</p>
-
-<p>tree</p>
-
-<p>字体安装</p>
-
-<p>brew install –cask font-fira-code font-jetbrains-mono</p>
-
-<p> </p>
-
-<p><strong>Plugins</strong></p>
-
-<p>Alfred workflows</p>
-
-<p><a href="https://github.com/jopemachine/alfred-chromium-workflow/">alfred-chromium-workflow</a> ：浏览器历史记录搜索</p>
-
-<p>找一些页面很方便</p>
-
-<p><a href="https://github.com/wensonsmith/YoudaoTranslator">YoudaoTranslator</a> ：有道搜索</p>
-
-<p>平时直接 yd 中英文单词/句子 很方便</p>
-
-<p><a href="https://github.com/ycjcl868/alfred-npmjs">NpmSearch</a> ：npm 包搜索</p>
-
-<p>npm 包名 搜索一些包版本，同时支持任意 registry 源</p>]]></content><author><name></name></author><category term="工具" /><summary type="html"><![CDATA[Apps]]></summary></entry></feed>
+<p>在目前阶段获取资讯或者知识的方式很多，知识在传递的过程中也会发生一些变化(理解偏差)，加上知识的输出者也不不可能把所有细节和方法论都讲出来，这也不太现实。我们在理解这些知识后切记隔岸观火，把这些知识和输出直接用在实际的场景中。<strong>我们一定要结合实际情况，深入理解事情的逻辑和本质，适当的结合和改造、优化，切记空有一套方法论。在软件研发领域，可能你已经是研发小组长、研发Leader，但是对于一线的一些问题必须去了解，知根知底。一定要 do something ，而不是 own stomething。</strong></p>]]></content><author><name></name></author><category term="成长" /><summary type="html"><![CDATA[最佳实践的理解]]></summary></entry></feed>

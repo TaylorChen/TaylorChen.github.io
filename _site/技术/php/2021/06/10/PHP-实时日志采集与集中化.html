@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>PHP 实时日志采集与集中化</h1>
+    <p class="post-meta">2021-06-10 · 技术 / PHP · 技术, PHP, 日志, 可观测性</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>如何在 PHP 体系下实现实时日志采集、清洗、聚合与检索？本文结合物理机与 Kubernetes 两种运行环境，给出分阶段演进路线、最佳实践与可落地配置（EFK/PLG/ClickHouse/OTel），并附带 PHP 端具体实现建议。</p>
+
+<h2 id="架构概览">架构概览</h2>
+<h3 id="物理机--vm-拓扑">物理机 / VM 拓扑</h3>
+<pre><code class="language-mermaid">flowchart TD
+  A["微服务 (物理机/VM)"] --&gt; B["应用日志: JSON 文件 / journald"]
+  B --&gt; C["宿主机 Agent: Fluent Bit / Vector / OTel Collector"]
+  C --&gt;|"TLS+重试+背压"| D["Kafka (可选缓冲)"]
+  C --&gt; E["处理/路由: Logstash / OTel Collector / Vector"]
+  D --&gt; E
+  E --&gt; F["Elasticsearch / OpenSearch"]
+  E --&gt; G["ClickHouse"]
+  E --&gt; H["Loki"]
+  F --&gt; I["可视化: Kibana / Grafana"]
+  G --&gt; I
+  H --&gt; I
+  J["治理: 时间同步(NTP) + 结构化Schema + 脱敏/掩码"] -.-&gt; E
+</code></pre>
+
+<h3 id="kubernetes-拓扑">Kubernetes 拓扑</h3>
+<pre><code class="language-mermaid">flowchart TD
+  subgraph K8s["Kubernetes 集群"]
+    A1["Pod: 微服务容器"] --&gt; B1["stdout/stderr (结构化JSON)"]
+    B1 --&gt; C1["DaemonSet: Fluent Bit / Vector"]
+    A1 --&gt; D1["Sidecar(可选): OTel Collector / Fluent Bit"]
+    C1 --&gt;|"TLS+背压+限流"| E1["集群网关: OTel Collector / Ingress"]
+  end
+  E1 --&gt; F1["Kafka / NATS / Redis Streams (缓冲)"]
+  E1 --&gt; G1["Loki / Elasticsearch / ClickHouse"]
+  F1 --&gt; H1["处理与路由: Logstash / Vector / OTel Collector"]
+  H1 --&gt; G1
+  G1 --&gt; I1["Grafana / Kibana / 自研埋点分析"]
+  J1["治理: 多租户、标签、索引生命周期、合规脱敏"] -.-&gt; H1
+</code></pre>
+
+<h2 id="演进阶段与适用场景">演进阶段与适用场景</h2>
+<ul>
+  <li>传统本地文件 + logrotate：单机/少量服务；简单但难检索、风险高。</li>
+  <li>中央化 Syslog（rsyslog/syslog-ng/journald）：轻量汇聚，结构化不足。</li>
+  <li>EFK/ELK：强检索与可视化；成本与治理压力需控制（ILM）。</li>
+  <li>容器化（stdout JSON + DaemonSet Agent）：与 K8s 契合；注意 label 基数。</li>
+  <li>事件流驱动（Kafka/NATS 缓冲解耦）：高吞吐可重放；链路更长。</li>
+  <li>OpenTelemetry 一体化：标准 OTLP，日志/链路/指标互相关联。</li>
+  <li>成本/性能优化（Loki/ClickHouse/对象存储分层）：性价比高，查询语义差异需适配。</li>
+</ul>
+
+<h2 id="通用最佳实践">通用最佳实践</h2>
+<ul>
+  <li>结构化与上下文：统一 JSON Schema（timestamp、level、service、env、trace_id、span_id、request_id、user_id）。</li>
+  <li>安全合规：采集端脱敏/掩码；TLS 传输；RBAC；多租户隔离。</li>
+  <li>稳定性：本地缓冲、断点续传、退避重试、背压/限流、时钟同步。</li>
+  <li>成本与性能：控制日志级别与采样；热/温/冷分层；限制高基数字段。</li>
+  <li>运维治理：ILM/TTL；集中配置与热更新；SLO/告警（延迟、拒收、落库错误率）。</li>
+</ul>
+
+<h2 id="物理机vm-最佳实践">物理机/VM 最佳实践</h2>
+<p>推荐：应用输出 JSON 到文件或 journald；宿主机 Agent（Fluent Bit/Vector/OTel Collector）采集→可选 Kafka 缓冲→后端（OpenSearch/ClickHouse/Loki）。</p>
+
+<h3 id="fluent-bittail--kafka--opensearch">Fluent Bit（Tail → Kafka → OpenSearch）</h3>
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">[SERVICE]</span>
+    <span class="err">Flush</span>        <span class="err">1</span>
+    <span class="err">Parsers_File</span> <span class="err">parsers.conf</span>
+    <span class="err">Log_Level</span>    <span class="err">info</span>
+
+<span class="nn">[INPUT]</span>
+    <span class="err">Name</span>              <span class="err">tail</span>
+    <span class="err">Path</span>              <span class="err">/var/log/app/*.log</span>
+    <span class="err">Tag</span>               <span class="err">app.*</span>
+    <span class="err">Multiline</span>         <span class="err">On</span>
+    <span class="err">Parser</span>            <span class="err">docker</span>
+    <span class="err">DB</span>                <span class="err">/var/lib/fluent-bit/tail.db</span>
+    <span class="err">Mem_Buf_Limit</span>     <span class="err">50MB</span>
+    <span class="err">Skip_Long_Lines</span>   <span class="err">On</span>
+
+<span class="nn">[FILTER]</span>
+    <span class="err">Name</span>          <span class="err">modify</span>
+    <span class="err">Match</span>         <span class="err">app.*</span>
+    <span class="err">Add</span>           <span class="err">env</span> <span class="err">prod</span>
+    <span class="err">Add</span>           <span class="err">service</span> <span class="err">myservice</span>
+
+<span class="nn">[OUTPUT]</span>
+    <span class="err">Name</span>            <span class="err">kafka</span>
+    <span class="err">Match</span>           <span class="err">app.*</span>
+    <span class="err">Brokers</span>         <span class="err">kafka-1:9092,kafka-2:9092</span>
+    <span class="err">Topics</span>          <span class="err">logs.app</span>
+    <span class="err">rdkafka.queue.buffering.max.ms</span> <span class="err">100</span>
+    <span class="err">rdkafka.compression.codec</span>      <span class="err">lz4</span>
+    <span class="err">rdkafka.security.protocol</span>      <span class="err">ssl</span>
+
+<span class="nn">[OUTPUT]</span>
+    <span class="err">Name</span>            <span class="err">es</span>
+    <span class="err">Match</span>           <span class="err">app.*</span>
+    <span class="err">Host</span>            <span class="err">opensearch.local</span>
+    <span class="err">Port</span>            <span class="err">9200</span>
+    <span class="err">HTTP_User</span>       <span class="err">fluent</span>
+    <span class="err">HTTP_Passwd</span>     <span class="err">xxxxxx</span>
+    <span class="err">Logstash_Format</span> <span class="err">On</span>
+    <span class="err">tls</span>             <span class="err">On</span>
+</code></pre></div></div>
+
+<h3 id="vectortail--脱敏--loki">Vector（Tail → 脱敏 → Loki）</h3>
+<div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">[sources.app]</span>
+<span class="py">type</span> <span class="p">=</span> <span class="s">"file"</span>
+<span class="py">include</span> <span class="p">=</span> <span class="p">[</span><span class="s">"/var/log/app/*.log"</span><span class="p">]</span>
+<span class="py">ignore_older_secs</span> <span class="p">=</span> <span class="mi">86400</span>
+<span class="py">fingerprint.strategy</span> <span class="p">=</span> <span class="s">"device_and_inode"</span>
+
+<span class="nn">[transforms.mask]</span>
+<span class="py">type</span> <span class="p">=</span> <span class="s">"remap"</span>
+<span class="py">inputs</span> <span class="p">=</span> <span class="p">[</span><span class="s">"app"</span><span class="p">]</span>
+<span class="py">source</span> <span class="p">=</span> <span class="s">'''
+. = parse_json!(.message)
+.email = replace!(.email, r'([\\w.%+-]+)@([\\w.-]+\\.[A-Za-z]{2,})', "***@***")
+.credit_card = null
+'''</span>
+
+<span class="nn">[sinks.loki]</span>
+<span class="py">type</span> <span class="p">=</span> <span class="s">"loki"</span>
+<span class="py">inputs</span> <span class="p">=</span> <span class="p">[</span><span class="s">"mask"</span><span class="p">]</span>
+<span class="py">endpoint</span> <span class="p">=</span> <span class="s">"https://loki.local"</span>
+<span class="py">encoding.codec</span> <span class="p">=</span> <span class="s">"json"</span>
+<span class="py">labels</span> <span class="o">=</span> <span class="p">{</span><span class="py">service</span><span class="p">=</span><span class="s">"myservice"</span><span class="p">,</span> <span class="py">env</span><span class="p">=</span><span class="s">"prod"</span><span class="p">}</span>
+<span class="py">out_of_order_action</span> <span class="p">=</span> <span class="s">"accept"</span>
+</code></pre></div></div>
+
+<h3 id="logrotate与-tail采集器配合">logrotate（与 tail/采集器配合）</h3>
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/<span class="n">var</span>/<span class="n">log</span>/<span class="n">app</span>/*.<span class="n">log</span> {
+  <span class="n">daily</span>
+  <span class="n">rotate</span> <span class="m">7</span>
+  <span class="n">compress</span>
+  <span class="n">missingok</span>
+  <span class="n">copytruncate</span>
+  <span class="n">create</span> <span class="m">0640</span> <span class="n">app</span> <span class="n">app</span>
+}
+</code></pre></div></div>
+
+<h2 id="kubernetes-最佳实践">Kubernetes 最佳实践</h2>
+<p>原则：应用只输出 stdout JSON；使用 DaemonSet（Fluent Bit/Vector/Promtail）统一采集 <code class="language-plaintext highlighter-rouge">/var/log/containers/*</code>，自动附加 k8s 元数据；Sidecar 仅在需本地解析/脱敏时使用；开启本地缓冲、资源限额、背压与基数治理。</p>
+
+<h3 id="fluent-bit-daemonsetcontainers--loki">Fluent Bit DaemonSet（Containers → Loki）</h3>
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">[SERVICE]</span>
+    <span class="err">Parsers_File</span> <span class="err">parsers.conf</span>
+
+<span class="nn">[INPUT]</span>
+    <span class="err">Name</span>              <span class="err">tail</span>
+    <span class="err">Path</span>              <span class="err">/var/log/containers/*.log</span>
+    <span class="err">Tag</span>               <span class="err">kube.*</span>
+    <span class="err">Parser</span>            <span class="err">docker</span>
+    <span class="err">Docker_Mode</span>       <span class="err">On</span>
+    <span class="err">Mem_Buf_Limit</span>     <span class="err">100MB</span>
+    <span class="err">DB</span>                <span class="err">/var/fluent-bit/tail.db</span>
+
+<span class="nn">[FILTER]</span>
+    <span class="err">Name</span>                <span class="err">kubernetes</span>
+    <span class="err">Match</span>               <span class="err">kube.*</span>
+    <span class="err">Kube_URL</span>            <span class="err">https://kubernetes.default.svc:443</span>
+    <span class="err">Merge_Log</span>           <span class="err">On</span>
+    <span class="err">Keep_Log</span>            <span class="err">Off</span>
+
+<span class="nn">[OUTPUT]</span>
+    <span class="err">Name</span>          <span class="err">loki</span>
+    <span class="err">Match</span>         <span class="err">kube.*</span>
+    <span class="err">Host</span>          <span class="err">loki-gateway</span>
+    <span class="err">Port</span>          <span class="err">3100</span>
+    <span class="err">Labels</span>        <span class="py">job</span><span class="p">=</span><span class="s">fluentbit, env=prod, kubernetes['namespace_name'], kubernetes['container_name']</span>
+    <span class="err">Auto_kubernetes_labels</span> <span class="err">On</span>
+</code></pre></div></div>
+
+<h3 id="promtail自动发现-pods">Promtail（自动发现 Pods）</h3>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">scrape_configs</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">job_name</span><span class="pi">:</span> <span class="s">kubernetes-pods</span>
+  <span class="na">pipeline_stages</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">docker</span><span class="pi">:</span> <span class="pi">{}</span>
+  <span class="pi">-</span> <span class="na">labeldrop</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">filename</span>
+  <span class="na">kubernetes_sd_configs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">role</span><span class="pi">:</span> <span class="s">pod</span>
+  <span class="na">relabel_configs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">source_labels</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">__meta_kubernetes_pod_label_app</span><span class="pi">]</span>
+    <span class="na">target_label</span><span class="pi">:</span> <span class="s">app</span>
+</code></pre></div></div>
+
+<h3 id="opentelemetry-collectorotlpfilelog--kafkaloki">OpenTelemetry Collector（OTLP/filelog → Kafka/Loki）</h3>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">receivers</span><span class="pi">:</span>
+  <span class="na">otlp</span><span class="pi">:</span>
+    <span class="na">protocols</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">http</span><span class="pi">:</span> <span class="pi">{},</span> <span class="nv">grpc</span><span class="pi">:</span> <span class="pi">{}}</span>
+  <span class="na">filelog</span><span class="pi">:</span>
+    <span class="na">include</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">/var/log/containers/*.log</span><span class="pi">]</span>
+    <span class="na">operators</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">json_parser</span>
+<span class="na">processors</span><span class="pi">:</span>
+  <span class="na">batch</span><span class="pi">:</span> <span class="pi">{}</span>
+  <span class="na">attributes</span><span class="pi">:</span>
+    <span class="na">actions</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">key</span><span class="pi">:</span> <span class="s">env</span>
+      <span class="na">value</span><span class="pi">:</span> <span class="s">prod</span>
+      <span class="na">action</span><span class="pi">:</span> <span class="s">upsert</span>
+<span class="na">exporters</span><span class="pi">:</span>
+  <span class="na">kafka</span><span class="pi">:</span>
+    <span class="na">brokers</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">kafka-1</span><span class="pi">:</span><span class="nv">9092</span><span class="pi">]</span>
+    <span class="na">topic</span><span class="pi">:</span> <span class="s">logs.app</span>
+  <span class="na">loki</span><span class="pi">:</span>
+    <span class="na">endpoint</span><span class="pi">:</span> <span class="s">http://loki:3100/loki/api/v1/push</span>
+<span class="na">service</span><span class="pi">:</span>
+  <span class="na">pipelines</span><span class="pi">:</span>
+    <span class="na">logs/primary</span><span class="pi">:</span>
+      <span class="na">receivers</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">filelog</span><span class="pi">,</span> <span class="nv">otlp</span><span class="pi">]</span>
+      <span class="na">processors</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">attributes</span><span class="pi">,</span> <span class="nv">batch</span><span class="pi">]</span>
+      <span class="na">exporters</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">kafka</span><span class="pi">,</span> <span class="nv">loki</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<h2 id="可落地方案与模板">可落地方案与模板</h2>
+<h3 id="小团队低成本plg">小团队低成本（PLG）</h3>
+<ul>
+  <li>Promtail/Fluent Bit → Loki → Grafana；控制标签基数，分层保留。
+    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">limits_config</span><span class="pi">:</span>
+<span class="na">retention_period</span><span class="pi">:</span> <span class="s">168h</span>
+<span class="na">compactor</span><span class="pi">:</span>
+<span class="na">working_directory</span><span class="pi">:</span> <span class="s">/data/compactor</span>
+<span class="na">compaction_interval</span><span class="pi">:</span> <span class="s">5m</span>
+<span class="na">delete_request_cancel_period</span><span class="pi">:</span> <span class="s">24h</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="中型团队检索优先efk--kafka">中型团队检索优先（EFK + Kafka）</h3>
+<ul>
+  <li>Fluent Bit/Vector → Kafka → Logstash/OTel Collector → OpenSearch；Kafka 缓冲与多消费者，OpenSearch 做 ILM。
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+</span><span class="nl">"policy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"phases"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"hot"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"actions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"rollover"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"max_size"</span><span class="p">:</span><span class="w"> </span><span class="s2">"50gb"</span><span class="p">,</span><span class="w"> </span><span class="nl">"max_age"</span><span class="p">:</span><span class="w"> </span><span class="s2">"7d"</span><span class="p">}}},</span><span class="w">
+    </span><span class="nl">"warm"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"actions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"forcemerge"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"max_num_segments"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">}}},</span><span class="w">
+    </span><span class="nl">"cold"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"min_age"</span><span class="p">:</span><span class="w"> </span><span class="s2">"30d"</span><span class="p">,</span><span class="w"> </span><span class="nl">"actions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"freeze"</span><span class="p">:</span><span class="w"> </span><span class="p">{}}},</span><span class="w">
+    </span><span class="nl">"delete"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"min_age"</span><span class="p">:</span><span class="w"> </span><span class="s2">"90d"</span><span class="p">,</span><span class="w"> </span><span class="nl">"actions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"delete"</span><span class="p">:</span><span class="w"> </span><span class="p">{}}}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="海量吞吐性价比vector--clickhouse">海量吞吐/性价比（Vector + ClickHouse）</h3>
+<ul>
+  <li>Vector DS/Agent → Vector Aggregator → ClickHouse（MergeTree/表分区）。
+    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">logs</span><span class="p">.</span><span class="n">app</span>
+<span class="p">(</span>
+<span class="n">ts</span> <span class="nb">DateTime</span> <span class="n">CODEC</span><span class="p">(</span><span class="n">Delta</span><span class="p">,</span> <span class="n">ZSTD</span><span class="p">),</span>
+<span class="k">level</span> <span class="n">LowCardinality</span><span class="p">(</span><span class="n">String</span><span class="p">),</span>
+<span class="n">service</span> <span class="n">LowCardinality</span><span class="p">(</span><span class="n">String</span><span class="p">),</span>
+<span class="n">trace_id</span> <span class="n">String</span><span class="p">,</span>
+<span class="n">message</span> <span class="n">String</span><span class="p">,</span>
+<span class="n">k8s_namespace</span> <span class="n">LowCardinality</span><span class="p">(</span><span class="n">String</span><span class="p">),</span>
+<span class="n">labels</span> <span class="k">Map</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">String</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">ENGINE</span> <span class="o">=</span> <span class="n">MergeTree</span>
+<span class="k">PARTITION</span> <span class="k">BY</span> <span class="n">toDate</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="p">(</span><span class="n">service</span><span class="p">,</span> <span class="n">ts</span><span class="p">)</span>
+<span class="n">TTL</span> <span class="n">ts</span> <span class="o">+</span> <span class="n">INTERVAL</span> <span class="mi">30</span> <span class="k">DAY</span> <span class="k">DELETE</span>
+<span class="n">SETTINGS</span> <span class="n">index_granularity</span> <span class="o">=</span> <span class="mi">8192</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="合规与审计">合规与审计</h3>
+<ul>
+  <li>采集端脱敏（Vector remap/Fluent Bit grep），传输与落盘加密，审计日志 WORM/对象存储锁不可篡改。</li>
+</ul>
+
+<h3 id="边缘离线">边缘/离线</h3>
+<ul>
+  <li>本地持久化缓冲，网络可用回传；启用压缩与节流；按优先级丢弃非关键日志。</li>
+</ul>
+
+<h2 id="php-实践与配置示例">PHP 实践与配置示例</h2>
+<h3 id="目标">目标</h3>
+<ul>
+  <li>统一 JSON Schema；stdout（K8s）或文件/journald（VM）；与链路追踪关联（trace_id/span_id）；采集端脱敏与缓冲。</li>
+</ul>
+
+<h3 id="monologstdout-json--关联上下文">Monolog（stdout JSON + 关联上下文）</h3>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">require</span> <span class="s1">'vendor/autoload.php'</span><span class="p">;</span>
+
+<span class="kn">use</span> <span class="nc">Monolog</span><span class="err">\</span><span class="nc">\Logger</span><span class="p">;</span>
+<span class="kn">use</span> <span class="nc">Monolog</span><span class="err">\</span><span class="nc">\Handler</span><span class="err">\</span><span class="nc">\StreamHandler</span><span class="p">;</span>
+<span class="kn">use</span> <span class="nc">Monolog</span><span class="err">\</span><span class="nc">\Formatter</span><span class="err">\</span><span class="nc">\JsonFormatter</span><span class="p">;</span>
+
+<span class="nv">$logger</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Logger</span><span class="p">(</span><span class="s1">'app'</span><span class="p">);</span>
+<span class="nv">$handler</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StreamHandler</span><span class="p">(</span><span class="s1">'php://stdout'</span><span class="p">,</span> <span class="nc">Logger</span><span class="o">::</span><span class="no">INFO</span><span class="p">);</span>
+<span class="nv">$handler</span><span class="o">-&gt;</span><span class="nf">setFormatter</span><span class="p">(</span><span class="k">new</span> <span class="nc">JsonFormatter</span><span class="p">(</span><span class="nc">JsonFormatter</span><span class="o">::</span><span class="no">BATCH_MODE_JSON</span><span class="p">,</span> <span class="kc">false</span><span class="p">));</span>
+
+<span class="c1">// 处理器：注入通用字段（建议从请求头、会话、OTel 上下文中提取）</span>
+<span class="nv">$logger</span><span class="o">-&gt;</span><span class="nf">pushProcessor</span><span class="p">(</span><span class="k">function</span> <span class="p">(</span><span class="kt">array</span> <span class="nv">$record</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$record</span><span class="p">[</span><span class="s1">'extra'</span><span class="p">][</span><span class="s1">'env'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getenv</span><span class="p">(</span><span class="s1">'APP_ENV'</span><span class="p">)</span> <span class="o">?:</span> <span class="s1">'prod'</span><span class="p">;</span>
+    <span class="nv">$record</span><span class="p">[</span><span class="s1">'extra'</span><span class="p">][</span><span class="s1">'service'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'my-php-service'</span><span class="p">;</span>
+    <span class="nv">$record</span><span class="p">[</span><span class="s1">'extra'</span><span class="p">][</span><span class="s1">'request_id'</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'HTTP_X_REQUEST_ID'</span><span class="p">]</span> <span class="o">??</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="nv">$record</span><span class="p">[</span><span class="s1">'extra'</span><span class="p">][</span><span class="s1">'trace_id'</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'HTTP_X_TRACE_ID'</span><span class="p">]</span> <span class="o">??</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// 或从 OTel SDK 获取</span>
+    <span class="nv">$record</span><span class="p">[</span><span class="s1">'extra'</span><span class="p">][</span><span class="s1">'user_id'</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'user_id'</span><span class="p">]</span> <span class="o">??</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nv">$record</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nv">$logger</span><span class="o">-&gt;</span><span class="nf">pushHandler</span><span class="p">(</span><span class="nv">$handler</span><span class="p">);</span>
+
+<span class="c1">// 示例</span>
+<span class="nv">$logger</span><span class="o">-&gt;</span><span class="nf">info</span><span class="p">(</span><span class="s1">'user login'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'user_id'</span> <span class="o">=&gt;</span> <span class="mi">123</span><span class="p">]);</span>
+<span class="nv">$logger</span><span class="o">-&gt;</span><span class="nf">error</span><span class="p">(</span><span class="s1">'db failed'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'error_code'</span> <span class="o">=&gt;</span> <span class="s1">'DB_CONN_TIMEOUT'</span><span class="p">]);</span>
+</code></pre></div></div>
+
+<h3 id="php-fpmnginx容器化将错误与访问日志输出到-stdoutstderr">PHP-FPM/Nginx（容器化）将错误与访问日志输出到 stdout/stderr</h3>
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">; php.ini
+</span><span class="py">log_errors</span> <span class="p">=</span> <span class="s">On</span>
+
+<span class="c">; php-fpm.conf 或 www.conf
+</span><span class="py">error_log</span> <span class="p">=</span> <span class="s">/proc/self/fd/2</span>
+<span class="c">; 可选：将 FPM 访问日志也导向 stdout/stderr
+; access.log = /proc/self/fd/2
+</span></code></pre></div></div>
+
+<h3 id="物理机文件落盘">物理机（文件落盘）</h3>
+<ul>
+  <li>Monolog 将日志写入 <code class="language-plaintext highlighter-rouge">/var/log/app/app.log</code>，配合 logrotate；采集器使用 tail 指纹/offset 防重。</li>
+</ul>
+
+<h3 id="与-opentelemetry-关联">与 OpenTelemetry 关联</h3>
+<ul>
+  <li>在反向代理或应用层透传 <code class="language-plaintext highlighter-rouge">traceparent</code>/<code class="language-plaintext highlighter-rouge">baggage</code>，在 Processor 中提取 <code class="language-plaintext highlighter-rouge">trace_id/span_id</code>；</li>
+  <li>采用 OTel PHP SDK（可选）向后端上报 Traces，与 Logs 通过共同字段实现互跳。</li>
+</ul>
+
+<h2 id="常见坑与自检清单">常见坑与自检清单</h2>
+<ul>
+  <li>时间戳/时区混乱；多行堆栈未结构化；</li>
+  <li>采集器与 logrotate 不匹配导致丢失；</li>
+  <li>生产误开 DEBUG/TRACE 导致成本暴涨；</li>
+  <li>在业务线程直连日志后端造成阻塞；</li>
+  <li>标签高基数（Loki/Prometheus 类系统致命）；</li>
+  <li>未做脱敏，泄露 PII/密钥；</li>
+  <li>无本地缓冲，网络抖动即丢；无 ILM/TTL 费用失控。</li>
+</ul>
+
+<h2 id="迁移与落地步骤">迁移与落地步骤</h2>
+<ul>
+  <li>盘点与分层：统一 Schema 与追踪字段，按服务/环境/吞吐/保留需求分层。</li>
+  <li>PoC：PLG/EFK/ClickHouse 各选一条链路做对比，回放历史日志估算成本与延迟。</li>
+  <li>渐进式上线：按业务域切流，灰度与采样并行，保留回滚通道。</li>
+  <li>治理与可视化：建立日志 SLO，Grafana/Kibana 看板与告警；</li>
+  <li>成本优化：ILM/TTL、热温冷分层、标签治理、对象存储归档。</li>
+</ul>
+
+<hr />
+<p>简要结论：统一 JSON Schema 与追踪上下文是基础；stdout（K8s）/文件或 journald（VM）为入口，Agent 端做脱敏与缓冲；强检索选 OpenSearch，性价比选 Loki/ClickHouse，高可靠加 Kafka；OTel 统一日志/链路/指标可显著提升排障效率；生产环境务必控制标签基数、采样与 ILM/TTL，并启用背压与本地缓冲。</p>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=PHP%20%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E4%B8%8E%E9%9B%86%E4%B8%AD%E5%8C%96&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/php/2021/06/10/PHP-%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E4%B8%8E%E9%9B%86%E4%B8%AD%E5%8C%96.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/php/2021/06/10/PHP-%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E4%B8%8E%E9%9B%86%E4%B8%AD%E5%8C%96.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

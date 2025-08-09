@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>TayloyChen Blog | 这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TayloyChen Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<meta property="og:description" content="这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员" />
+<link rel="canonical" href="" />
+<meta property="og:url" content="" />
+<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="TayloyChen Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","name":"TayloyChen Blog","url":""}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="TayloyChen Blog" />
+</head>
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicons/favicon.ico">
+<!-- 分类导航入口 -->
+<a href="/categories/" style="margin-left:16px;font-weight:bold;">分类</a>
+<body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header>
+
+
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+  <header>
+    <h1>Java 内存模型与可见性实践</h1>
+    <p class="post-meta">2015-09-08 · 技术 / Java · 技术, Java</p>
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc"></aside>
+    <div id="post-content">
+      <p>JMM（Java Memory Model）定义了线程间可见性、原子性与有序性。本文通过可复现案例解释 <code class="language-plaintext highlighter-rouge">volatile</code>、<code class="language-plaintext highlighter-rouge">happens-before</code>、指令重排与发布/逃逸，并给出 JIT 层面的观测方法。</p>
+
+<h2 id="1-可见性问题复现">1. 可见性问题复现</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">StopFlagDemo</span> <span class="o">{</span>
+  <span class="c1">// 去掉 volatile 观察现象</span>
+  <span class="kd">static</span> <span class="cm">/*volatile*/</span> <span class="kt">boolean</span> <span class="n">stop</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span> <span class="k">while</span> <span class="o">(!</span><span class="n">stop</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span> <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+    <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+    <span class="n">stop</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>无 <code class="language-plaintext highlighter-rouge">volatile</code> 时，JIT 可能将 <code class="language-plaintext highlighter-rouge">stop</code> 缓存至寄存器，循环无法观察到主线程写入。</p>
+
+<h2 id="2-jit-观测hsdisprintassembly">2. JIT 观测（hsdis/PrintAssembly）</h2>
+<p>启动参数：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-XX:+UnlockDiagnosticVMOptions -XX:+PrintCompilation -XX:+PrintAssembly
+</code></pre></div></div>
+<p>观察 <code class="language-plaintext highlighter-rouge">volatile</code> 写前后的屏障指令（如 x86 的 <code class="language-plaintext highlighter-rouge">lock</code> 前缀原子指令 / <code class="language-plaintext highlighter-rouge">mfence</code>）。</p>
+
+<h2 id="3-指令重排与双检锁">3. 指令重排与双检锁</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">LazySingleton</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="nc">LazySingleton</span> <span class="no">INSTANCE</span><span class="o">;</span>
+  <span class="kd">static</span> <span class="nc">LazySingleton</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="no">INSTANCE</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">synchronized</span> <span class="o">(</span><span class="nc">LazySingleton</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="no">INSTANCE</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="no">INSTANCE</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LazySingleton</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="no">INSTANCE</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">volatile</code> 避免构造重排导致的“引用可见但对象未完成初始化”。</p>
+
+<h2 id="4-happens-before-速查">4. Happens-Before 速查</h2>
+<ul>
+  <li>程序次序、监视器锁、volatile、线程启动/终止、传递性。</li>
+</ul>
+
+<h2 id="5-排错清单">5. 排错清单</h2>
+<ul>
+  <li>自旋等待变量需 <code class="language-plaintext highlighter-rouge">volatile</code> 或原子类；</li>
+  <li>不要在锁外读写与锁内读写混用同一状态；</li>
+  <li>使用 <code class="language-plaintext highlighter-rouge">jcmd VM.print_touched_methods</code>、<code class="language-plaintext highlighter-rouge">jfr</code> 观测热点与锁竞争。</li>
+</ul>
+
+<hr />
+
+<h2 id="6-jmm-与内存屏障的演进jsr-133">6. JMM 与内存屏障的演进（JSR-133）</h2>
+<ul>
+  <li>JDK 5 以前（JSR-133 之前），内存模型对 <code class="language-plaintext highlighter-rouge">volatile</code> 与 <code class="language-plaintext highlighter-rouge">final</code> 的约束较弱，双检锁（DCL）可能失效。</li>
+  <li>自 JDK 5（JSR-133）起：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">volatile</code> 写建立 Store-Store 与 Store-Load 语义；<code class="language-plaintext highlighter-rouge">volatile</code> 读建立 Load-Load 与 Load-Store 语义（等价于写的释放、读的获取）。</li>
+      <li><code class="language-plaintext highlighter-rouge">final</code> 字段发布语义明确：构造完成后对其它线程可见，避免“半初始化”。</li>
+    </ul>
+  </li>
+  <li>抽象屏障分类（便于理解，具体实现依赖平台）：
+    <ul>
+      <li>LoadLoad, LoadStore, StoreStore, StoreLoad</li>
+      <li>一般而言：volatile 写 ~ Release（StoreStore + StoreLoad），volatile 读 ~ Acquire（LoadLoad + LoadStore）。</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="7-hotspot-在不同硬件上的实现概览">7. HotSpot 在不同硬件上的实现（概览）</h2>
+<p>不同平台的内存一致性与可用指令不同，HotSpot 会在 C1/C2 后端针对性插入屏障/选用原子指令。</p>
+
+<h3 id="71-x86x64tso">7.1 x86/x64（TSO）</h3>
+<ul>
+  <li>天然较强（Total Store Order）：已保证 LoadLoad / LoadStore，有风险的是 StoreLoad。</li>
+  <li>常见映射（HotSpot 版本与编译后端可能差异）：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">volatile</code> 写：使用带 <code class="language-plaintext highlighter-rouge">lock</code> 前缀的原子指令（如 <code class="language-plaintext highlighter-rouge">lock xchg</code>、<code class="language-plaintext highlighter-rouge">lock add</code> 0），或显式 <code class="language-plaintext highlighter-rouge">mfence</code>，以形成 Full Fence，确保写-读不可越过。</li>
+      <li><code class="language-plaintext highlighter-rouge">volatile</code> 读：通常普通 <code class="language-plaintext highlighter-rouge">mov</code> 即可满足 Acquire 语义（TSO 已保证读的顺序），必要时可能配合轻量栅栏。</li>
+    </ul>
+  </li>
+  <li>CAS/原子操作：<code class="language-plaintext highlighter-rouge">lock cmpxchg</code>，天然携带全栅栏语义。</li>
+</ul>
+
+<p>示例（节选，不同 JDK/编译器可能略有不同，仅供识别思路）：</p>
+<pre><code class="language-asm">; volatile store 之前/之后的栅栏
+lock addl $0x0, (%rsp)   ; 作为全栅栏（或使用 mfence）
+mov DWORD PTR [field], eax ; 实际写入
+</code></pre>
+
+<h3 id="72-aarch64armv8">7.2 AArch64（ARMv8）</h3>
+<ul>
+  <li>指令级提供获取/释放语义：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">LDAR</code>（acquire load）/ <code class="language-plaintext highlighter-rouge">STLR</code>（release store）</li>
+      <li>显式全栅栏：<code class="language-plaintext highlighter-rouge">DMB ish</code></li>
+    </ul>
+  </li>
+  <li>常见映射：
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">volatile</code> 读：<code class="language-plaintext highlighter-rouge">LDAR</code></li>
+      <li><code class="language-plaintext highlighter-rouge">volatile</code> 写：<code class="language-plaintext highlighter-rouge">STLR</code></li>
+      <li><code class="language-plaintext highlighter-rouge">VarHandle.fullFence()</code> / <code class="language-plaintext highlighter-rouge">Unsafe.fullFence()</code>：<code class="language-plaintext highlighter-rouge">DMB ish</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="73-其它简述">7.3 其它（简述）</h3>
+<ul>
+  <li>ARMv7：<code class="language-plaintext highlighter-rouge">ldrex/strex</code> + <code class="language-plaintext highlighter-rouge">dmb</code> 组合；</li>
+  <li>PPC：<code class="language-plaintext highlighter-rouge">lwsync</code>（轻量栅栏）、<code class="language-plaintext highlighter-rouge">sync</code>（全栅栏）。</li>
+</ul>
+
+<blockquote>
+  <p>关键点：JMM 语义是上层抽象，HotSpot 在不同平台选用“能满足该语义的最弱指令组合”，以减少开销。</p>
+</blockquote>
+
+<h2 id="8-varhandle-与-unsafe-的屏障对应">8. VarHandle 与 Unsafe 的屏障对应</h2>
+<p>现代 JDK 推荐使用 <code class="language-plaintext highlighter-rouge">VarHandle</code> 指定精确的内存语义：</p>
+<ul>
+  <li>访问语义：<code class="language-plaintext highlighter-rouge">getAcquire / setRelease / getOpaque / setOpaque / getVolatile / setVolatile</code></li>
+  <li>栅栏语义：<code class="language-plaintext highlighter-rouge">VarHandle.acquireFence()</code>、<code class="language-plaintext highlighter-rouge">releaseFence()</code>、<code class="language-plaintext highlighter-rouge">fullFence()</code></li>
+</ul>
+
+<p>大致映射关系：</p>
+<ul>
+  <li>Acquire/Release -&gt; 对应硬件 acquire/release（如 AArch64 的 LDAR/STLR）；</li>
+  <li>Volatile -&gt; acquire + release（按点位插入栅栏，或选用更强指令）；</li>
+  <li>FullFence -&gt; 全序列栅栏（x86 可用 <code class="language-plaintext highlighter-rouge">mfence</code> 或 <code class="language-plaintext highlighter-rouge">lock</code> 原子操作；AArch64 用 <code class="language-plaintext highlighter-rouge">dmb ish</code>）。</li>
+</ul>
+
+<p>Unsafe（不推荐新代码使用）也提供：<code class="language-plaintext highlighter-rouge">storeFence()</code>、<code class="language-plaintext highlighter-rouge">loadFence()</code>、<code class="language-plaintext highlighter-rouge">fullFence()</code>，与 VarHandle 栅栏语义对应。</p>
+
+<h2 id="9-hsdis-观测指引示例">9. hsdis 观测指引（示例）</h2>
+<p>以 <code class="language-plaintext highlighter-rouge">volatile</code> 写为例，打开 <code class="language-plaintext highlighter-rouge">-XX:+PrintAssembly</code> 后，在输出中搜索目标方法：</p>
+<pre><code class="language-asm">; ...
+; 关键位置常见：
+lock addl $0x0,(%rsp)   ; 或 mfence，形成 StoreLoad 屏障
+mov    %eax,0xNN(%rbx)  ; 写入 volatile 字段
+; ...
+</code></pre>
+<p>在 AArch64：</p>
+<pre><code class="language-asm">stlr    w0, [x1]        ; release store 到 volatile 字段
+</code></pre>
+<p>说明：不同 JDK/编译器（C1/C2）、优化级别与 CPU 平台会有差异，识别“是否具备 acquire/release/全栅栏”语义是核心。</p>
+
+<h2 id="10-实战建议落地">10. 实战建议（落地）</h2>
+<ul>
+  <li>选择合适语义：
+    <ul>
+      <li>只需要“发布事件/状态位”的写：<code class="language-plaintext highlighter-rouge">setRelease</code>；对应读取用 <code class="language-plaintext highlighter-rouge">getAcquire</code>。</li>
+      <li>必须与既有 volatile 交互且要求最强语义：使用 <code class="language-plaintext highlighter-rouge">getVolatile/setVolatile</code>。</li>
+      <li>仅跨线程传递“可能乱序但最终一致”的值：<code class="language-plaintext highlighter-rouge">getOpaque/setOpaque</code>（更弱，开销小）。</li>
+    </ul>
+  </li>
+  <li>避免无谓全栅栏：全栅栏成本高，在热点路径优先 acquire/release 组合。</li>
+  <li>发布对象：
+    <ul>
+      <li>使字段 <code class="language-plaintext highlighter-rouge">final</code>，或在构造完毕后通过 <code class="language-plaintext highlighter-rouge">volatile</code>/<code class="language-plaintext highlighter-rouge">release</code> 语义发布；</li>
+      <li>避免“逃逸未完成初始化”的引用外泄。</li>
+    </ul>
+  </li>
+  <li>诊断与基线：
+    <ul>
+      <li>用 JFR 观测锁竞争/线程状态；</li>
+      <li>用 hsdis 验证关键点的指令是否达成预期语义（仅在关键问题排查时使用）。</li>
+    </ul>
+  </li>
+</ul>
+
+    </div>
+  </div>
+
+  <footer class="post-footer">
+    <div class="share">
+      <a href="https://twitter.com/intent/tweet?text=Java%20%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html" target="_blank">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+    </div>
+
+    
+    <section id="comments" style="margin-top: 24px;">
+      <script src="https://giscus.app/client.js"
+        data-repo=""
+        data-repo-id=""
+        data-category="General"
+        data-category-id=""
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+    
+  </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+// 构建目录
+(function(){
+  const content = document.getElementById('post-content');
+  const toc = document.getElementById('toc');
+  if (!content || !toc) return;
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (!headings.length) return;
+  const ul = document.createElement('ul');
+  headings.forEach(h => {
+    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+    const li = document.createElement('li');
+    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  const title = document.createElement('div');
+  title.textContent = '目录';
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '8px';
+  toc.appendChild(title);
+  toc.appendChild(ul);
+})();
+
+// 代码复制按钮
+(function(){
+  document.querySelectorAll('pre > code').forEach(code => {
+    const pre = code.parentElement;
+    const btn = document.createElement('button');
+    btn.textContent = '复制';
+    btn.className = 'copy-btn';
+    btn.onclick = async () => {
+      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
+    };
+    pre.style.position = 'relative';
+    btn.style.position = 'absolute';
+    btn.style.right = '8px';
+    btn.style.top = '8px';
+    pre.appendChild(btn);
+  });
+})();
+
+// 回到顶部
+(function(){
+  const btn = document.getElementById('back-to-top');
+  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+  window.addEventListener('scroll', onscroll); onscroll();
+  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
+// 图片懒加载
+(function(){
+  document.querySelectorAll('#post-content img').forEach(img => { img.loading = 'lazy'; });
+})();
+</script>
+
+<style>
+.post-body{display:flex; gap:24px}
+#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
+#post-content{flex:1}
+#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
+.copy-btn{font-size:12px; padding:2px 6px}
+@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+</style>
+
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">TayloyChen Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">TayloyChen Blog</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
