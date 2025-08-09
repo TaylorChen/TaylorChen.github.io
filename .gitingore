@@ -1,5 +1,4 @@
-.specstory/
-.specstory/*
-specstory
-vendor
-vendor/*
+/.specstory
+/vendor
+/.idea
+/.vscode
