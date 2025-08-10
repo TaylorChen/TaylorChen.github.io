@@ -33,7 +33,28 @@
   
     <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
     <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "TayloyChen Blog",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script>
 </head>
 <body><header class="site-header" role="banner">
   <div class="wrapper">
@@ -43,7 +64,8 @@
       <a class="page-link" href="/categories/">分类</a>
       <a class="page-link" href="/tags/">标签</a>
       <a class="page-link" href="/archives/">归档</a>
-      <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
       <a class="page-link" href="/about/">关于</a>
     </nav>
   </div>
@@ -57,11 +79,19 @@
   
   
     <li>
-      <a href="/%E6%80%9D%E8%80%83/2024/08/25/%E4%BD%A0%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B.html">你需要知道的事情</a> (2024-08-25)
+      <span class="post-meta">2024-08-25</span>
+      <a class="post-link" href="/%E6%80%9D%E8%80%83/2024/08/25/%E4%BD%A0%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B.html">你需要知道的事情</a>
+      
+        <p class="excerpt">围绕商业底层逻辑、信息差、宏中微视角、资产与负债端回报、投资误区与兴趣商业化，整理一套贴近现实的思考与建议。</p>
+      
     </li>
   
     <li>
-      <a href="/%E6%80%9D%E8%80%83/2024/08/11/%E5%91%A8%E6%9C%AB%E6%80%9D%E8%80%83%E8%AE%B0%E5%BD%95.html">周末思考记录20240811</a> (2024-08-11)
+      <span class="post-meta">2024-08-11</span>
+      <a class="post-link" href="/%E6%80%9D%E8%80%83/2024/08/11/%E5%91%A8%E6%9C%AB%E6%80%9D%E8%80%83%E8%AE%B0%E5%BD%95.html">周末思考记录20240811</a>
+      
+        <p class="excerpt">围绕知识盲点、动手实践、信息可靠性、日常反思与家人陪伴的片段式记录，沉淀可复用的生活与工作方法。</p>
+      
     </li>
   
 </ul>
@@ -79,7 +109,7 @@
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">{&quot;name&quot; =&gt; &quot;TayloyChen&quot;, &quot;url&quot; =&gt; &quot;https://taylorchen.github.io&quot;}</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+          <li class="p-name"><a class="u-url" href="https://taylorchen.github.io">TayloyChen</a></li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
       </div>
 
       <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
@@ -93,6 +123,8 @@
   </div>
 
 </footer>
+
+
 </body>
 
 </html>

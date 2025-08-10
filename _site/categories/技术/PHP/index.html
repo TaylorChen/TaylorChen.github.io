@@ -33,7 +33,28 @@
   
     <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
     <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "TayloyChen Blog",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script>
 </head>
 <body><header class="site-header" role="banner">
   <div class="wrapper">
@@ -43,7 +64,8 @@
       <a class="page-link" href="/categories/">分类</a>
       <a class="page-link" href="/tags/">标签</a>
       <a class="page-link" href="/archives/">归档</a>
-      <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
       <a class="page-link" href="/about/">关于</a>
     </nav>
   </div>
@@ -268,6 +290,8 @@
               <a class="post-link" href="/%E6%8A%80%E6%9C%AF/php/2021/06/10/PHP-%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E4%B8%8E%E9%9B%86%E4%B8%AD%E5%8C%96.html">PHP 实时日志采集与集中化</a>
             </h3>
             
+              <p class="excerpt">从物理机到 Kubernetes 的日志采集/清洗/聚合方案，对比 EFK/PLG/ClickHouse/OTel，提供配置模板、脱敏与容量治理清单。</p>
+            
           </li>
         
       
@@ -393,6 +417,8 @@
               <a class="post-link" href="/%E6%8A%80%E6%9C%AF/php/2018/01/26/PHP-%E5%8D%8F%E7%A8%8BSwoole-%E9%AB%98%E5%B9%B6%E5%8F%91%E5%AE%9E%E8%B7%B5.html">PHP 协程 Swoole 高并发实践</a>
             </h3>
             
+              <p class="excerpt">围绕 Swoole 协程/调度/Hook 与连接池等关键点，提供高并发落地范式、压测方法与避坑清单。</p>
+            
           </li>
         
       
@@ -446,6 +472,8 @@
               <a class="post-link" href="/%E6%8A%80%E6%9C%AF/php/2016/08/17/PHP-FPM-%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E6%8C%87%E5%8D%97.html">PHP-FPM 性能调优指南</a>
             </h3>
             
+              <p class="excerpt">涵盖系统内核/网络、Nginx-FPM 通讯、Pool 参数、OPcache/JIT 与代码层实践的端到端优化方案，附标准化配置与排错清单。</p>
+            
           </li>
         
       
@@ -491,7 +519,7 @@
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">{&quot;name&quot; =&gt; &quot;TayloyChen&quot;, &quot;url&quot; =&gt; &quot;https://taylorchen.github.io&quot;}</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+          <li class="p-name"><a class="u-url" href="https://taylorchen.github.io">TayloyChen</a></li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
       </div>
 
       <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
@@ -505,6 +533,8 @@
   </div>
 
 </footer>
+
+
 </body>
 
 </html>

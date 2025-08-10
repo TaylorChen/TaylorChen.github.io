@@ -6,6 +6,10 @@
   <meta name="robots" content="{{ page.robots }}">
   {% endif %}
   {% seo %}
+  {%- comment -%} 分页页码 > 1 的归档页避免收录，保留翻页抓取 {%- endcomment -%}
+  {% if paginator and paginator.page and paginator.page > 1 %}
+    <meta name="robots" content="noindex,follow">
+  {% endif %}
   {% if paginator %}
     {% if paginator.previous_page %}
       <link rel="prev" href="{{ paginator.previous_page_path | absolute_url }}">
@@ -25,4 +29,28 @@
     <meta property="og:image" content="{{ share_img | absolute_url }}">
     <meta name="twitter:image" content="{{ share_img | absolute_url }}">
   {% endif %}
+
+  {%- comment -%} 结构化数据：WebSite + SearchAction 与 Person {%- endcomment -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ site.title | jsonify }},
+    "url": {{ site.url | jsonify }},
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "{{ site.url }}/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": {{ site.author.name | default: site.title | jsonify }},
+    "url": {{ site.author.url | default: site.url | jsonify }},
+    "sameAs": {{ site.author.same_as | jsonify }}
+  }
+  </script>
 </head>

@@ -21,9 +21,11 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="TayloyChen Blog" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-09T22:23:40+08:00","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/page3/"}</script>
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-10T00:22:34+08:00","description":"这里是 TayloyChen 的个人博客，与你一起发现更大的世界 要做一个有 ikigai 的程序员","headline":"TayloyChen Blog","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/page3/"}</script>
 <!-- End Jekyll SEO tag -->
 
+    <meta name="robots" content="noindex,follow">
+  
   
     
       <link rel="prev" href="http://localhost:4000/page2/">
@@ -33,7 +35,7 @@
     
   
   
-    <meta property="article:modified_time" content="2025-08-09T22:23:40+08:00">
+    <meta property="article:modified_time" content="2025-08-10T00:22:34+08:00">
   
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="TayloyChen Blog" />
@@ -42,7 +44,28 @@
   
     <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
     <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "TayloyChen Blog",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script>
 </head>
 <body><header class="site-header" role="banner">
   <div class="wrapper">
@@ -52,7 +75,8 @@
       <a class="page-link" href="/categories/">分类</a>
       <a class="page-link" href="/tags/">标签</a>
       <a class="page-link" href="/archives/">归档</a>
-      <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
       <a class="page-link" href="/about/">关于</a>
     </nav>
   </div>
@@ -73,6 +97,8 @@
         <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html">Java Spring 事务传播与隔离级别陷阱</a>
       </h3>
       
+      <p class="excerpt">梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。</p>
+      
     </li>
     
     <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
@@ -80,6 +106,8 @@
       <h3 itemprop="headline">
         <a class="post-link" itemprop="url" href="/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html">智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线</a>
       </h3>
+      
+      <p class="excerpt">以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。</p>
       
     </li>
     
@@ -89,6 +117,8 @@
         <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/php/2021/06/10/PHP-%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E4%B8%8E%E9%9B%86%E4%B8%AD%E5%8C%96.html">PHP 实时日志采集与集中化</a>
       </h3>
       
+      <p class="excerpt">从物理机到 Kubernetes 的日志采集/清洗/聚合方案，对比 EFK/PLG/ClickHouse/OTel，提供配置模板、脱敏与容量治理清单。</p>
+      
     </li>
     
     <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
@@ -96,6 +126,8 @@
       <h3 itemprop="headline">
         <a class="post-link" itemprop="url" href="/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html">去中心化应用（DApps）架构实战：钱包、签名与读写分层</a>
       </h3>
+      
+      <p class="excerpt">以钱包为入口、合约为规则源、索引器为读路径，搭建可上线 DApp 的完整闭环；覆盖多钱包发现、网络切换、事件索引与错误处理。</p>
       
     </li>
     
@@ -105,6 +137,8 @@
         <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/nginx/2020/09/22/Nginx-%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5%E4%B8%8E%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E5%AE%9E%E8%B7%B5.html">Nginx 缓存策略与动静分离实践</a>
       </h3>
       
+      <p class="excerpt">从 CDN 到源站 Nginx 的缓存语义、键设计与失效策略，给出微缓存/静态长缓存配置与动静分离实践，附协同与排错清单。</p>
+      
     </li>
     
     <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
@@ -112,6 +146,8 @@
       <h3 itemprop="headline">
         <a class="post-link" itemprop="url" href="/web3/2020/08/19/Web3-%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%A0%88.html">Web3 的链上基础：共识、状态机与扩容栈</a>
       </h3>
+      
+      <p class="excerpt">以“可验证状态机复制”为主线，梳理状态转换、共识与数据可用性（DA），并给出节点/索引/扩容的工程建议与代码片段。</p>
       
     </li>
     
@@ -121,6 +157,8 @@
         <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html">MySQL 索引设计与回表优化实战</a>
       </h3>
       
+      <p class="excerpt">围绕查询模式而非字段建索引：B+树原理、列序与覆盖索引、SARGable 改写、回表优化与 Seek 分页、统计信息与灰度验证的工程化清单。</p>
+      
     </li>
     
     <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
@@ -128,6 +166,8 @@
       <h3 itemprop="headline">
         <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html">Java 垃圾回收调优：从 G1 到 ZGC</a>
       </h3>
+      
+      <p class="excerpt">从 JVM 内存/暂停机制到 G1/ZGC 的收集原理与调参方法论，结合日志示例与案例拆解，提供延迟敏感系统可直接落地的 GC 优化路径。</p>
       
     </li>
     
@@ -137,6 +177,8 @@
         <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/mysql/2019/08/02/MySQL-Online-DDL%E6%9C%BA%E5%88%B6%E5%AF%BC%E8%87%B4Duplicate-entry%E9%94%99%E8%AF%AF.html">MySQL Online DDL机制导致</a>
       </h3>
       
+      <p class="excerpt">解析 Online DDL row log 重放机制为何会触发 Duplicate entry，给出时间线、源码指引与工程上的可行规避策略（低峰变更/EXCLUSIVE/分阶段变更）。</p>
+      
     </li>
     
     <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
@@ -144,6 +186,8 @@
       <h3 itemprop="headline">
         <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/golang/2019/04/18/Go-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.html">Go 内存逃逸与性能优化</a>
       </h3>
+      
+      <p class="excerpt">从跨语言视角解释逃逸的本质，深入 Go 编译器逃逸分析与典型触发场景，并给出值语义、接口边界、容器预分配与并发实践的系统优化清单。</p>
       
     </li>
     
@@ -183,7 +227,7 @@
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">{&quot;name&quot; =&gt; &quot;TayloyChen&quot;, &quot;url&quot; =&gt; &quot;https://taylorchen.github.io&quot;}</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+          <li class="p-name"><a class="u-url" href="https://taylorchen.github.io">TayloyChen</a></li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
       </div>
 
       <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
@@ -197,6 +241,8 @@
   </div>
 
 </footer>
+
+
 </body>
 
 </html>

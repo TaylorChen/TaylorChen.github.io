@@ -34,7 +34,28 @@
   
     <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
     <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "TayloyChen Blog",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script>
 </head>
 <body><header class="site-header" role="banner">
   <div class="wrapper">
@@ -44,7 +65,8 @@
       <a class="page-link" href="/categories/">分类</a>
       <a class="page-link" href="/tags/">标签</a>
       <a class="page-link" href="/archives/">归档</a>
-      <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
       <a class="page-link" href="/about/">关于</a>
     </nav>
   </div>
@@ -62,6 +84,15 @@
        · 工具
        · 
     </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+        
+          &nbsp;/&nbsp;<a href="/categories/">工具</a>
+        
+      
+      &nbsp;/&nbsp;<span aria-current="page">实用Mac软件推荐列表</span>
+    </nav>
     
     
       <meta name="keywords" content="">
@@ -860,9 +891,18 @@
   
 
   <footer class="post-footer">
+    <nav class="post-pager" aria-label="Post Navigation">
+      
+        <a class="prev" href="/%E6%8A%80%E6%9C%AF/nginx/2023/12/05/Nginx-Ingress-%E5%9C%A8Kubernetes%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE.html" rel="prev">← 上一篇：Nginx Ingress 在 Kubernetes 的高可用配置</a>
+      
+      
+        <a class="next" href="/%E6%80%9D%E8%80%83/2024/03/25/%E4%BA%8C%E5%85%AB%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83.html" rel="next">下一篇：二八法则的一些思考 →</a>
+      
+    </nav>
     <div class="share">
-      <a href="https://twitter.com/intent/tweet?text=%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8&url=http://localhost:4000/%E5%B7%A5%E5%85%B7/2023/12/19/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html" target="_blank">Share to X</a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E5%B7%A5%E5%85%B7/2023/12/19/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://twitter.com/intent/tweet?text=%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8&url=http://localhost:4000/%E5%B7%A5%E5%85%B7/2023/12/19/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html" target="_blank" rel="noopener">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E5%B7%A5%E5%85%B7/2023/12/19/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html" target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/%E5%B7%A5%E5%85%B7/2023/12/19/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html" target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
     </div>
 
     
@@ -942,7 +982,7 @@
   btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 })();
 
-// 图片懒加载
+// 图片懒加载与缺失 alt 自动补全
 (function(){
   document.querySelectorAll('#post-content img').forEach(img => {
     img.loading = 'lazy';
@@ -959,10 +999,13 @@
 
 <style>
 .post-body{display:flex; gap:24px}
+#post-body .breadcrumbs{margin:8px 0 12px 0}
 #toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
 #post-content{flex:1}
 #back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
 .copy-btn{font-size:12px; padding:2px 6px}
+ .post-pager{display:flex; justify-content:space-between; margin:16px 0}
+ .post-pager .prev,.post-pager .next{max-width:48%;}
 @media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
 </style><script type="application/ld+json">
 {
@@ -982,6 +1025,22 @@
   },
   "url": "http://localhost:4000/%E5%B7%A5%E5%85%B7/2023/12/19/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html"
 }
+</script><script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "首页", "item": "http://localhost:4000/"}
+    
+      
+      
+        ,{"@type": "ListItem", "position": 2, "name": "工具", "item": "http://localhost:4000/categories/"}
+        
+      
+    
+    ,{"@type": "ListItem", "position": 3, "name": "实用Mac软件推荐列表", "item": "http://localhost:4000/%E5%B7%A5%E5%85%B7/2023/12/19/%E5%AE%9E%E7%94%A8Mac%E8%BD%AF%E4%BB%B6%E6%8E%A8%E8%8D%90%E5%88%97%E8%A1%A8.html"}
+  ]
+}
 </script>
 
 
@@ -997,7 +1056,7 @@
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">{&quot;name&quot; =&gt; &quot;TayloyChen&quot;, &quot;url&quot; =&gt; &quot;https://taylorchen.github.io&quot;}</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+          <li class="p-name"><a class="u-url" href="https://taylorchen.github.io">TayloyChen</a></li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
       </div>
 
       <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
@@ -1011,6 +1070,8 @@
   </div>
 
 </footer>
+
+
 </body>
 
 </html>

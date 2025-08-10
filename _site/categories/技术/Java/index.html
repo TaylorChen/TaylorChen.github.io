@@ -33,7 +33,28 @@
   
     <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
     <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "TayloyChen Blog",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script>
 </head>
 <body><header class="site-header" role="banner">
   <div class="wrapper">
@@ -43,7 +64,8 @@
       <a class="page-link" href="/categories/">分类</a>
       <a class="page-link" href="/tags/">标签</a>
       <a class="page-link" href="/archives/">归档</a>
-      <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
       <a class="page-link" href="/about/">关于</a>
     </nav>
   </div>
@@ -250,6 +272,8 @@
               <a class="post-link" href="/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html">Java Spring 事务传播与隔离级别陷阱</a>
             </h3>
             
+              <p class="excerpt">梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。</p>
+            
           </li>
         
       
@@ -320,6 +344,8 @@
             <h3>
               <a class="post-link" href="/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html">Java 垃圾回收调优：从 G1 到 ZGC</a>
             </h3>
+            
+              <p class="excerpt">从 JVM 内存/暂停机制到 G1/ZGC 的收集原理与调参方法论，结合日志示例与案例拆解，提供延迟敏感系统可直接落地的 GC 优化路径。</p>
             
           </li>
         
@@ -419,6 +445,8 @@
               <a class="post-link" href="/%E6%8A%80%E6%9C%AF/java/2017/05/21/Java-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E4%BB%8ELock%E5%88%B0AQS.html">Java 并发编程：从 Lock 到 AQS</a>
             </h3>
             
+              <p class="excerpt">从对象头与锁位、CAS 内存语义到 AQS 队列机制，结合 x86/ARM 差异与工程选型，给出面向性能与可见性的并发实践指南。</p>
+            
           </li>
         
       
@@ -435,6 +463,8 @@
             <h3>
               <a class="post-link" href="/%E6%8A%80%E6%9C%AF/java/2017/04/09/Java-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E4%B8%8ESPI%E6%9C%BA%E5%88%B6%E5%AE%9E%E8%B7%B5.html">Java 类加载器与 SPI 机制实践</a>
             </h3>
+            
+              <p class="excerpt">梳理类加载全流程与双亲委派、命名空间隔离，深入 SPI 与 TCCL 的装配机制，并结合字节码增强/Agent 构建从加载到运行期增强的工程链路。</p>
             
           </li>
         
@@ -489,6 +519,8 @@
               <a class="post-link" href="/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html">Java 内存模型与可见性实践</a>
             </h3>
             
+              <p class="excerpt">从 JMM（Java Memory Model）出发，结合可复现实验讲透 volatile、happens-before、指令重排与内存屏障，并给出 JIT/汇编观测与工程排错清单。</p>
+            
           </li>
         
       
@@ -507,7 +539,7 @@
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">{&quot;name&quot; =&gt; &quot;TayloyChen&quot;, &quot;url&quot; =&gt; &quot;https://taylorchen.github.io&quot;}</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+          <li class="p-name"><a class="u-url" href="https://taylorchen.github.io">TayloyChen</a></li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
       </div>
 
       <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
@@ -521,6 +553,8 @@
   </div>
 
 </footer>
+
+
 </body>
 
 </html>

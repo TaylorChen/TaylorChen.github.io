@@ -20,12 +20,12 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Java 内存模型与可见性实践" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-09T19:09:21+08:00","datePublished":"2015-09-08T00:00:00+08:00","description":"从 JMM（Java Memory Model）出发，结合可复现实验讲透 volatile、happens-before、指令重排与内存屏障，并给出 JIT/汇编观测与工程排错清单。","headline":"Java 内存模型与可见性实践","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2015-09-08T00:00:00+08:00","description":"从 JMM（Java Memory Model）出发，结合可复现实验讲透 volatile、happens-before、指令重排与内存屏障，并给出 JIT/汇编观测与工程排错清单。","headline":"Java 内存模型与可见性实践","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
   
-    <meta property="article:modified_time" content="2025-08-09T19:09:21+08:00">
+    <meta property="article:modified_time" content="2025-08-10T00:22:34+08:00">
   
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="TayloyChen Blog" />
@@ -34,7 +34,28 @@
   
     <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
     <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "TayloyChen Blog",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script>
 </head>
 <body><header class="site-header" role="banner">
   <div class="wrapper">
@@ -44,7 +65,8 @@
       <a class="page-link" href="/categories/">分类</a>
       <a class="page-link" href="/tags/">标签</a>
       <a class="page-link" href="/archives/">归档</a>
-      <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
       <a class="page-link" href="/about/">关于</a>
     </nav>
   </div>
@@ -58,10 +80,21 @@
     <h1>Java 内存模型与可见性实践</h1>
     <p class="post-meta">
       <time datetime="2015-09-08T00:00:00+08:00">2015-09-08</time>
-       · 最后更新于 <time datetime="2025-08-09T19:09:21+08:00">2025-08-09</time>
+       · 最后更新于 <time datetime="2025-08-10T00:22:34+08:00">2025-08-10</time>
        · 技术 / Java
        · 技术, Java, JMM, 可见性, volatile, 内存屏障
     </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+        
+          &nbsp;/&nbsp;<a href="/categories/">技术</a>
+        
+          &nbsp;/&nbsp;<a href="/categories/">Java</a>
+        
+      
+      &nbsp;/&nbsp;<span aria-current="page">Java 内存模型与可见性实践</span>
+    </nav>
     
       <meta name="description" content="从 JMM（Java Memory Model）出发，结合可复现实验讲透 volatile、happens-before、指令重排与内存屏障，并给出 JIT/汇编观测与工程排错清单。">
     
@@ -667,9 +700,16 @@ mov    %eax,0xNN(%rbx)  ; 写入 volatile 字段
   
 
   <footer class="post-footer">
+    <nav class="post-pager" aria-label="Post Navigation">
+      
+      
+        <a class="next" href="/%E6%8A%80%E6%9C%AF/golang/2015/11/02/Go-goroutine%E8%B0%83%E5%BA%A6%E5%99%A8%E5%8E%9F%E7%90%86GMP.html" rel="next">下一篇：Go goroutine 调度器原理：GMP →</a>
+      
+    </nav>
     <div class="share">
-      <a href="https://twitter.com/intent/tweet?text=Java%20%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html" target="_blank">Share to X</a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://twitter.com/intent/tweet?text=Java%20%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html" target="_blank" rel="noopener">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html" target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html" target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
     </div>
 
     
@@ -749,7 +789,7 @@ mov    %eax,0xNN(%rbx)  ; 写入 volatile 字段
   btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 })();
 
-// 图片懒加载
+// 图片懒加载与缺失 alt 自动补全
 (function(){
   document.querySelectorAll('#post-content img').forEach(img => {
     img.loading = 'lazy';
@@ -766,10 +806,13 @@ mov    %eax,0xNN(%rbx)  ; 写入 volatile 字段
 
 <style>
 .post-body{display:flex; gap:24px}
+#post-body .breadcrumbs{margin:8px 0 12px 0}
 #toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
 #post-content{flex:1}
 #back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
 .copy-btn{font-size:12px; padding:2px 6px}
+ .post-pager{display:flex; justify-content:space-between; margin:16px 0}
+ .post-pager .prev,.post-pager .next{max-width:48%;}
 @media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
 </style><script type="application/ld+json">
 {
@@ -778,7 +821,7 @@ mov    %eax,0xNN(%rbx)  ; 写入 volatile 字段
   "headline": "Java 内存模型与可见性实践",
   "description": "从 JMM（Java Memory Model）出发，结合可复现实验讲透 volatile、happens-before、指令重排与内存屏障，并给出 JIT/汇编观测与工程排错清单。",
   "datePublished": "2015-09-08T00:00:00+08:00",
-  "dateModified": "2025-08-09T19:09:21+08:00",
+  "dateModified": "2025-08-10T00:22:34+08:00",
   "author": {
     "@type": "Person",
     "name": "TayloyChen"
@@ -788,6 +831,25 @@ mov    %eax,0xNN(%rbx)  ; 写入 volatile 字段
     "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html"
   },
   "url": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html"
+}
+</script><script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "首页", "item": "http://localhost:4000/"}
+    
+      
+      
+        ,{"@type": "ListItem", "position": 2, "name": "技术", "item": "http://localhost:4000/categories/"}
+        
+      
+        ,{"@type": "ListItem", "position": 3, "name": "Java", "item": "http://localhost:4000/categories/"}
+        
+      
+    
+    ,{"@type": "ListItem", "position": 4, "name": "Java 内存模型与可见性实践", "item": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2015/09/08/Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7%E5%AE%9E%E8%B7%B5.html"}
+  ]
 }
 </script>
 
@@ -804,7 +866,7 @@ mov    %eax,0xNN(%rbx)  ; 写入 volatile 字段
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">{&quot;name&quot; =&gt; &quot;TayloyChen&quot;, &quot;url&quot; =&gt; &quot;https://taylorchen.github.io&quot;}</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+          <li class="p-name"><a class="u-url" href="https://taylorchen.github.io">TayloyChen</a></li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
       </div>
 
       <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
@@ -818,6 +880,8 @@ mov    %eax,0xNN(%rbx)  ; 写入 volatile 字段
   </div>
 
 </footer>
+
+
 </body>
 
 </html>

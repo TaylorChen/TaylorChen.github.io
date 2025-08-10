@@ -20,12 +20,12 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Java 垃圾回收调优：从 G1 到 ZGC" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-09T19:09:21+08:00","datePublished":"2019-12-14T00:00:00+08:00","description":"从 JVM 内存/暂停机制到 G1/ZGC 的收集原理与调参方法论，结合日志示例与案例拆解，提供延迟敏感系统可直接落地的 GC 优化路径。","headline":"Java 垃圾回收调优：从 G1 到 ZGC","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2019-12-14T00:00:00+08:00","description":"从 JVM 内存/暂停机制到 G1/ZGC 的收集原理与调参方法论，结合日志示例与案例拆解，提供延迟敏感系统可直接落地的 GC 优化路径。","headline":"Java 垃圾回收调优：从 G1 到 ZGC","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
   
-    <meta property="article:modified_time" content="2025-08-09T19:09:21+08:00">
+    <meta property="article:modified_time" content="2025-08-10T00:22:34+08:00">
   
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="TayloyChen Blog" />
@@ -34,7 +34,28 @@
   
     <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
     <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "TayloyChen Blog",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script>
 </head>
 <body><header class="site-header" role="banner">
   <div class="wrapper">
@@ -44,7 +65,8 @@
       <a class="page-link" href="/categories/">分类</a>
       <a class="page-link" href="/tags/">标签</a>
       <a class="page-link" href="/archives/">归档</a>
-      <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
       <a class="page-link" href="/about/">关于</a>
     </nav>
   </div>
@@ -58,10 +80,21 @@
     <h1>Java 垃圾回收调优：从 G1 到 ZGC</h1>
     <p class="post-meta">
       <time datetime="2019-12-14T00:00:00+08:00">2019-12-14</time>
-       · 最后更新于 <time datetime="2025-08-09T19:09:21+08:00">2025-08-09</time>
+       · 最后更新于 <time datetime="2025-08-10T00:22:34+08:00">2025-08-10</time>
        · 技术 / Java
        · 技术, Java, GC, G1, ZGC
     </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+        
+          &nbsp;/&nbsp;<a href="/categories/">技术</a>
+        
+          &nbsp;/&nbsp;<a href="/categories/">Java</a>
+        
+      
+      &nbsp;/&nbsp;<span aria-current="page">Java 垃圾回收调优：从 G1 到 ZGC</span>
+    </nav>
     
       <meta name="description" content="从 JVM 内存/暂停机制到 G1/ZGC 的收集原理与调参方法论，结合日志示例与案例拆解，提供延迟敏感系统可直接落地的 GC 优化路径。">
     
@@ -722,9 +755,18 @@ jstat <span class="nt">-gcutil</span> &lt;pid&gt; 1000 20 | <span class="nb">cat
   
 
   <footer class="post-footer">
+    <nav class="post-pager" aria-label="Post Navigation">
+      
+        <a class="prev" href="/%E6%8A%80%E6%9C%AF/mysql/2019/08/02/MySQL-Online-DDL%E6%9C%BA%E5%88%B6%E5%AF%BC%E8%87%B4Duplicate-entry%E9%94%99%E8%AF%AF.html" rel="prev">← 上一篇：MySQL Online DDL机制导致</a>
+      
+      
+        <a class="next" href="/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html" rel="next">下一篇：MySQL 索引设计与回表优化实战 →</a>
+      
+    </nav>
     <div class="share">
-      <a href="https://twitter.com/intent/tweet?text=Java%20%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98%EF%BC%9A%E4%BB%8E%20G1%20%E5%88%B0%20ZGC&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html" target="_blank">Share to X</a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://twitter.com/intent/tweet?text=Java%20%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98%EF%BC%9A%E4%BB%8E%20G1%20%E5%88%B0%20ZGC&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html" target="_blank" rel="noopener">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html" target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html" target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
     </div>
 
     
@@ -804,7 +846,7 @@ jstat <span class="nt">-gcutil</span> &lt;pid&gt; 1000 20 | <span class="nb">cat
   btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 })();
 
-// 图片懒加载
+// 图片懒加载与缺失 alt 自动补全
 (function(){
   document.querySelectorAll('#post-content img').forEach(img => {
     img.loading = 'lazy';
@@ -821,10 +863,13 @@ jstat <span class="nt">-gcutil</span> &lt;pid&gt; 1000 20 | <span class="nb">cat
 
 <style>
 .post-body{display:flex; gap:24px}
+#post-body .breadcrumbs{margin:8px 0 12px 0}
 #toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
 #post-content{flex:1}
 #back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
 .copy-btn{font-size:12px; padding:2px 6px}
+ .post-pager{display:flex; justify-content:space-between; margin:16px 0}
+ .post-pager .prev,.post-pager .next{max-width:48%;}
 @media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
 </style><script type="application/ld+json">
 {
@@ -833,7 +878,7 @@ jstat <span class="nt">-gcutil</span> &lt;pid&gt; 1000 20 | <span class="nb">cat
   "headline": "Java 垃圾回收调优：从 G1 到 ZGC",
   "description": "从 JVM 内存/暂停机制到 G1/ZGC 的收集原理与调参方法论，结合日志示例与案例拆解，提供延迟敏感系统可直接落地的 GC 优化路径。",
   "datePublished": "2019-12-14T00:00:00+08:00",
-  "dateModified": "2025-08-09T19:09:21+08:00",
+  "dateModified": "2025-08-10T00:22:34+08:00",
   "author": {
     "@type": "Person",
     "name": "TayloyChen"
@@ -843,6 +888,25 @@ jstat <span class="nt">-gcutil</span> &lt;pid&gt; 1000 20 | <span class="nb">cat
     "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"
   },
   "url": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"
+}
+</script><script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "首页", "item": "http://localhost:4000/"}
+    
+      
+      
+        ,{"@type": "ListItem", "position": 2, "name": "技术", "item": "http://localhost:4000/categories/"}
+        
+      
+        ,{"@type": "ListItem", "position": 3, "name": "Java", "item": "http://localhost:4000/categories/"}
+        
+      
+    
+    ,{"@type": "ListItem", "position": 4, "name": "Java 垃圾回收调优：从 G1 到 ZGC", "item": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"}
+  ]
 }
 </script>
 
@@ -859,7 +923,7 @@ jstat <span class="nt">-gcutil</span> &lt;pid&gt; 1000 20 | <span class="nb">cat
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">{&quot;name&quot; =&gt; &quot;TayloyChen&quot;, &quot;url&quot; =&gt; &quot;https://taylorchen.github.io&quot;}</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+          <li class="p-name"><a class="u-url" href="https://taylorchen.github.io">TayloyChen</a></li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
       </div>
 
       <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
@@ -873,6 +937,8 @@ jstat <span class="nt">-gcutil</span> &lt;pid&gt; 1000 20 | <span class="nb">cat
   </div>
 
 </footer>
+
+
 </body>
 
 </html>

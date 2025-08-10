@@ -32,6 +32,9 @@ timezone: Asia/Shanghai
 author:
   name: "TayloyChen"
   url: "https://taylorchen.github.io"
+  same_as:
+    - "https://github.com/taylorchen"
+    - "https://twitter.com/shlchen"
 logo: /assets/images/favicons/favicon-96x96.png
 og_image: /assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg
 
@@ -42,6 +45,7 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-paginate
+  - jekyll-last-modified-at
 
 # Exclude from processing.
 # The following items will not be processed, by default.

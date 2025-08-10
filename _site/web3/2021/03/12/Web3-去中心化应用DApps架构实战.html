@@ -20,12 +20,12 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="去中心化应用（DApps）架构实战：钱包、签名与读写分层" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-09T19:09:21+08:00","datePublished":"2021-03-12T00:00:00+08:00","description":"以钱包为入口、合约为规则源、索引器为读路径，搭建可上线 DApp 的完整闭环；覆盖多钱包发现、网络切换、事件索引与错误处理。","headline":"去中心化应用（DApps）架构实战：钱包、签名与读写分层","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2021-03-12T00:00:00+08:00","description":"以钱包为入口、合约为规则源、索引器为读路径，搭建可上线 DApp 的完整闭环；覆盖多钱包发现、网络切换、事件索引与错误处理。","headline":"去中心化应用（DApps）架构实战：钱包、签名与读写分层","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
   
-    <meta property="article:modified_time" content="2025-08-09T19:09:21+08:00">
+    <meta property="article:modified_time" content="2025-08-10T00:22:34+08:00">
   
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="TayloyChen Blog" />
@@ -34,7 +34,28 @@
   
     <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
     <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "TayloyChen Blog",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script>
 </head>
 <body><header class="site-header" role="banner">
   <div class="wrapper">
@@ -44,7 +65,8 @@
       <a class="page-link" href="/categories/">分类</a>
       <a class="page-link" href="/tags/">标签</a>
       <a class="page-link" href="/archives/">归档</a>
-      <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
       <a class="page-link" href="/about/">关于</a>
     </nav>
   </div>
@@ -58,10 +80,19 @@
     <h1>去中心化应用（DApps）架构实战：钱包、签名与读写分层</h1>
     <p class="post-meta">
       <time datetime="2021-03-12T00:00:00+08:00">2021-03-12</time>
-       · 最后更新于 <time datetime="2025-08-09T19:09:21+08:00">2025-08-09</time>
+       · 最后更新于 <time datetime="2025-08-10T00:22:34+08:00">2025-08-10</time>
        · Web3
        · DApp, 钱包, EIP-1193, EVM
     </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+        
+          &nbsp;/&nbsp;<a href="/categories/">Web3</a>
+        
+      
+      &nbsp;/&nbsp;<span aria-current="page">去中心化应用（DApps）架构实战：钱包、签名与读写分层</span>
+    </nav>
     
       <meta name="description" content="以钱包为入口、合约为规则源、索引器为读路径，搭建可上线 DApp 的完整闭环；覆盖多钱包发现、网络切换、事件索引与错误处理。">
     
@@ -667,9 +698,18 @@ contract Voucher is ERC721, Owned {
   
 
   <footer class="post-footer">
+    <nav class="post-pager" aria-label="Post Navigation">
+      
+        <a class="prev" href="/%E6%8A%80%E6%9C%AF/nginx/2020/09/22/Nginx-%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5%E4%B8%8E%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E5%AE%9E%E8%B7%B5.html" rel="prev">← 上一篇：Nginx 缓存策略与动静分离实践</a>
+      
+      
+        <a class="next" href="/%E6%8A%80%E6%9C%AF/php/2021/06/10/PHP-%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E4%B8%8E%E9%9B%86%E4%B8%AD%E5%8C%96.html" rel="next">下一篇：PHP 实时日志采集与集中化 →</a>
+      
+    </nav>
     <div class="share">
-      <a href="https://twitter.com/intent/tweet?text=%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8%EF%BC%88DApps%EF%BC%89%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98%EF%BC%9A%E9%92%B1%E5%8C%85%E3%80%81%E7%AD%BE%E5%90%8D%E4%B8%8E%E8%AF%BB%E5%86%99%E5%88%86%E5%B1%82&url=http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html" target="_blank">Share to X</a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://twitter.com/intent/tweet?text=%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8%EF%BC%88DApps%EF%BC%89%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98%EF%BC%9A%E9%92%B1%E5%8C%85%E3%80%81%E7%AD%BE%E5%90%8D%E4%B8%8E%E8%AF%BB%E5%86%99%E5%88%86%E5%B1%82&url=http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html" target="_blank" rel="noopener">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html" target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html" target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
     </div>
 
     
@@ -749,7 +789,7 @@ contract Voucher is ERC721, Owned {
   btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 })();
 
-// 图片懒加载
+// 图片懒加载与缺失 alt 自动补全
 (function(){
   document.querySelectorAll('#post-content img').forEach(img => {
     img.loading = 'lazy';
@@ -766,10 +806,13 @@ contract Voucher is ERC721, Owned {
 
 <style>
 .post-body{display:flex; gap:24px}
+#post-body .breadcrumbs{margin:8px 0 12px 0}
 #toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
 #post-content{flex:1}
 #back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
 .copy-btn{font-size:12px; padding:2px 6px}
+ .post-pager{display:flex; justify-content:space-between; margin:16px 0}
+ .post-pager .prev,.post-pager .next{max-width:48%;}
 @media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
 </style><script type="application/ld+json">
 {
@@ -778,7 +821,7 @@ contract Voucher is ERC721, Owned {
   "headline": "去中心化应用（DApps）架构实战：钱包、签名与读写分层",
   "description": "以钱包为入口、合约为规则源、索引器为读路径，搭建可上线 DApp 的完整闭环；覆盖多钱包发现、网络切换、事件索引与错误处理。",
   "datePublished": "2021-03-12T00:00:00+08:00",
-  "dateModified": "2025-08-09T19:09:21+08:00",
+  "dateModified": "2025-08-10T00:22:34+08:00",
   "author": {
     "@type": "Person",
     "name": "TayloyChen"
@@ -788,6 +831,22 @@ contract Voucher is ERC721, Owned {
     "@id": "http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html"
   },
   "url": "http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html"
+}
+</script><script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "首页", "item": "http://localhost:4000/"}
+    
+      
+      
+        ,{"@type": "ListItem", "position": 2, "name": "Web3", "item": "http://localhost:4000/categories/"}
+        
+      
+    
+    ,{"@type": "ListItem", "position": 3, "name": "去中心化应用（DApps）架构实战：钱包、签名与读写分层", "item": "http://localhost:4000/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html"}
+  ]
 }
 </script>
 
@@ -804,7 +863,7 @@ contract Voucher is ERC721, Owned {
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">{&quot;name&quot; =&gt; &quot;TayloyChen&quot;, &quot;url&quot; =&gt; &quot;https://taylorchen.github.io&quot;}</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+          <li class="p-name"><a class="u-url" href="https://taylorchen.github.io">TayloyChen</a></li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
       </div>
 
       <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
@@ -818,6 +877,8 @@ contract Voucher is ERC721, Owned {
   </div>
 
 </footer>
+
+
 </body>
 
 </html>

@@ -20,12 +20,12 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-09T19:09:21+08:00","datePublished":"2021-11-06T00:00:00+08:00","description":"以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。","headline":"智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2021-11-06T00:00:00+08:00","description":"以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。","headline":"智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
   
-    <meta property="article:modified_time" content="2025-08-09T19:09:21+08:00">
+    <meta property="article:modified_time" content="2025-08-10T00:22:34+08:00">
   
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="TayloyChen Blog" />
@@ -34,7 +34,28 @@
   
     <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
     <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "TayloyChen Blog",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script>
 </head>
 <body><header class="site-header" role="banner">
   <div class="wrapper">
@@ -44,7 +65,8 @@
       <a class="page-link" href="/categories/">分类</a>
       <a class="page-link" href="/tags/">标签</a>
       <a class="page-link" href="/archives/">归档</a>
-      <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/search/">搜索</a>
+  <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
       <a class="page-link" href="/about/">关于</a>
     </nav>
   </div>
@@ -58,10 +80,19 @@
     <h1>智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线</h1>
     <p class="post-meta">
       <time datetime="2021-11-06T00:00:00+08:00">2021-11-06</time>
-       · 最后更新于 <time datetime="2025-08-09T19:09:21+08:00">2025-08-09</time>
+       · 最后更新于 <time datetime="2025-08-10T00:22:34+08:00">2025-08-10</time>
        · Web3
        · 智能合约, Solidity, 安全, Foundry
     </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+        
+          &nbsp;/&nbsp;<a href="/categories/">Web3</a>
+        
+      
+      &nbsp;/&nbsp;<span aria-current="page">智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线</span>
+    </nav>
     
       <meta name="description" content="以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。">
     
@@ -649,9 +680,18 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
   
 
   <footer class="post-footer">
+    <nav class="post-pager" aria-label="Post Navigation">
+      
+        <a class="prev" href="/%E6%8A%80%E6%9C%AF/php/2021/06/10/PHP-%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E4%B8%8E%E9%9B%86%E4%B8%AD%E5%8C%96.html" rel="prev">← 上一篇：PHP 实时日志采集与集中化</a>
+      
+      
+        <a class="next" href="/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html" rel="next">下一篇：Java Spring 事务传播与隔离级别陷阱 →</a>
+      
+    </nav>
     <div class="share">
-      <a href="https://twitter.com/intent/tweet?text=%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%EF%BC%9ASolidity/Foundry%20%E4%B8%8A%E6%89%8B%E5%88%B0%E4%B8%8A%E7%BA%BF&url=http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" target="_blank">Share to X</a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://twitter.com/intent/tweet?text=%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%EF%BC%9ASolidity/Foundry%20%E4%B8%8A%E6%89%8B%E5%88%B0%E4%B8%8A%E7%BA%BF&url=http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" target="_blank" rel="noopener">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
     </div>
 
     
@@ -731,7 +771,7 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
   btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 })();
 
-// 图片懒加载
+// 图片懒加载与缺失 alt 自动补全
 (function(){
   document.querySelectorAll('#post-content img').forEach(img => {
     img.loading = 'lazy';
@@ -748,10 +788,13 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
 
 <style>
 .post-body{display:flex; gap:24px}
+#post-body .breadcrumbs{margin:8px 0 12px 0}
 #toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
 #post-content{flex:1}
 #back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
 .copy-btn{font-size:12px; padding:2px 6px}
+ .post-pager{display:flex; justify-content:space-between; margin:16px 0}
+ .post-pager .prev,.post-pager .next{max-width:48%;}
 @media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
 </style><script type="application/ld+json">
 {
@@ -760,7 +803,7 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
   "headline": "智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线",
   "description": "以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。",
   "datePublished": "2021-11-06T00:00:00+08:00",
-  "dateModified": "2025-08-09T19:09:21+08:00",
+  "dateModified": "2025-08-10T00:22:34+08:00",
   "author": {
     "@type": "Person",
     "name": "TayloyChen"
@@ -770,6 +813,22 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
     "@id": "http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"
   },
   "url": "http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"
+}
+</script><script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "首页", "item": "http://localhost:4000/"}
+    
+      
+      
+        ,{"@type": "ListItem", "position": 2, "name": "Web3", "item": "http://localhost:4000/categories/"}
+        
+      
+    
+    ,{"@type": "ListItem", "position": 3, "name": "智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线", "item": "http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"}
+  ]
 }
 </script>
 
@@ -786,7 +845,7 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">{&quot;name&quot; =&gt; &quot;TayloyChen&quot;, &quot;url&quot; =&gt; &quot;https://taylorchen.github.io&quot;}</li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
+          <li class="p-name"><a class="u-url" href="https://taylorchen.github.io">TayloyChen</a></li><li><a class="u-email" href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li></ul>
       </div>
 
       <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/taylorchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">taylorchen</span></a></li><li><a href="https://www.twitter.com/shlchen"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">shlchen</span></a></li></ul>
@@ -800,6 +859,8 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
   </div>
 
 </footer>
+
+
 </body>
 
 </html>

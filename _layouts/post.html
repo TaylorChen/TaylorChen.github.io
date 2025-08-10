@@ -11,6 +11,15 @@ layout: default
       {% if page.categories %} · {{ page.categories | join: ' / ' }}{% endif %}
       {% if page.tags %} · {{ page.tags | join: ', ' }}{% endif %}
     </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ '/' | relative_url }}">首页</a>
+      {% if page.categories and page.categories.size > 0 %}
+        {% for c in page.categories %}
+          &nbsp;/&nbsp;<a href="{{ '/categories/' | relative_url }}">{{ c }}</a>
+        {% endfor %}
+      {% endif %}
+      &nbsp;/&nbsp;<span aria-current="page">{{ page.title }}</span>
+    </nav>
     {% if page.description %}
       <meta name="description" content="{{ page.description | strip_html | strip_newlines | truncate: 160 }}">
     {% endif %}
@@ -22,7 +31,7 @@ layout: default
   <div class="post-body" id="post-body">
     <aside id="toc"></aside>
     <div id="post-content">
-      {{ content }}
+      {{ content | replace: '<img', '<img loading="lazy"' }}
     </div>
   </div>
 
@@ -58,9 +67,18 @@ layout: default
   {% endif %}
 
   <footer class="post-footer">
+    <nav class="post-pager" aria-label="Post Navigation">
+      {% if page.previous %}
+        <a class="prev" href="{{ page.previous.url | relative_url }}" rel="prev">← 上一篇：{{ page.previous.title }}</a>
+      {% endif %}
+      {% if page.next %}
+        <a class="next" href="{{ page.next.url | relative_url }}" rel="next">下一篇：{{ page.next.title }} →</a>
+      {% endif %}
+    </nav>
     <div class="share">
-      <a href="https://twitter.com/intent/tweet?text={{ page.title | uri_escape }}&url={{ page.url | absolute_url | uri_escape }}" target="_blank">Share to X</a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u={{ page.url | absolute_url | uri_escape }}" target="_blank" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://twitter.com/intent/tweet?text={{ page.title | uri_escape }}&url={{ page.url | absolute_url | uri_escape }}" target="_blank" rel="noopener">Share to X</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ page.url | absolute_url | uri_escape }}" target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ page.url | absolute_url | uri_escape }}" target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
     </div>
 
     {% if site.giscus and site.giscus.repo %}
@@ -140,7 +158,7 @@ layout: default
   btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 })();
 
-// 图片懒加载
+// 图片懒加载与缺失 alt 自动补全
 (function(){
   document.querySelectorAll('#post-content img').forEach(img => {
     img.loading = 'lazy';
@@ -157,10 +175,13 @@ layout: default
 
 <style>
 .post-body{display:flex; gap:24px}
+#post-body .breadcrumbs{margin:8px 0 12px 0}
 #toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
 #post-content{flex:1}
 #back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
 .copy-btn{font-size:12px; padding:2px 6px}
+ .post-pager{display:flex; justify-content:space-between; margin:16px 0}
+ .post-pager .prev,.post-pager .next{max-width:48%;}
 @media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
 </style>
 
@@ -182,6 +203,27 @@ layout: default
     "@id": "{{ page.url | absolute_url }}"
   },
   "url": "{{ page.url | absolute_url }}"
+}
+</script>
+
+{%- comment -%} 结构化数据：BreadcrumbList {%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "首页", "item": "{{ '/' | absolute_url }}"}
+    {% if page.categories and page.categories.size > 0 %}
+      {% assign pos = 2 %}
+      {% for c in page.categories %}
+        ,{"@type": "ListItem", "position": {{ pos }}, "name": "{{ c }}", "item": "{{ '/categories/' | absolute_url }}"}
+        {% assign pos = pos | plus: 1 %}
+      {% endfor %}
+    {% else %}
+      {% assign pos = 2 %}
+    {% endif %}
+    ,{"@type": "ListItem", "position": {{ pos }}, "name": {{ page.title | jsonify }}, "item": "{{ page.url | absolute_url }}"}
+  ]
 }
 </script>
 

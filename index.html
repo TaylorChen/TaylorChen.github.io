@@ -13,7 +13,9 @@ layout: default
       <h3 itemprop="headline">
         <a class="post-link" itemprop="url" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
       </h3>
-      {% if site.show_excerpts %}
+      {% if post.description %}
+      <p class="excerpt">{{ post.description | strip_html | truncate: 150 }}</p>
+      {% elsif site.show_excerpts %}
       {{ post.excerpt }}
       {% endif %}
     </li>
