@@ -170,8 +170,64 @@
   }
 </style><main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <article class="post">
-  <header>
+        <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "MySQL 索引设计与回表优化实战",
+  "description": "围绕查询模式而非字段建索引：B+树原理、列序与覆盖索引、SARGable 改写、回表优化与 Seek 分页、统计信息与灰度验证的工程化清单。",
+  "author": {
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "TayloyChen Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
+    }
+  },
+  "datePublished": "2020-07-19T00:00:00+08:00",
+  "dateModified": "2025-08-10T00:22:34+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html"
+  },
+  
+  "image": "http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg",
+  
+  "keywords": "技术, MySQL, 索引, 调优",
+  "articleSection": "技术"
+}
+</script>
+
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><nav class="breadcrumbs" aria-label="面包屑导航">
+    <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/">
+                <span itemprop="name">首页</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+
+        
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/categories/%E6%8A%80%E6%9C%AF">
+                <span itemprop="name">技术</span>
+            </a>
+            <meta itemprop="position" content="2" />
+        </li>
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">MySQL 索引设计与回表优化实战</span>
+            <meta itemprop="position" content="3" />
+        </li>
+        
+    </ol>
+</nav><header class="post-header">
     <h1>MySQL 索引设计与回表优化实战</h1>
     <p class="post-meta">
       <time datetime="2020-07-19T00:00:00+08:00">2020-07-19</time>

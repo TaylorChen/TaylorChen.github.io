@@ -170,8 +170,64 @@
   }
 </style><main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <article class="post">
-  <header>
+        <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "MySQL 自增主键热点与分布式 ID 实践",
+  "description": "解析自增主键在聚簇索引上的尾部热点成因，给出雪花/号段/Redis INCR 等分布式 ID 方案的权衡与实验，并附上线灰度与指标基线。",
+  "author": {
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "TayloyChen Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
+    }
+  },
+  "datePublished": "2016-04-12T00:00:00+08:00",
+  "dateModified": "2025-08-10T00:22:34+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2016/04/12/MySQL-%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%E7%83%AD%E7%82%B9%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8FID%E5%AE%9E%E8%B7%B5.html"
+  },
+  
+  "image": "http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg",
+  
+  "keywords": "技术, MySQL, 架构, 性能",
+  "articleSection": "技术"
+}
+</script>
+
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><nav class="breadcrumbs" aria-label="面包屑导航">
+    <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/">
+                <span itemprop="name">首页</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+
+        
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/categories/%E6%8A%80%E6%9C%AF">
+                <span itemprop="name">技术</span>
+            </a>
+            <meta itemprop="position" content="2" />
+        </li>
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">MySQL 自增主键热点与分布式 ID 实践</span>
+            <meta itemprop="position" content="3" />
+        </li>
+        
+    </ol>
+</nav><header class="post-header">
     <h1>MySQL 自增主键热点与分布式 ID 实践</h1>
     <p class="post-meta">
       <time datetime="2016-04-12T00:00:00+08:00">2016-04-12</time>

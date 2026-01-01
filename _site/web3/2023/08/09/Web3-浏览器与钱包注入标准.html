@@ -170,8 +170,64 @@
   }
 </style><main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <article class="post">
-  <header>
+        <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Web3 浏览器与钱包注入：EIP-1193/6963 与隐私实践",
+  "description": "Web3 浏览器的要义是“让网页安全地调用用户的加密身份与链上资源”。核心落在 Provider 标准（EIP-1193）、多钱包发现（EIP-6963）与网络切换（EIP-3085/3326），同时还要面对隐私合规、反钓鱼、兼容性与多链适配等现实问题。本文从标准到工程实践，系统讲解如何构建“安全、可靠、好用”的 Web3 浏览器/前端。\n",
+  "author": {
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "TayloyChen Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
+    }
+  },
+  "datePublished": "2023-08-09T00:00:00+08:00",
+  "dateModified": "2025-08-09T19:09:21+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4000/web3/2023/08/09/Web3-%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%8E%E9%92%B1%E5%8C%85%E6%B3%A8%E5%85%A5%E6%A0%87%E5%87%86.html"
+  },
+  
+  "image": "http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg",
+  
+  "keywords": "Web3 浏览器, 钱包, EIP-1193, 隐私",
+  "articleSection": "Web3"
+}
+</script>
+
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><nav class="breadcrumbs" aria-label="面包屑导航">
+    <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/">
+                <span itemprop="name">首页</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+
+        
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/categories/Web3">
+                <span itemprop="name">Web3</span>
+            </a>
+            <meta itemprop="position" content="2" />
+        </li>
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">Web3 浏览器与钱包注入：EIP-1193/6963 与隐私实践</span>
+            <meta itemprop="position" content="3" />
+        </li>
+        
+    </ol>
+</nav><header class="post-header">
     <h1>Web3 浏览器与钱包注入：EIP-1193/6963 与隐私实践</h1>
     <p class="post-meta">
       <time datetime="2023-08-09T00:00:00+08:00">2023-08-09</time>

@@ -170,8 +170,64 @@
   }
 </style><main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <article class="post">
-  <header>
+        <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "MySQL-慢查询优化-从-explain-到火焰图",
+  "description": "从底层原理到工程方法论：EXPLAIN/ANALYZE 判读、联合索引与 SARGable 改写、回表/分页优化、直方图与 Invisible Index 灰度，附典型案例。",
+  "author": {
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "TayloyChen Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
+    }
+  },
+  "datePublished": "2023-02-27T00:00:00+08:00",
+  "dateModified": "2025-08-10T00:22:34+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2023/02/27/MySQL-%E6%85%A2%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96-%E4%BB%8E-explain-%E5%88%B0%E7%81%AB%E7%84%B0%E5%9B%BE.html"
+  },
+  
+  "image": "http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg",
+  
+  "keywords": "技术, MySQL, 慢查询, 索引, B+树, EXPLAIN, 性能",
+  "articleSection": "技术"
+}
+</script>
+
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><nav class="breadcrumbs" aria-label="面包屑导航">
+    <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/">
+                <span itemprop="name">首页</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+
+        
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/categories/%E6%8A%80%E6%9C%AF">
+                <span itemprop="name">技术</span>
+            </a>
+            <meta itemprop="position" content="2" />
+        </li>
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">MySQL-慢查询优化-从-explain-到火焰图</span>
+            <meta itemprop="position" content="3" />
+        </li>
+        
+    </ol>
+</nav><header class="post-header">
     <h1>MySQL-慢查询优化-从-explain-到火焰图</h1>
     <p class="post-meta">
       <time datetime="2023-02-27T00:00:00+08:00">2023-02-27</time>

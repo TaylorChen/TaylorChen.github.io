@@ -170,8 +170,64 @@
   }
 </style><main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <article class="post">
-  <header>
+        <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Java Spring 事务传播与隔离级别陷阱",
+  "description": "梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。",
+  "author": {
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "TayloyChen Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
+    }
+  },
+  "datePublished": "2022-03-30T00:00:00+08:00",
+  "dateModified": "2025-08-10T00:22:34+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"
+  },
+  
+  "image": "http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg",
+  
+  "keywords": "技术, Java, Spring, 事务",
+  "articleSection": "技术"
+}
+</script>
+
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><nav class="breadcrumbs" aria-label="面包屑导航">
+    <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/">
+                <span itemprop="name">首页</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+
+        
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/categories/%E6%8A%80%E6%9C%AF">
+                <span itemprop="name">技术</span>
+            </a>
+            <meta itemprop="position" content="2" />
+        </li>
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">Java Spring 事务传播与隔离级别陷阱</span>
+            <meta itemprop="position" content="3" />
+        </li>
+        
+    </ol>
+</nav><header class="post-header">
     <h1>Java Spring 事务传播与隔离级别陷阱</h1>
     <p class="post-meta">
       <time datetime="2022-03-30T00:00:00+08:00">2022-03-30</time>

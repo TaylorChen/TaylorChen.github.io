@@ -170,8 +170,64 @@
   }
 </style><main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <article class="post">
-  <header>
+        <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Go 并发模型：Channel 与 Context 最佳实践",
+  "description": "以可复用的模式（扇入扇出/超时取消/泄漏排查）与代码片段，总结 Channel/Context 的工程化用法与排障要点。",
+  "author": {
+    "@type": "Person",
+    "name": "TayloyChen",
+    "url": "https://taylorchen.github.io"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "TayloyChen Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
+    }
+  },
+  "datePublished": "2022-10-07T00:00:00+08:00",
+  "dateModified": "2025-08-10T00:22:34+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2022/10/07/Go-%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B-Channel%E4%B8%8EContext%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"
+  },
+  
+  "image": "http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg",
+  
+  "keywords": "技术, Golang, 并发",
+  "articleSection": "技术"
+}
+</script>
+
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><nav class="breadcrumbs" aria-label="面包屑导航">
+    <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/">
+                <span itemprop="name">首页</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+
+        
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="/categories/%E6%8A%80%E6%9C%AF">
+                <span itemprop="name">技术</span>
+            </a>
+            <meta itemprop="position" content="2" />
+        </li>
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">Go 并发模型：Channel 与 Context 最佳实践</span>
+            <meta itemprop="position" content="3" />
+        </li>
+        
+    </ol>
+</nav><header class="post-header">
     <h1>Go 并发模型：Channel 与 Context 最佳实践</h1>
     <p class="post-meta">
       <time datetime="2022-10-07T00:00:00+08:00">2022-10-07</time>

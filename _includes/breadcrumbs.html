@@ -1,0 +1,40 @@
+<nav class="breadcrumbs" aria-label="面包屑导航">
+    <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="{{ '/' | relative_url }}">
+                <span itemprop="name">首页</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+
+        {% if page.layout == 'post' %}
+        {% if page.categories[0] %}
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="{{ '/categories/' | append: page.categories[0] | relative_url }}">
+                <span itemprop="name">{{ page.categories[0] }}</span>
+            </a>
+            <meta itemprop="position" content="2" />
+        </li>
+        {% endif %}
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">{{ page.title }}</span>
+            <meta itemprop="position" content="3" />
+        </li>
+        {% elsif page.url contains '/categories/' %}
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">分类</span>
+            <meta itemprop="position" content="2" />
+        </li>
+        {% elsif page.url contains '/tags/' %}
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">标签</span>
+            <meta itemprop="position" content="2" />
+        </li>
+        {% elsif page.url contains '/search' %}
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">搜索</span>
+            <meta itemprop="position" content="2" />
+        </li>
+        {% endif %}
+    </ol>
+</nav>

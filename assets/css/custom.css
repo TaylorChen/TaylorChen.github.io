@@ -608,3 +608,64 @@ pre code {
 [data-theme="dark"] .post-item:hover {
   background: rgba(255, 255, 255, 0.03);
 }
+
+/* ==================== 面包屑导航样式 ==================== */
+
+.breadcrumbs {
+  margin: 1.5rem 0 2rem;
+  padding: 0;
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumbs li:not(:last-child)::after {
+  content: "›";
+  margin: 0 0.5rem;
+  color: var(--text-muted);
+  font-size: 1.1em;
+}
+
+.breadcrumbs a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.breadcrumbs a:hover {
+  color: var(--primary-color);
+}
+
+.breadcrumbs [aria-current="page"],
+.breadcrumbs span[itemprop="name"] {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .breadcrumbs {
+    margin: 1rem 0 1.5rem;
+  }
+
+  .breadcrumbs ol {
+    font-size: 0.8125rem;
+  }
+
+  .breadcrumbs li:not(:last-child)::after {
+    margin: 0 0.375rem;
+  }
+}

@@ -2,8 +2,47 @@
 layout: default
 ---
 
-<article class="post">
-  <header>
+{%- comment -%} BlogPosting 结构化数据 {%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": {{ page.title | jsonify }},
+  "description": {{ page.description | default: page.excerpt | strip_html | truncatewords: 50 | jsonify }},
+  "author": {
+    "@type": "Person",
+    "name": {{ site.author.name | jsonify }},
+    "url": {{ site.author.url | jsonify }}
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ site.title | jsonify }},
+    "logo": {
+      "@type": "ImageObject",
+      "url": {{ site.logo | absolute_url | jsonify }}
+    }
+  },
+  "datePublished": {{ page.date | date_to_xmlschema | jsonify }},
+  "dateModified": {{ page.last_modified_at | default: page.date | date_to_xmlschema | jsonify }},
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": {{ page.url | absolute_url | jsonify }}
+  },
+  {% if page.image %}
+  "image": {{ page.image | absolute_url | jsonify }},
+  {% elsif site.og_image %}
+  "image": {{ site.og_image | absolute_url | jsonify }},
+  {% endif %}
+  "keywords": "{{ page.tags | join: ', ' }}",
+  "articleSection": "{{ page.categories | first }}"
+}
+</script>
+
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  {%- include breadcrumbs.html -%}
+
+  <header class="post-header">
     <h1>{{ page.title }}</h1>
     <p class="post-meta">
       <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>

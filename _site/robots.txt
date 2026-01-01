@@ -1,3 +1,18 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# 禁止索引搜索结果页
+Disallow: /search?*
+Disallow: /search/*?*
+
+# 禁止索引分页页码>1的页面（已在meta中处理noindex）
+# Allow: /page*/
+
+# 禁止访问资源文件夹
+Disallow: /assets/
+Allow: /assets/images/
+Allow: /assets/css/
+Allow: /assets/js/
+
+# 站点地图
 Sitemap: https://taylorchen.github.io/sitemap.xml
