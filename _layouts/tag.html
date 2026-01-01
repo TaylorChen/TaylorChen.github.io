@@ -2,18 +2,197 @@
 layout: default
 ---
 
-<h1>标签：{{ page.tag }}</h1>
-<ul>
-  {% assign posts = site.tags[page.tag] %}
-  {% for post in posts %}
-    <li>
-      <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
-      <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-      {% if post.description %}
-        <p class="excerpt">{{ post.description | strip_html | truncate: 120 }}</p>
-      {% endif %}
+<div class="tag-page">
+  <header class="tag-header">
+    <h1 class="tag-title">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+        <line x1="7" y1="7" x2="7.01" y2="7"></line>
+      </svg>
+      #{{ page.tag }}
+    </h1>
+
+    {%- comment -%} 统计该标签下的文章数量 {%- endcomment -%}
+    {% assign post_count = 0 %}
+    {% for post in site.posts %}
+    {% if post.tags contains page.tag %}
+    {% assign post_count = post_count | plus: 1 %}
+    {% endif %}
+    {% endfor %}
+
+    <p class="tag-count">共 {{ post_count }} 篇文章</p>
+  </header>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+    {% if post.tags contains page.tag %}
+    <li class="post-item card">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title">
+            <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+          </h3>
+          <div class="post-item-meta">
+            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+            {% if post.categories and post.categories.size > 0 %}
+            <span class="separator">·</span>
+            <span class="post-category">{{ post.categories | join: ' / ' }}</span>
+            {% endif %}
+          </div>
+        </header>
+
+        {% if post.description %}
+        <p class="post-excerpt">{{ post.description | strip_html | truncate: 150 }}</p>
+        {% elsif site.show_excerpts %}
+        <div class="post-excerpt">{{ post.excerpt }}</div>
+        {% endif %}
+
+        {% if post.tags and post.tags.size > 1 %}
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            {% for tag in post.tags %}
+            {% if tag != page.tag %}
+            <a href="{{ '/tags/' | append: tag | relative_url }}" class="tag">{{ tag }}</a>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </footer>
+        {% endif %}
+      </article>
     </li>
-  {% endfor %}
-</ul>
+    {% endif %}
+    {% endfor %}
+  </ul>
+</div>
 
+<style>
+  .tag-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
 
+  .tag-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--divider-color);
+  }
+
+  .tag-title {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--text-primary);
+  }
+
+  .tag-title svg {
+    color: var(--primary-color);
+  }
+
+  .tag-count {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  /* 复用首页的post-list样式 */
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .post-item {
+    padding: 1.5rem;
+  }
+
+  .post-item-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .post-item-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+
+  .post-link {
+    color: var(--text-primary);
+    transition: color var(--transition-fast);
+  }
+
+  .post-link:hover {
+    color: var(--primary-color);
+  }
+
+  .post-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .separator {
+    color: var(--text-muted);
+  }
+
+  .post-category {
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+
+  .post-excerpt {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0.75rem 0 0;
+  }
+
+  .post-item-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--divider-color);
+  }
+
+  .post-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--bg-code);
+    color: var(--primary-color);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .tag:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 768px) {
+    .tag-title {
+      font-size: 2rem;
+    }
+
+    .post-item-title {
+      font-size: 1.25rem;
+    }
+  }
+</style>

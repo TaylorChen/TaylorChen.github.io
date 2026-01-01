@@ -11,6 +11,15 @@ layout: default
         page.last_modified_at | date: "%Y-%m-%d" }}</time>{% endif %}
       {% if page.categories %} · {{ page.categories | join: ' / ' }}{% endif %}
       {% if page.tags %} · {{ page.tags | join: ', ' }}{% endif %}
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
     </p>
     <nav class="breadcrumbs" aria-label="Breadcrumb">
       <a href="{{ '/' | relative_url }}">首页</a>

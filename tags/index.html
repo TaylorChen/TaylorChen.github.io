@@ -1,73 +1,118 @@
 ---
 layout: default
-title: 标签
+title: 所有标签
 ---
 
-<h1>所有标签</h1>
-<ul id="tag-list">
-  {%- assign all_tags = '' | split: '|' -%}
-  {%- for post in site.posts -%}
-    {%- if post.tags -%}
-      {%- for t in post.tags -%}
-        {%- unless all_tags contains t -%}
-          {%- assign all_tags = all_tags | push: t -%}
-        {%- endunless -%}
-      {%- endfor -%}
-    {%- endif -%}
-    {%- if post.categories -%}
-      {%- for c in post.categories -%}
-        {%- unless all_tags contains c -%}
-          {%- assign all_tags = all_tags | push: c -%}
-        {%- endunless -%}
-      {%- endfor -%}
-    {%- endif -%}
-  {%- endfor -%}
-  {%- assign all_tags = all_tags | sort -%}
+<div class="archive-page tags-archive">
+  <header class="archive-header">
+    <h1 class="archive-title">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+        <line x1="7" y1="7" x2="7.01" y2="7"></line>
+      </svg>
+      所有标签
+    </h1>
+    <p class="archive-stats">
+      共 <strong>{{ site.tags.size }}</strong> 个标签，<strong>{{ site.posts.size }}</strong> 篇文章
+    </p>
+  </header>
 
-  {%- for tag_name in all_tags -%}
-    {%- assign matched = '' | split: '|' -%}
-    {%- for p in site.posts -%}
-      {%- assign has_tag = false -%}
-      {%- if p.tags and p.tags contains tag_name -%}
-        {%- assign has_tag = true -%}
-      {%- endif -%}
-      {%- assign has_cat = false -%}
-      {%- if p.categories and p.categories contains tag_name -%}
-        {%- assign has_cat = true -%}
-      {%- endif -%}
-      {%- if has_tag or has_cat -%}
-        {%- assign matched = matched | push: p -%}
-      {%- endif -%}
-    {%- endfor -%}
-    {%- assign count = matched.size -%}
-    <li>
-      <button class="tag-toggle" data-target="tag-{{ tag_name | url_encode }}">{{ tag_name }} <span class="tag-count">({{ count }})</span></button>
-      <ul class="tag-posts" id="tag-{{ tag_name | url_encode }}" style="display:none;">
-        {%- for p in matched -%}
-          <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a> <small>({{ p.date | date: "%Y-%m-%d" }})</small></li>
-        {%- endfor -%}
+  {%- comment -%} 快速导航 {%- endcomment -%}
+  <nav class="alpha-nav">
+    {% assign alpha_list = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,0-9,中文" | split: "," %}
+    {% for alpha in alpha_list %}
+    <a href="#{{ alpha }}" class="alpha-link">{{ alpha }}</a>
+    {% endfor %}
+  </nav>
+
+  {%- comment -%} 标签分组 {%- endcomment -%}
+  <div class="tags-content">
+    {%- comment -%} 按首字母分组 {%- endcomment -%}
+    {% assign sorted_tags = site.tags | sort %}
+    {% assign tags_by_initial = "" | split: "" %}
+
+    {%- comment -%} 构建分组映射 {%- endcomment -%}
+    {% for tag_pair in sorted_tags %}
+    {% assign tag_name = tag_pair[0] %}
+    {% assign tag_posts = tag_pair[1] %}
+    {% assign first_char = tag_name | slice: 0, 1 | upcase %}
+
+    {%- comment -%} 判断首字符类型 {%- endcomment -%}
+    {% assign is_digit = false %}
+    {% assign is_alpha = false %}
+    {% assign digits = "0123456789" %}
+    {% assign alphas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+
+    {% if digits contains first_char %}
+    {% assign is_digit = true %}
+    {% elsif alphas contains first_char %}
+    {% assign is_alpha = true %}
+    {% endif %}
+
+    {%- comment -%} 确定分组键 {%- endcomment -%}
+    {% if is_digit %}
+    {% assign group_key = "0-9" %}
+    {% elsif is_alpha %}
+    {% assign group_key = first_char %}
+    {% else %}
+    {% assign group_key = "中文" %}
+    {% endif %}
+
+    {%- comment -%} 存储标签信息 {%- endcomment -%}
+    {% assign tag_info = tag_name | append: "|" | append: tag_posts.size | append: "|" | append: group_key %}
+    {% assign tags_by_initial = tags_by_initial | push: tag_info %}
+    {% endfor %}
+
+    {%- comment -%} 按分组展示 {%- endcomment -%}
+    {% assign current_group = "" %}
+    {% for tag_info in tags_by_initial %}
+    {% assign info_parts = tag_info | split: "|" %}
+    {% assign tag_name = info_parts[0] %}
+    {% assign tag_count = info_parts[1] %}
+    {% assign group_key = info_parts[2] %}
+
+    {%- comment -%} 新分组，显示分组标题 {%- endcomment -%}
+    {% if group_key != current_group %}
+    {% if current_group != "" %}
+  </div> {%- comment -%} 关闭上一个分组 {%- endcomment -%}
+  {% endif %}
+
+  <div class="tag-group" id="{{ group_key }}">
+    <h2 class="group-title">{{ group_key }}</h2>
+
+    {% assign current_group = group_key %}
+    {% endif %}
+
+    {%- comment -%} 渲染单个标签及其文章列表 {%- endcomment -%}
+    <section class="tag-section">
+      <h3 class="tag-name">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+          <line x1="7" y1="7" x2="7.01" y2="7"></line>
+        </svg>
+        {{ tag_name }}
+        <span class="tag-count">({{ tag_count }})</span>
+      </h3>
+
+      <ul class="posts-list">
+        {% assign tag_posts = site.tags[tag_name] | sort: 'date' | reverse %}
+        {% for post in tag_posts %}
+        <li class="post-item">
+          <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">
+            {{ post.date | date: "%Y-%m-%d" }}
+          </time>
+          <a href="{{ post.url | relative_url }}" class="post-title">
+            {{ post.title }}
+          </a>
+        </li>
+        {% endfor %}
       </ul>
-    </li>
-  {%- endfor -%}
-</ul>
+    </section>
+    {% endfor %}
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.tag-toggle').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const id = this.dataset.target;
-      const list = document.getElementById(id);
-      if (!list) return;
-      list.style.display = (list.style.display === 'none' || list.style.display === '') ? 'block' : 'none';
-    });
-  });
-});
-</script>
-<style>
-#tag-list { margin-left: 0; padding-left: 0; }
-#tag-list > li { list-style: none; margin: 6px 0; }
-.tag-toggle { background: none; border: none; padding: 0; font-size: 1rem; color: #0074d9; cursor: pointer; }
-.tag-toggle:hover { text-decoration: underline; }
-.tag-count { color: #888; }
-.tag-posts { margin: 6px 0 6px 18px; }
-</style>
+    {%- comment -%} 关闭最后一个分组 {%- endcomment -%}
+    {% if current_group != "" %}
+  </div>
+  {% endif %}
+</div>
+</div>

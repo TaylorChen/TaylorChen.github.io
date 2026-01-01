@@ -1,90 +1,47 @@
 ---
 layout: default
-title: 分类
+title: 所有分类
 ---
 
-<h1>所有分类</h1>
-<ul id="category-tree">
-  {% assign tree = "" | split: "|" %}
-  {% for post in site.posts %}
-    {% if post.categories.size > 0 %}
-      {% assign top = post.categories[0] %}
-      {% assign found = false %}
-      {% for t in tree %}
-        {% if t == top %}{% assign found = true %}{% endif %}
-      {% endfor %}
-      {% if found == false %}
-        {% assign tree = tree | push: top %}
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-  {% assign tree = tree | uniq %}
-  {% for top in tree %}
-    {% assign subs = "" | split: "|" %}
-    {% for post in site.posts %}
-      {% if post.categories.size > 1 and post.categories[0] == top %}
-        {% assign sub = post.categories[1] %}
-        {% unless subs contains sub %}
-          {% assign subs = subs | push: sub %}
-        {% endunless %}
-      {% endif %}
-    {% endfor %}
-    {% assign subs = subs | uniq %}
-    {% comment %}统计一级分类下所有文章数量（含二级）{% endcomment %}
-    {% assign count = 0 %}
-    {% for post in site.posts %}
-      {% if post.categories.size > 0 and post.categories[0] == top %}
-        {% assign count = count | plus: 1 %}
-      {% endif %}
-    {% endfor %}
-    <li>
-      {% if subs.size > 0 %}
-        <span class="tree-toggle">{{ top }} <span class="cat-count">({{ count }})</span></span>
-        <button class="tree-toggle-btn" style="margin-left:6px;">+</button>
-        <ul style="display:none;">
-          {% for sub in subs %}
-            {% assign sub_count = 0 %}
-            {% for post in site.posts %}
-              {% if post.categories.size > 1 and post.categories[0] == top and post.categories[1] == sub %}
-                {% assign sub_count = sub_count | plus: 1 %}
-              {% endif %}
-            {% endfor %}
-            <li>
-              <a href="/categories/{{ top | append: '/' | append: sub | uri_escape }}/">{{ sub }} <span class="cat-count">({{ sub_count }})</span></a>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <a href="/categories/{{ top | uri_escape }}/" class="cat-link">{{ top }} <span class="cat-count">({{ count }})</span></a>
-      {% endif %}
-    </li>
-  {% endfor %}
-</ul>
+<div class="archive-page categories-archive">
+  <header class="archive-header">
+    <h1 class="archive-title">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+      </svg>
+      所有分类
+    </h1>
+    <p class="archive-stats">
+      共 <strong>{{ site.categories.size }}</strong> 个分类，<strong>{{ site.posts.size }}</strong> 篇文章
+    </p>
+  </header>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var toggles = document.querySelectorAll('.tree-toggle-btn');
-  toggles.forEach(function(toggle) {
-    toggle.style.cursor = 'pointer';
-    toggle.onclick = function(e) {
-      e.preventDefault();
-      var prev = toggle.previousElementSibling;
-      var next = toggle.nextElementSibling;
-      while (next && next.tagName !== 'UL') next = next.nextElementSibling;
-      if (next) {
-        var isOpen = next.style.display === 'block';
-        next.style.display = isOpen ? 'none' : 'block';
-        toggle.textContent = isOpen ? '+' : '-';
-      }
-    };
-  });
-});
-</script>
-<style>
-#category-tree ul { margin-left: 1em; }
-.cat-link { font-weight: bold; color: #0074d9; text-decoration: none; }
-.cat-link:hover { text-decoration: underline; }
-.tree-toggle { font-weight: bold; color: #0074d9; }
-.cat-count { color: #888; font-weight: normal; }
-.tree-toggle-btn { font-size: 1em; background: none; border: none; color: #0074d9; }
-</style>
+  <div class="categories-content">
+    {%- comment -%} 手动按文章数量倒序排列 {%- endcomment -%}
+    {% for category in site.categories %}
+    <section class="category-section">
+      <h2 class="category-name">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        {{ category[0] }}
+        <span class="category-count">({{ category[1].size }})</span>
+      </h2>
+
+      <ul class="posts-list">
+        {% assign category_posts = category[1] | sort: 'date' | reverse %}
+        {% for post in category_posts %}
+        <li class="post-item">
+          <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">
+            {{ post.date | date: "%Y-%m-%d" }}
+          </time>
+          <a href="{{ post.url | relative_url }}" class="post-title">
+            {{ post.title }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endfor %}
+  </div>
+</div>

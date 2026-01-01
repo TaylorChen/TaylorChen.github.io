@@ -3,77 +3,369 @@ layout: default
 title: 搜索
 ---
 
-<h1>站内搜索</h1>
-<input id="search-input" type="search" placeholder="输入关键词..." style="width:100%;padding:8px;" aria-label="站内搜索">
-<ul id="search-results"></ul>
-<div id="search-empty" style="color:#888;margin-top:8px;display:none;">未找到结果</div>
+<div class="search-page">
+  <div class="search-header">
+    <h1 class="search-title">站内搜索</h1>
+    <p class="search-subtitle">搜索{{ site.posts.size }}篇文章</p>
+  </div>
+
+  <div class="search-box">
+    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2">
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.35-4.35"></path>
+    </svg>
+    <input id="search-input" type="search" placeholder="输入关键词，支持中英文搜索..." aria-label="站内搜索" autocomplete="off">
+    <button id="clear-search" class="clear-btn" style="display:none;" aria-label="清空搜索">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div id="search-stats" class="search-stats" style="display:none;"></div>
+
+  <ul id="search-results" class="search-results"></ul>
+
+  <div id="search-empty" class="search-empty" style="display:none;">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.35-4.35"></path>
+    </svg>
+    <p>未找到相关结果</p>
+    <small>请尝试其他关键词</small>
+  </div>
+
+  <div id="search-placeholder" class="search-placeholder">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.35-4.35"></path>
+    </svg>
+    <p>输入关键词开始搜索</p>
+    <small>支持搜索文章标题和正文内容</small>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/lunr/lunr.min.js"></script>
 <script>
-(async function() {
-  const canonical = document.querySelector('link[rel="canonical"]');
-  const base = canonical && canonical.getAttribute('href') ? canonical.getAttribute('href') : '';
-  let docs = [];
-  try {
-    const res = await fetch((base && base.endsWith('/') ? base.slice(0,-1) : (base || '')) + '/search.json');
-    if (!res.ok) throw new Error('search.json load failed');
-    docs = await res.json();
-  } catch (e) {
-    console.error('加载搜索索引失败', e);
-    document.getElementById('search-empty').style.display = 'block';
-    return;
-  }
+  (async function () {
+    let docs = [];
 
-  const idx = lunr(function () {
-    this.tokenizer.separator = /[\s\-_.:/?&=#%]+/;
-    this.ref('url');
-    this.field('title');
-    this.field('content');
-    docs.forEach(d => this.add({ url: d.url, title: d.title, content: d.content }));
-  });
-
-  const input = document.getElementById('search-input');
-  const list = document.getElementById('search-results');
-  const empty = document.getElementById('search-empty');
-
-  const render = (items) => {
-    list.innerHTML = '';
-    if (!items || items.length === 0) { empty.style.display = 'block'; return; }
-    empty.style.display = 'none';
-    items.slice(0,20).forEach(item => {
-      const doc = item.url ? item : docs.find(d => decodeURI(d.url) === decodeURI(item.ref));
-      if (!doc) return;
-      const li = document.createElement('li');
-      li.innerHTML = `<a href="${doc.url}">${doc.title}</a>`;
-      list.appendChild(li);
-    });
-  };
-
-  const doSearch = () => {
-    const q = input.value.trim();
-    list.innerHTML = '';
-    if (!q) { list.innerHTML = ''; empty.style.display = 'none'; return; }
     try {
-      // 对中文做简易切词：按非字母数字分隔，并按每个字符做 OR 查询
-      const ascii = /[\x00-\x7F]/.test(q);
-      const tokens = ascii ? [q] : q.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
-      const query = tokens.length > 1 ? tokens.map(t => `${t}*`).join(' ') : `${q}*`;
-      const hits = idx.search(query);
-      if (hits && hits.length > 0) return render(hits);
-    } catch (e) { /* ignore lunr parse errors */ }
-    // 中文或解析失败时的回退：标题/正文包含匹配
-    const qLower = q.toLowerCase();
-    const fallback = docs.filter(d => {
-      const inTitle = d.title && d.title.toLowerCase().includes(qLower);
-      const inContent = d.content && d.content.toLowerCase().includes(qLower);
-      const inUrl = d.url && (d.url.toLowerCase().includes(qLower) || decodeURI(d.url).toLowerCase().includes(qLower));
-      return inTitle || inContent || inUrl;
-    });
-    render(fallback.map(d => ({ url: d.url, title: d.title })));
-  };
+      const res = await fetch('/search.json');
+      if (!res.ok) throw new Error('search.json load failed');
+      docs = await res.json();
+    } catch (e) {
+      console.error('加载搜索索引失败', e);
+      document.getElementById('search-empty').style.display = 'flex';
+      document.getElementById('search-placeholder').style.display = 'none';
+      return;
+    }
 
-  ['input', 'change', 'keyup', 'compositionend'].forEach(evt => input.addEventListener(evt, doSearch));
-})();
+    // 构建lunr索引
+    const idx = lunr(function () {
+      this.tokenizer.separator = /[\s\-_.:/?\&#=%]+/;
+      this.ref('url');
+      this.field('title', { boost: 10 });
+      this.field('content');
+      docs.forEach(d => this.add({ url: d.url, title: d.title, content: d.content }));
+    });
+
+    const input = document.getElementById('search-input');
+    const list = document.getElementById('search-results');
+    const empty = document.getElementById('search-empty');
+    const placeholder = document.getElementById('search-placeholder');
+    const stats = document.getElementById('search-stats');
+    const clearBtn = document.getElementById('clear-search');
+
+    // 高亮文本
+    const highlightText = (text, query) => {
+      if (!text || !query) return text;
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return text.replace(regex, '<mark>$1</mark>');
+    };
+
+    // 提取摘要
+    const getExcerpt = (content, query, maxLength = 150) => {
+      if (!content) return '';
+      const lowerContent = content.toLowerCase();
+      const lowerQuery = query.toLowerCase();
+      const index = lowerContent.indexOf(lowerQuery);
+
+      if (index === -1) {
+        return content.substring(0, maxLength) + (content.length > maxLength ? '...' : '');
+      }
+
+      const start = Math.max(0, index - 50);
+      const end = Math.min(content.length, index + query.length + 100);
+      const excerpt = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
+
+      return excerpt;
+    };
+
+    const render = (items, query) => {
+      list.innerHTML = '';
+      placeholder.style.display = 'none';
+
+      if (!items || items.length === 0) {
+        empty.style.display = 'flex';
+        stats.style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      stats.style.display = 'block';
+      stats.textContent = `找到 ${items.length} 篇相关文章`;
+
+      items.slice(0, 50).forEach(item => {
+        const doc = item.url ? item : docs.find(d => decodeURI(d.url) === decodeURI(item.ref));
+        if (!doc) return;
+
+        const li = document.createElement('li');
+        li.className = 'search-result-item card';
+
+        const title = highlightText(doc.title, query);
+        const excerpt = getExcerpt(doc.content, query);
+        const highlightedExcerpt = highlightText(excerpt, query);
+
+        li.innerHTML = `
+        <a href="${doc.url}" class="search-result-link">
+          <h3 class="search-result-title">${title}</h3>
+          ${excerpt ? `<p class="search-result-excerpt">${highlightedExcerpt}</p>` : ''}
+        </a>
+      `;
+
+        list.appendChild(li);
+      });
+    };
+
+    const doSearch = () => {
+      const q = input.value.trim();
+
+      // 清空按钮显示/隐藏
+      clearBtn.style.display = q ? 'flex' : 'none';
+
+      if (!q) {
+        list.innerHTML = '';
+        empty.style.display = 'none';
+        placeholder.style.display = 'flex';
+        stats.style.display = 'none';
+        return;
+      }
+
+      try {
+        // 对中文做简易切词：按非字母数字分隔，并按每个字符做 OR 查询
+        const ascii = /[\x00-\x7F]/.test(q);
+        const tokens = ascii ? [q] : q.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+        const query = tokens.length > 1 ? tokens.map(t => `${t}*`).join(' ') : `${q}*`;
+        const hits = idx.search(query);
+        if (hits && hits.length > 0) return render(hits, q);
+      } catch (e) {
+        console.warn('Lunr search error:', e);
+      }
+
+      // 中文或解析失败时的回退：标题/正文包含匹配
+      const qLower = q.toLowerCase();
+      const fallback = docs.filter(d => {
+        const inTitle = d.title && d.title.toLowerCase().includes(qLower);
+        const inContent = d.content && d.content.toLowerCase().includes(qLower);
+        const inUrl = d.url && (d.url.toLowerCase().includes(qLower) || decodeURI(d.url).toLowerCase().includes(qLower));
+        return inTitle || inContent || inUrl;
+      });
+
+      render(fallback.map(d => ({ url: d.url, title: d.title, content: d.content })), q);
+    };
+
+    // 清空搜索
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      input.focus();
+      doSearch();
+    });
+
+    // 实时搜索
+    ['input', 'change', 'keyup', 'compositionend'].forEach(evt => input.addEventListener(evt, doSearch));
+
+    // 自动聚焦
+    input.focus();
+
+    // 快捷键支持 (Ctrl/Cmd + K 聚焦搜索框)
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        input.focus();
+      }
+    });
+  })();
 </script>
 
+<style>
+  .search-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
 
+  .search-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .search-title {
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+    font-weight: 700;
+  }
+
+  .search-subtitle {
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .search-box {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  #search-input {
+    width: 100%;
+    padding: 1rem 3rem 1rem 3rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    font-size: 1rem;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    transition: all var(--transition-base);
+  }
+
+  #search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  .clear-btn {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--bg-code);
+    color: var(--text-secondary);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+  }
+
+  .clear-btn:hover {
+    background: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .search-stats {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .search-results {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .search-result-item {
+    padding: 1.5rem;
+    transition: all var(--transition-base);
+  }
+
+  .search-result-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .search-result-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .search-result-excerpt {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 0.9375rem;
+  }
+
+  .search-result-item mark {
+    background: rgba(37, 99, 235, 0.2);
+    color: var(--primary-color);
+    font-weight: 600;
+    padding: 0.125rem 0.25rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .search-empty,
+  .search-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .search-empty svg,
+  .search-placeholder svg {
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  .search-empty p,
+  .search-placeholder p {
+    font-size: 1.125rem;
+    margin: 0.5rem 0;
+    color: var(--text-secondary);
+  }
+
+  .search-empty small,
+  .search-placeholder small {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 768px) {
+    .search-page {
+      padding: 1rem 0;
+    }
+
+    .search-title {
+      font-size: 1.5rem;
+    }
+
+    #search-input {
+      padding: 0.875rem 2.75rem 0.875rem 2.75rem;
+    }
+  }
+</style>

@@ -252,6 +252,79 @@
         }
     };
 
+    // ==================== 不蒜子统计显示控制 ====================
+    const BusuanziStats = {
+        init() {
+            // 只在文章页显示文章阅读量
+            const pageContainer = document.getElementById('busuanzi_container_page_pv');
+            if (!pageContainer) return;
+
+            // 等待不蒜子脚本加载
+            const checkInterval = setInterval(() => {
+                if (typeof busuanzi !== 'undefined') {
+                    clearInterval(checkInterval);
+                    pageContainer.style.display = 'inline';
+                }
+            }, 100);
+
+            // 超时处理
+            setTimeout(() => {
+                clearInterval(checkInterval);
+            }, 5000);
+        }
+    };
+
+    // ==================== 阅读时长预估 ====================
+    const ReadingTime = {
+        init() {
+            // 只在文章页显示
+            const postContent = document.getElementById('post-content');
+            if (!postContent) return;
+
+            const text = postContent.textContent || postContent.innerText;
+            const wordCount = this.countWords(text);
+            const readingTime = this.calculateReadingTime(wordCount);
+
+            this.displayReadingTime(readingTime, wordCount);
+        },
+
+        countWords(text) {
+            // 移除多余空白
+            text = text.trim();
+
+            // 统计中文字符
+            const chineseChars = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+
+            // 统计英文单词
+            const englishWords = text
+                .replace(/[\u4e00-\u9fa5]/g, '') // 移除中文
+                .split(/\s+/)
+                .filter(word => word.length > 0).length;
+
+            return chineseChars + englishWords;
+        },
+
+        calculateReadingTime(wordCount) {
+            // 中文平均阅读速度: 300-500字/分钟，这里取400
+            // 英文平均阅读速度: 200-250词/分钟，这里统一按中文计算
+            const wordsPerMinute = 400;
+            const minutes = Math.ceil(wordCount / wordsPerMinute);
+            return minutes;
+        },
+
+        displayReadingTime(minutes, wordCount) {
+            const postMeta = document.querySelector('.post-meta');
+            if (!postMeta) return;
+
+            const readingTimeEl = document.createElement('span');
+            readingTimeEl.className = 'reading-time';
+            readingTimeEl.innerHTML = ` · 约 ${minutes} 分钟 · ${wordCount.toLocaleString()} 字`;
+            readingTimeEl.style.color = 'var(--text-secondary)';
+
+            postMeta.appendChild(readingTimeEl);
+        }
+    };
+
     // ==================== 初始化所有功能 ====================
     function initAll() {
         ThemeManager.init();
@@ -262,6 +335,8 @@
         PageAnimations.init();
         ImageLazyLoad.init();
         ExternalLinks.init();
+        ReadingTime.init();
+        BusuanziStats.init();
 
         console.log('✨ TaylorChen Blog - 主题功能已加载');
     }
@@ -274,3 +349,4 @@
     }
 
 })();
+

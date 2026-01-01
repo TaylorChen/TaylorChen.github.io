@@ -2,51 +2,243 @@
 layout: default
 ---
 
-<h1>分类：{{ page.category }}</h1>
-{% assign cat_path = page.category | split: '/' %}
-{% assign depth = cat_path | size %}
+<div class="category-page">
+  <header class="category-header">
+    <h1 class="category-title">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+      </svg>
+      {{ page.category }}
+    </h1>
+    {% assign cat_path = page.category | split: '/' %}
+    {% assign depth = cat_path | size %}
 
-<ul class="post-list">
-  {% for post in site.posts %}
+    {%- comment -%} 统计该分类下的文章数量 {%- endcomment -%}
+    {% assign post_count = 0 %}
+    {% for post in site.posts %}
     {% if post.categories and post.categories.size > 0 %}
-      {% if depth == 1 %}
-        {% comment %} 顶级分类：展示该顶级及其所有子类 {% endcomment %}
-        {% if post.categories[0] == cat_path[0] %}
-          <li>
-            <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
-            <h3>
-              <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-            </h3>
-            {% if post.description %}
-              <p class="excerpt">{{ post.description | strip_html | truncate: 120 }}</p>
-            {% elsif site.show_excerpts %}
-              {{ post.excerpt }}
-            {% endif %}
-          </li>
-        {% endif %}
-      {% else %}
-        {% comment %} 二级及以上：要求前缀逐级匹配（当前实现到二级） {% endcomment %}
-        {% assign ok = true %}
-        {% if post.categories.size < depth %}
-          {% assign ok = false %}
-        {% else %}
-          {% if post.categories[0] != cat_path[0] %}{% assign ok = false %}{% endif %}
-          {% if ok and depth > 1 and post.categories[1] != cat_path[1] %}{% assign ok = false %}{% endif %}
-        {% endif %}
-        {% if ok %}
-          <li>
-            <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
-            <h3>
-              <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-            </h3>
-            {% if post.description %}
-              <p class="excerpt">{{ post.description | strip_html | truncate: 120 }}</p>
-            {% elsif site.show_excerpts %}
-              {{ post.excerpt }}
-            {% endif %}
-          </li>
-        {% endif %}
-      {% endif %}
+    {% if depth == 1 %}
+    {% if post.categories[0] == cat_path[0] %}
+    {% assign post_count = post_count | plus: 1 %}
     {% endif %}
-  {% endfor %}
-</ul>
+    {% else %}
+    {% assign ok = true %}
+    {% if post.categories.size < depth %} {% assign ok=false %} {% else %} {% if post.categories[0] !=cat_path[0] %}{%
+      assign ok=false %}{% endif %} {% if ok and depth> 1 and post.categories[1] != cat_path[1] %}{% assign ok = false
+      %}{% endif %}
+      {% endif %}
+      {% if ok %}
+      {% assign post_count = post_count | plus: 1 %}
+      {% endif %}
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+
+      <p class="category-count">共 {{ post_count }} 篇文章</p>
+  </header>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+    {% if post.categories and post.categories.size > 0 %}
+    {% if depth == 1 %}
+    {% comment %} 顶级分类：展示该顶级及其所有子类 {% endcomment %}
+    {% if post.categories[0] == cat_path[0] %}
+    <li class="post-item card">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title">
+            <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+          </h3>
+          <div class="post-item-meta">
+            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+            {% if post.categories and post.categories.size > 1 %}
+            <span class="separator">·</span>
+            <span class="post-subcategory">{{ post.categories | slice: 1, 10 | join: ' / ' }}</span>
+            {% endif %}
+          </div>
+        </header>
+
+        {% if post.description %}
+        <p class="post-excerpt">{{ post.description | strip_html | truncate: 150 }}</p>
+        {% elsif site.show_excerpts %}
+        <div class="post-excerpt">{{ post.excerpt }}</div>
+        {% endif %}
+
+        {% if post.tags and post.tags.size > 0 %}
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            {% for tag in post.tags limit:5 %}
+            <span class="tag">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        </footer>
+        {% endif %}
+      </article>
+    </li>
+    {% endif %}
+    {% else %}
+    {% comment %} 二级及以上：要求前缀逐级匹配（当前实现到二级） {% endcomment %}
+    {% assign ok = true %}
+    {% if post.categories.size < depth %} {% assign ok=false %} {% else %} {% if post.categories[0] !=cat_path[0] %}{%
+      assign ok=false %}{% endif %} {% if ok and depth> 1 and post.categories[1] != cat_path[1] %}{% assign ok = false
+      %}{% endif %}
+      {% endif %}
+      {% if ok %}
+      <li class="post-item card">
+        <article>
+          <header class="post-item-header">
+            <h3 class="post-item-title">
+              <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+            </h3>
+            <div class="post-item-meta">
+              <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+            </div>
+          </header>
+
+          {% if post.description %}
+          <p class="post-excerpt">{{ post.description | strip_html | truncate: 150 }}</p>
+          {% elsif site.show_excerpts %}
+          <div class="post-excerpt">{{ post.excerpt }}</div>
+          {% endif %}
+
+          {% if post.tags and post.tags.size > 0 %}
+          <footer class="post-item-footer">
+            <div class="post-tags">
+              {% for tag in post.tags limit:5 %}
+              <span class="tag">{{ tag }}</span>
+              {% endfor %}
+            </div>
+          </footer>
+          {% endif %}
+        </article>
+      </li>
+      {% endif %}
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+  </ul>
+</div>
+
+<style>
+  .category-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
+
+  .category-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--divider-color);
+  }
+
+  .category-title {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--text-primary);
+  }
+
+  .category-title svg {
+    color: var(--primary-color);
+  }
+
+  .category-count {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  /* 复用首页的post-list样式 */
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .post-item {
+    padding: 1.5rem;
+  }
+
+  .post-item-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .post-item-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+
+  .post-link {
+    color: var(--text-primary);
+    transition: color var(--transition-fast);
+  }
+
+  .post-link:hover {
+    color: var(--primary-color);
+  }
+
+  .post-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .separator {
+    color: var(--text-muted);
+  }
+
+  .post-subcategory {
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+
+  .post-excerpt {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0.75rem 0 0;
+  }
+
+  .post-item-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--divider-color);
+  }
+
+  .post-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--bg-code);
+    color: var(--primary-color);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+  }
+
+  @media (max-width: 768px) {
+    .category-title {
+      font-size: 2rem;
+    }
+
+    .post-item-title {
+      font-size: 1.25rem;
+    }
+  }
+</style>
