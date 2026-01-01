@@ -30,6 +30,14 @@
     <meta name="twitter:image" content="{{ share_img | absolute_url }}">
   {% endif %}
 
+  {%- comment -%} Google Fonts - 优化字体 {%- endcomment -%}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  {%- comment -%} 自定义样式 {%- endcomment -%}
+  <link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}">
+
   {%- comment -%} 结构化数据：WebSite + SearchAction 与 Person {%- endcomment -%}
   <script type="application/ld+json">
   {
@@ -53,4 +61,7 @@
     "sameAs": {{ site.author.same_as | jsonify }}
   }
   </script>
+  
+  {%- comment -%} 主题功能脚本 {%- endcomment -%}
+  <script src="{{ '/assets/js/theme.js' | relative_url }}" defer></script>
 </head>

@@ -3,21 +3,83 @@ layout: default
 ---
 
 <div class="home">
-  <h1 class="page-heading">最新文章</h1>
+  {%- comment -%} Hero 个人介绍区域 {%- endcomment -%}
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-avatar">
+        <img src="{{ site.logo | relative_url }}" alt="{{ site.author.name }}" />
+      </div>
+      <h1 class="hero-title">{{ site.title }}</h1>
+      <p class="hero-description">{{ site.description }}</p>
+      <div class="hero-social">
+        {% if site.github_username %}
+        <a href="https://github.com/{{ site.github_username }}" target="_blank" rel="noopener" aria-label="GitHub"
+          title="GitHub">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+          </svg>
+        </a>
+        {% endif %}
+        {% if site.twitter_username %}
+        <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank" rel="noopener" aria-label="Twitter"
+          title="Twitter">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+        </a>
+        {% endif %}
+        {% if site.email %}
+        <a href="mailto:{{ site.email }}" aria-label="Email" title="Email">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <h2 class="section-title">最新文章</h2>
 
   <ul class="post-list" itemscope itemtype="https://schema.org/Blog">
     {% assign posts = paginator.posts | default: site.posts %}
     {% for post in posts %}
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-      </h3>
-      {% if post.description %}
-      <p class="excerpt">{{ post.description | strip_html | truncate: 150 }}</p>
-      {% elsif site.show_excerpts %}
-      {{ post.excerpt }}
-      {% endif %}
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="{{ post.date | date_to_xmlschema }}">
+              {{ post.date | date: "%Y-%m-%d" }}
+            </time>
+            {% if post.categories and post.categories.size > 0 %}
+            <span class="separator">·</span>
+            <span class="post-category">{{ post.categories | join: ' / ' }}</span>
+            {% endif %}
+          </div>
+        </header>
+
+        {% if post.description %}
+        <p class="post-excerpt" itemprop="description">{{ post.description | strip_html | truncate: 150 }}</p>
+        {% elsif site.show_excerpts %}
+        <div class="post-excerpt">{{ post.excerpt }}</div>
+        {% endif %}
+
+        {% if post.tags and post.tags.size > 0 %}
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            {% for tag in post.tags limit:3 %}
+            <span class="tag">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        </footer>
+        {% endif %}
+      </article>
     </li>
     {% endfor %}
   </ul>
@@ -25,26 +87,215 @@ layout: default
   {% if paginator and paginator.total_pages > 1 %}
   <nav class="pagination" role="navigation">
     {% if paginator.previous_page %}
-      <a class="previous" href="{{ paginator.previous_page_path | relative_url }}">上一页</a>
+    <a class="btn btn-outline" href="{{ paginator.previous_page_path | relative_url }}">← 上一页</a>
     {% else %}
-      <span class="previous">上一页</span>
+    <span class="btn btn-outline disabled">← 上一页</span>
     {% endif %}
 
     <span class="page-number">第 {{ paginator.page }} / {{ paginator.total_pages }} 页</span>
 
     {% if paginator.next_page %}
-      <a class="next" href="{{ paginator.next_page_path | relative_url }}">下一页</a>
+    <a class="btn btn-outline" href="{{ paginator.next_page_path | relative_url }}">下一页 →</a>
     {% else %}
-      <span class="next">下一页</span>
+    <span class="btn btn-outline disabled">下一页 →</span>
     {% endif %}
   </nav>
   {% endif %}
 </div>
 
 <style>
-.pagination{display:flex; gap:12px; align-items:center; margin-top:24px}
-.pagination .previous,.pagination .next{padding:6px 10px; border:1px solid #ddd}
-.pagination .page-number{color:#666}
+  /* Hero Section */
+  .hero-section {
+    text-align: center;
+    padding: 4rem 0 3rem;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .hero-avatar {
+    margin: 0 auto 1.5rem;
+    width: 120px;
+    height: 120px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 4px;
+    display: inline-block;
+  }
+
+  .hero-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    background: var(--bg-card);
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin: 0 0 1.5rem;
+    line-height: 1.6;
+  }
+
+  .hero-social {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero-social a {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all var(--transition-base);
+  }
+
+  .hero-social a:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Section Title */
+  .section-title {
+    font-size: 1.75rem;
+    margin: 2rem 0 1.5rem;
+    font-weight: 600;
+  }
+
+  /* Post List */
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .post-item {
+    padding: 1.5rem;
+  }
+
+  .post-item-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .post-item-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+
+  .post-link {
+    color: var(--text-primary);
+    transition: color var(--transition-fast);
+  }
+
+  .post-link:hover {
+    color: var(--primary-color);
+  }
+
+  .post-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .separator {
+    color: var(--text-muted);
+  }
+
+  .post-category {
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+
+  .post-excerpt {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0.75rem 0 0;
+  }
+
+  .post-item-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--divider-color);
+  }
+
+  .post-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--bg-code);
+    color: var(--primary-color);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--divider-color);
+  }
+
+  .pagination .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .page-number {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .hero-section {
+      padding: 3rem 0 2rem;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .hero-description {
+      font-size: 1rem;
+    }
+
+    .post-item-title {
+      font-size: 1.25rem;
+    }
+  }
 </style>
-
-

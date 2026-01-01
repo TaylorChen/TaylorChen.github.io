@@ -1,0 +1,348 @@
+/**
+ * TaylorChen Blog - 自定义样式
+ * 基于Minima主题的视觉优化
+ */
+
+/* ==================== 主题配色系统 ==================== */
+:root {
+  /* 主色调 - 蓝紫渐变 */
+  --primary-color: #2563eb;
+  --primary-dark: #1e40af;
+  --secondary-color: #8b5cf6;
+  
+  /* 背景色 */
+  --bg-color: #fafafa;
+  --bg-card: #ffffff;
+  --bg-code: #f5f5f5;
+  
+  /* 文字色 */
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  
+  /* 边框和分割线 */
+  --border-color: #e5e5e5;
+  --divider-color: #f0f0f0;
+  
+  /* 强调色 */
+  --accent-success: #10b981;
+  --accent-warning: #f59e0b;
+  --accent-error: #ef4444;
+  
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.15);
+  
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  
+  /* 过渡动画 */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+/* 暗色模式 */
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --bg-card: #2a2a2a;
+  --bg-code: #1e1e1e;
+  
+  --text-primary: #f5f5f5;
+  --text-secondary: #b3b3b3;
+  --text-muted: #808080;
+  
+  --border-color: #404040;
+  --divider-color: #333333;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* ==================== 全局样式优化 ==================== */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  transition: background-color var(--transition-base), 
+              color var(--transition-base);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", 
+               "Noto Sans SC", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 优化字体渲染 */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ==================== 容器优化 ==================== */
+.wrapper {
+  max-width: 1200px;
+  padding: 0 24px;
+}
+
+/* ==================== 标题样式 ==================== */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.875rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--divider-color);
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+/* ==================== 链接优化 ==================== */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+/* ==================== 卡片样式 ==================== */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  border: 1px solid var(--border-color);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+}
+
+/* ==================== 代码块优化 ==================== */
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 
+               'Monaco', monospace;
+  font-size: 0.9em;
+  background: var(--bg-code);
+  padding: 0.2em 0.4em;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+}
+
+pre {
+  background: var(--bg-code);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* 代码复制按钮样式 */
+.copy-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  opacity: 0.8;
+}
+
+.copy-btn:hover {
+  opacity: 1;
+  background: var(--primary-dark);
+}
+
+/* ==================== 按钮样式 ==================== */
+.btn {
+  display: inline-block;
+  padding: 0.625rem 1.25rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all var(--transition-base);
+  border: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  color: white;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+
+.btn-outline:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* ==================== 返回顶部按钮优化 ==================== */
+#back-to-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-base);
+  z-index: 999;
+  display: none;
+}
+
+#back-to-top:hover {
+  background: var(--primary-dark);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ==================== 阅读进度条 ==================== */
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  z-index: 1000;
+  transition: width var(--transition-fast);
+}
+
+/* ==================== 主题切换按钮 ==================== */
+#theme-toggle {
+  position: fixed;
+  right: 24px;
+  top: 80px;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+  z-index: 999;
+}
+
+#theme-toggle:hover {
+  transform: rotate(20deg) scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ==================== 页面加载动画 ==================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn var(--transition-slow) ease-out;
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.875rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+  }
+  
+  .wrapper {
+    padding: 0 16px;
+  }
+  
+  #theme-toggle,
+  #back-to-top {
+    right: 16px;
+  }
+}
+
+/* ==================== 滚动条样式 ==================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ==================== 选择文本样式 ==================== */
+::selection {
+  background: var(--primary-color);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--primary-color);
+  color: white;
+}

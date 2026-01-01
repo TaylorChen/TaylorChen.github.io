@@ -7,182 +7,469 @@ layout: default
     <h1>{{ page.title }}</h1>
     <p class="post-meta">
       <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>
-      {% if page.last_modified_at %} · 最后更新于 <time datetime="{{ page.last_modified_at | date_to_xmlschema }}">{{ page.last_modified_at | date: "%Y-%m-%d" }}</time>{% endif %}
+      {% if page.last_modified_at %} · 最后更新于 <time datetime="{{ page.last_modified_at | date_to_xmlschema }}">{{
+        page.last_modified_at | date: "%Y-%m-%d" }}</time>{% endif %}
       {% if page.categories %} · {{ page.categories | join: ' / ' }}{% endif %}
       {% if page.tags %} · {{ page.tags | join: ', ' }}{% endif %}
     </p>
     <nav class="breadcrumbs" aria-label="Breadcrumb">
       <a href="{{ '/' | relative_url }}">首页</a>
       {% if page.categories and page.categories.size > 0 %}
-        {% for c in page.categories %}
-          &nbsp;/&nbsp;<a href="{{ '/categories/' | relative_url }}">{{ c }}</a>
-        {% endfor %}
+      {% for c in page.categories %}
+      &nbsp;/&nbsp;<a href="{{ '/categories/' | relative_url }}">{{ c }}</a>
+      {% endfor %}
       {% endif %}
       &nbsp;/&nbsp;<span aria-current="page">{{ page.title }}</span>
     </nav>
     {% if page.description %}
-      <meta name="description" content="{{ page.description | strip_html | strip_newlines | truncate: 160 }}">
+    <meta name="description" content="{{ page.description | strip_html | strip_newlines | truncate: 160 }}">
     {% endif %}
     {% if page.tags %}
-      <meta name="keywords" content="{{ page.tags | join: ', ' }}">
+    <meta name="keywords" content="{{ page.tags | join: ', ' }}">
     {% endif %}
   </header>
 
   <div class="post-body" id="post-body">
     <aside id="toc"></aside>
     <div id="post-content">
-      {{ content | replace: '<img', '<img loading="lazy"' }}
+      {{ content | replace: '<img', '<img loading="lazy"' }} </div>
     </div>
-  </div>
 
-  {% comment %} 相关阅读（按同标签/分类匹配，最多 5 篇） {% endcomment %}
-  {% assign related = '' | split: '|' %}
-  {% for p in site.posts %}
+    {% comment %} 相关阅读（按同标签/分类匹配，最多 5 篇） {% endcomment %}
+    {% assign related = '' | split: '|' %}
+    {% for p in site.posts %}
     {% if p.url == page.url %}{% continue %}{% endif %}
     {% assign is_related = false %}
     {% if page.tags and p.tags %}
-      {% for t in page.tags %}
-        {% if p.tags contains t %}{% assign is_related = true %}{% break %}{% endif %}
-      {% endfor %}
+    {% for t in page.tags %}
+    {% if p.tags contains t %}{% assign is_related = true %}{% break %}{% endif %}
+    {% endfor %}
     {% endif %}
     {% if is_related == false and page.categories and p.categories %}
-      {% for c in page.categories %}
-        {% if p.categories contains c %}{% assign is_related = true %}{% break %}{% endif %}
-      {% endfor %}
+    {% for c in page.categories %}
+    {% if p.categories contains c %}{% assign is_related = true %}{% break %}{% endif %}
+    {% endfor %}
     {% endif %}
     {% if is_related %}
-      {% assign related = related | push: p %}
+    {% assign related = related | push: p %}
     {% endif %}
     {% if related.size >= 5 %}{% break %}{% endif %}
-  {% endfor %}
-  {% if related.size > 0 %}
-  <section class="related-posts">
-    <h2>相关阅读</h2>
-    <ul>
-      {% for r in related %}
+    {% endfor %}
+    {% if related.size > 0 %}
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        {% for r in related %}
         <li><a href="{{ r.url | relative_url }}">{{ r.title }}</a> <small>({{ r.date | date: "%Y-%m-%d" }})</small></li>
-      {% endfor %}
-    </ul>
-  </section>
-  {% endif %}
-
-  <footer class="post-footer">
-    <nav class="post-pager" aria-label="Post Navigation">
-      {% if page.previous %}
-        <a class="prev" href="{{ page.previous.url | relative_url }}" rel="prev">← 上一篇：{{ page.previous.title }}</a>
-      {% endif %}
-      {% if page.next %}
-        <a class="next" href="{{ page.next.url | relative_url }}" rel="next">下一篇：{{ page.next.title }} →</a>
-      {% endif %}
-    </nav>
-    <div class="share">
-      <a href="https://twitter.com/intent/tweet?text={{ page.title | uri_escape }}&url={{ page.url | absolute_url | uri_escape }}" target="_blank" rel="noopener">Share to X</a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u={{ page.url | absolute_url | uri_escape }}" target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
-      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ page.url | absolute_url | uri_escape }}" target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
-    </div>
-
-    {% if site.giscus and site.giscus.repo %}
-    <section id="comments" style="margin-top: 24px;">
-      <script src="https://giscus.app/client.js"
-        data-repo="{{ site.giscus.repo }}"
-        data-repo-id="{{ site.giscus.repo_id }}"
-        data-category="{{ site.giscus.category }}"
-        data-category-id="{{ site.giscus.category_id }}"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="{{ site.giscus.theme | default: 'light' }}"
-        data-lang="zh-CN"
-        crossorigin="anonymous"
-        async>
-      </script>
+        {% endfor %}
+      </ul>
     </section>
     {% endif %}
-  </footer>
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        {% if page.previous %}
+        <a class="prev" href="{{ page.previous.url | relative_url }}" rel="prev">← 上一篇：{{ page.previous.title }}</a>
+        {% endif %}
+        {% if page.next %}
+        <a class="next" href="{{ page.next.url | relative_url }}" rel="next">下一篇：{{ page.next.title }} →</a>
+        {% endif %}
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text={{ page.title | uri_escape }}&url={{ page.url | absolute_url | uri_escape }}"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ page.url | absolute_url | uri_escape }}"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ page.url | absolute_url | uri_escape }}"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      {% if site.giscus and site.giscus.repo %}
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo="{{ site.giscus.repo }}"
+          data-repo-id="{{ site.giscus.repo_id }}" data-category="{{ site.giscus.category }}"
+          data-category-id="{{ site.giscus.category_id }}" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="{{ site.giscus.theme | default: 'light' }}" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      {% endif %}
+    </footer>
 </article>
 
 <button id="back-to-top" title="回到顶部">↑</button>
 
 <script>
-// 构建目录
-(function(){
-  const content = document.getElementById('post-content');
-  const toc = document.getElementById('toc');
-  if (!content || !toc) return;
-  const headings = content.querySelectorAll('h1, h2, h3');
-  if (!headings.length) return;
-  const ul = document.createElement('ul');
-  headings.forEach(h => {
-    if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
-    const li = document.createElement('li');
-    li.style.marginLeft = ({H1:0,H2:12,H3:24})[h.tagName] + 'px';
-    const a = document.createElement('a');
-    a.href = '#' + h.id;
-    a.textContent = h.textContent;
-    li.appendChild(a);
-    ul.appendChild(li);
-  });
-  const title = document.createElement('div');
-  title.textContent = '目录';
-  title.style.fontWeight = 'bold';
-  title.style.marginBottom = '8px';
-  toc.appendChild(title);
-  toc.appendChild(ul);
-})();
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
 
-// 代码复制按钮
-(function(){
-  document.querySelectorAll('pre > code').forEach(code => {
-    const pre = code.parentElement;
-    const btn = document.createElement('button');
-    btn.textContent = '复制';
-    btn.className = 'copy-btn';
-    btn.onclick = async () => {
-      try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(()=>btn.textContent='复制',1000);} catch(e) {}
-    };
-    pre.style.position = 'relative';
-    btn.style.position = 'absolute';
-    btn.style.right = '8px';
-    btn.style.top = '8px';
-    pre.appendChild(btn);
-  });
-})();
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
 
-// 回到顶部
-(function(){
-  const btn = document.getElementById('back-to-top');
-  const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
-  window.addEventListener('scroll', onscroll); onscroll();
-  btn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
-})();
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
 
-// 图片懒加载与缺失 alt 自动补全
-(function(){
-  document.querySelectorAll('#post-content img').forEach(img => {
-    img.loading = 'lazy';
-    if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
-      try {
-        const u = new URL(img.src, window.location.origin);
-        const name = (u.pathname.split('/').pop() || '').split('.')[0];
-        if (name) img.setAttribute('alt', decodeURIComponent(name));
-      } catch (e) {}
-    }
-  });
-})();
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
 </script>
 
 <style>
-.post-body{display:flex; gap:24px}
-#post-body .breadcrumbs{margin:8px 0 12px 0}
-#toc{min-width:200px; max-width:240px; position:sticky; top:80px; height:max-content}
-#post-content{flex:1}
-#back-to-top{position:fixed; right:16px; bottom:24px; display:none; padding:8px 10px}
-.copy-btn{font-size:12px; padding:2px 6px}
- .post-pager{display:flex; justify-content:space-between; margin:16px 0}
- .post-pager .prev,.post-pager .next{max-width:48%;}
-@media (max-width: 900px){ .post-body{flex-direction:column;} #toc{position:static;}}
+  /* 文章页整体布局 */
+  .post-body {
+    display: flex;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+
+  /* 面包屑导航 */
+  #post-body .breadcrumbs {
+    margin: 1rem 0 1.5rem 0;
+    font-size: 0.875rem;
+  }
+
+  .breadcrumbs a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--primary-color);
+  }
+
+  /* 目录样式优化 */
+  #toc {
+    min-width: 220px;
+    max-width: 260px;
+    position: sticky;
+    top: 100px;
+    height: max-content;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+  }
+
+  #toc>div {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+  }
+
+  #toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  #toc li {
+    margin: 0.5rem 0;
+    line-height: 1.5;
+  }
+
+  #toc a {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+    display: block;
+    padding: 0.25rem 0;
+  }
+
+  #toc a:hover {
+    color: var(--primary-color);
+    padding-left: 0.5rem;
+  }
+
+  /* 文章内容区域优化 */
+  #post-content {
+    flex: 1;
+    min-width: 0;
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text-primary);
+  }
+
+  #post-content p {
+    margin: 1.2rem 0;
+  }
+
+  #post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    margin: 1.5rem 0;
+  }
+
+  #post-content blockquote {
+    border-left: 4px solid var(--primary-color);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    background: var(--bg-code);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    color: var(--text-secondary);
+  }
+
+  #post-content ul,
+  #post-content ol {
+    padding-left: 2rem;
+    margin: 1rem 0;
+  }
+
+  #post-content li {
+    margin: 0.5rem 0;
+  }
+
+  #post-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  #post-content th,
+  #post-content td {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+  }
+
+  #post-content th {
+    background: var(--bg-code);
+    font-weight: 600;
+  }
+
+  /* 返回顶部按钮 */
+  #back-to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-base);
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #back-to-top:hover {
+    background: var(--primary-dark);
+    transform: translateY(-4px);
+  }
+
+  /* 代码复制按钮优化 */
+  .copy-btn {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    font-size: 12px;
+    padding: 4px 10px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    opacity: 0.9;
+  }
+
+  .copy-btn:hover {
+    opacity: 1;
+    background: var(--primary-dark);
+  }
+
+  /* 文章导航 */
+  .post-pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 2rem 0;
+    padding-top: 2rem;
+    border-top: 1px solid var(--divider-color);
+  }
+
+  .post-pager .prev,
+  .post-pager .next {
+    flex: 1;
+    max-width: 48%;
+    padding: 1rem 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    color: var(--text-primary);
+  }
+
+  .post-pager .prev:hover,
+  .post-pager .next:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  /* 相关阅读 */
+  .related-posts {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+  }
+
+  .related-posts h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.75rem;
+  }
+
+  .related-posts ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+  }
+
+  .related-posts li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .related-posts li:last-child {
+    border-bottom: none;
+  }
+
+  .related-posts a {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .related-posts a:hover {
+    color: var(--primary-color);
+  }
+
+  .related-posts small {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  /* 分享按钮 */
+  .share {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .share a {
+    padding: 0.5rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    transition: all var(--transition-base);
+  }
+
+  .share a:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 900px) {
+    .post-body {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    #toc {
+      position: static;
+      max-width: 100%;
+      max-height: 400px;
+    }
+
+    #post-content {
+      font-size: 16px;
+    }
+
+    .post-pager {
+      flex-direction: column;
+    }
+
+    .post-pager .prev,
+    .post-pager .next {
+      max-width: 100%;
+    }
+  }
 </style>
 
 {%- comment -%} 结构化数据：Article {%- endcomment -%}
@@ -226,5 +513,3 @@ layout: default
   ]
 }
 </script>
-
-

@@ -44,7 +44,9 @@
   
     <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
     <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  <script type="application/ld+json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/css/custom.css"><script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -65,7 +67,7 @@
     "url": "https://taylorchen.github.io",
     "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
   }
-  </script>
+  </script><script src="/assets/js/theme.js" defer></script>
 </head>
 <body><header class="site-header" role="banner">
   <div class="wrapper">
@@ -75,120 +77,519 @@
       <a class="page-link" href="/categories/">分类</a>
       <a class="page-link" href="/tags/">标签</a>
       <a class="page-link" href="/archives/">归档</a>
-  <a class="page-link" href="/search/">搜索</a>
-  <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
       <a class="page-link" href="/about/">关于</a>
     </nav>
   </div>
 </header>
 
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+  }
 
-<main class="page-content" aria-label="Content">
+  .site-header .wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .site-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    transition: color var(--transition-fast);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .site-title:hover {
+    opacity: 0.8;
+  }
+
+  .site-nav {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+  }
+
+  .page-link {
+    padding: 0.5rem 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.9375rem;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    position: relative;
+  }
+
+  .page-link:hover {
+    color: var(--primary-color);
+    background: var(--bg-code);
+  }
+
+  .page-link::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 70%;
+    height: 2px;
+    background: var(--primary-color);
+    transition: transform var(--transition-base);
+    border-radius: 2px;
+  }
+
+  .page-link:hover::after {
+    transform: translateX(-50%) scaleX(1);
+  }
+
+  /* 响应式菜单 */
+  @media (max-width: 768px) {
+    .site-header .wrapper {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .site-nav {
+      width: 100%;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .page-link {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.875rem;
+    }
+  }
+</style><main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="home">
-  <h1 class="page-heading">最新文章</h1>
+        <div class="home"><section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-avatar">
+        <img src="/assets/images/favicons/favicon-96x96.png" alt="TayloyChen" />
+      </div>
+      <h1 class="hero-title">TayloyChen Blog</h1>
+      <p class="hero-description">这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      <div class="hero-social">
+        
+        <a href="https://github.com/taylorchen" target="_blank" rel="noopener" aria-label="GitHub"
+          title="GitHub">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+          </svg>
+        </a>
+        
+        
+        <a href="https://twitter.com/shlchen" target="_blank" rel="noopener" aria-label="Twitter"
+          title="Twitter">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+        </a>
+        
+        
+        <a href="mailto:cherrycmd@gmail.com" aria-label="Email" title="Email">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+        </a>
+        
+      </div>
+    </div>
+  </section>
+
+  <h2 class="section-title">最新文章</h2>
 
   <ul class="post-list" itemscope itemtype="https://schema.org/Blog">
     
     
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="2022-10-01T00:00:00+08:00">2022-10-01</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="/web3/2022/10/01/Web3-NFT-%E6%A0%87%E5%87%86%E4%B8%8E%E5%BA%94%E7%94%A8%E5%AE%9E%E8%B7%B5.html">NFT 标准与应用实践：ERC-721/1155、元数据与版税</a>
-      </h3>
-      
-      <p class="excerpt">全面讲解 NFT 标准、元数据与存储、铸造与交易、版税策略、动态/可组合 NFT、跨链与索引缓存，并附工程实践与代码片段。</p>
-      
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/golang/2022/10/07/Go-%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B-Channel%E4%B8%8EContext%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html">Go 并发模型：Channel 与 Context 最佳实践</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="2022-10-07T00:00:00+08:00">
+              2022-10-07
+            </time>
+            
+            <span class="separator">·</span>
+            <span class="post-category">技术 / Golang</span>
+            
+          </div>
+        </header>
+
+        
+        <p class="post-excerpt" itemprop="description">以可复用的模式（扇入扇出/超时取消/泄漏排查）与代码片段，总结 Channel/Context 的工程化用法与排障要点。</p>
+        
+
+        
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            
+            <span class="tag">技术</span>
+            
+            <span class="tag">Golang</span>
+            
+            <span class="tag">并发</span>
+            
+          </div>
+        </footer>
+        
+      </article>
     </li>
     
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="2022-05-18T00:00:00+08:00">2022-05-18</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="/web3/2022/05/18/Web3-%E4%BB%A3%E5%B8%81%E7%BB%8F%E6%B5%8E%E5%AD%A6-%E4%BB%8E%E8%AE%BE%E8%AE%A1%E5%88%B0%E5%AE%9E%E6%93%8D.html">加密货币与代币经济：从模型设计到实操监控</a>
-      </h3>
-      
-      <p class="excerpt">自发行/释放/锁仓到治理/金库/做市的完整 Tokenomics 方法论，附合约片段、监控指标、风控与运营看板实践。</p>
-      
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="/web3/2022/10/01/Web3-NFT-%E6%A0%87%E5%87%86%E4%B8%8E%E5%BA%94%E7%94%A8%E5%AE%9E%E8%B7%B5.html">NFT 标准与应用实践：ERC-721/1155、元数据与版税</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="2022-10-01T00:00:00+08:00">
+              2022-10-01
+            </time>
+            
+            <span class="separator">·</span>
+            <span class="post-category">Web3</span>
+            
+          </div>
+        </header>
+
+        
+        <p class="post-excerpt" itemprop="description">全面讲解 NFT 标准、元数据与存储、铸造与交易、版税策略、动态/可组合 NFT、跨链与索引缓存，并附工程实践与代码片段。</p>
+        
+
+        
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            
+            <span class="tag">NFT</span>
+            
+            <span class="tag">ERC-721</span>
+            
+            <span class="tag">ERC-1155</span>
+            
+          </div>
+        </footer>
+        
+      </article>
     </li>
     
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="2022-03-30T00:00:00+08:00">2022-03-30</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html">Java Spring 事务传播与隔离级别陷阱</a>
-      </h3>
-      
-      <p class="excerpt">梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。</p>
-      
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="/web3/2022/05/18/Web3-%E4%BB%A3%E5%B8%81%E7%BB%8F%E6%B5%8E%E5%AD%A6-%E4%BB%8E%E8%AE%BE%E8%AE%A1%E5%88%B0%E5%AE%9E%E6%93%8D.html">加密货币与代币经济：从模型设计到实操监控</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="2022-05-18T00:00:00+08:00">
+              2022-05-18
+            </time>
+            
+            <span class="separator">·</span>
+            <span class="post-category">Web3</span>
+            
+          </div>
+        </header>
+
+        
+        <p class="post-excerpt" itemprop="description">自发行/释放/锁仓到治理/金库/做市的完整 Tokenomics 方法论，附合约片段、监控指标、风控与运营看板实践。</p>
+        
+
+        
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            
+            <span class="tag">代币经济</span>
+            
+            <span class="tag">Tokenomics</span>
+            
+            <span class="tag">AMM</span>
+            
+          </div>
+        </footer>
+        
+      </article>
     </li>
     
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="2021-11-06T00:00:00+08:00">2021-11-06</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html">智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线</a>
-      </h3>
-      
-      <p class="excerpt">以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。</p>
-      
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html">Java Spring 事务传播与隔离级别陷阱</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="2022-03-30T00:00:00+08:00">
+              2022-03-30
+            </time>
+            
+            <span class="separator">·</span>
+            <span class="post-category">技术 / Java</span>
+            
+          </div>
+        </header>
+
+        
+        <p class="post-excerpt" itemprop="description">梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。</p>
+        
+
+        
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            
+            <span class="tag">技术</span>
+            
+            <span class="tag">Java</span>
+            
+            <span class="tag">Spring</span>
+            
+          </div>
+        </footer>
+        
+      </article>
     </li>
     
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="2021-06-10T00:00:00+08:00">2021-06-10</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/php/2021/06/10/PHP-%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E4%B8%8E%E9%9B%86%E4%B8%AD%E5%8C%96.html">PHP 实时日志采集与集中化</a>
-      </h3>
-      
-      <p class="excerpt">从物理机到 Kubernetes 的日志采集/清洗/聚合方案，对比 EFK/PLG/ClickHouse/OTel，提供配置模板、脱敏与容量治理清单。</p>
-      
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html">智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="2021-11-06T00:00:00+08:00">
+              2021-11-06
+            </time>
+            
+            <span class="separator">·</span>
+            <span class="post-category">Web3</span>
+            
+          </div>
+        </header>
+
+        
+        <p class="post-excerpt" itemprop="description">以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。</p>
+        
+
+        
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            
+            <span class="tag">智能合约</span>
+            
+            <span class="tag">Solidity</span>
+            
+            <span class="tag">安全</span>
+            
+          </div>
+        </footer>
+        
+      </article>
     </li>
     
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="2021-03-12T00:00:00+08:00">2021-03-12</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html">去中心化应用（DApps）架构实战：钱包、签名与读写分层</a>
-      </h3>
-      
-      <p class="excerpt">以钱包为入口、合约为规则源、索引器为读路径，搭建可上线 DApp 的完整闭环；覆盖多钱包发现、网络切换、事件索引与错误处理。</p>
-      
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/php/2021/06/10/PHP-%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E4%B8%8E%E9%9B%86%E4%B8%AD%E5%8C%96.html">PHP 实时日志采集与集中化</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="2021-06-10T00:00:00+08:00">
+              2021-06-10
+            </time>
+            
+            <span class="separator">·</span>
+            <span class="post-category">技术 / PHP</span>
+            
+          </div>
+        </header>
+
+        
+        <p class="post-excerpt" itemprop="description">从物理机到 Kubernetes 的日志采集/清洗/聚合方案，对比 EFK/PLG/ClickHouse/OTel，提供配置模板、脱敏与容量治理清单。</p>
+        
+
+        
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            
+            <span class="tag">技术</span>
+            
+            <span class="tag">PHP</span>
+            
+            <span class="tag">日志</span>
+            
+          </div>
+        </footer>
+        
+      </article>
     </li>
     
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="2020-09-22T00:00:00+08:00">2020-09-22</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/nginx/2020/09/22/Nginx-%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5%E4%B8%8E%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E5%AE%9E%E8%B7%B5.html">Nginx 缓存策略与动静分离实践</a>
-      </h3>
-      
-      <p class="excerpt">从 CDN 到源站 Nginx 的缓存语义、键设计与失效策略，给出微缓存/静态长缓存配置与动静分离实践，附协同与排错清单。</p>
-      
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="/web3/2021/03/12/Web3-%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%BA%94%E7%94%A8DApps%E6%9E%B6%E6%9E%84%E5%AE%9E%E6%88%98.html">去中心化应用（DApps）架构实战：钱包、签名与读写分层</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="2021-03-12T00:00:00+08:00">
+              2021-03-12
+            </time>
+            
+            <span class="separator">·</span>
+            <span class="post-category">Web3</span>
+            
+          </div>
+        </header>
+
+        
+        <p class="post-excerpt" itemprop="description">以钱包为入口、合约为规则源、索引器为读路径，搭建可上线 DApp 的完整闭环；覆盖多钱包发现、网络切换、事件索引与错误处理。</p>
+        
+
+        
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            
+            <span class="tag">DApp</span>
+            
+            <span class="tag">钱包</span>
+            
+            <span class="tag">EIP-1193</span>
+            
+          </div>
+        </footer>
+        
+      </article>
     </li>
     
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="2020-08-19T00:00:00+08:00">2020-08-19</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="/web3/2020/08/19/Web3-%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%A0%88.html">Web3 的链上基础：共识、状态机与扩容栈</a>
-      </h3>
-      
-      <p class="excerpt">以“可验证状态机复制”为主线，梳理状态转换、共识与数据可用性（DA），并给出节点/索引/扩容的工程建议与代码片段。</p>
-      
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/nginx/2020/09/22/Nginx-%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5%E4%B8%8E%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E5%AE%9E%E8%B7%B5.html">Nginx 缓存策略与动静分离实践</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="2020-09-22T00:00:00+08:00">
+              2020-09-22
+            </time>
+            
+            <span class="separator">·</span>
+            <span class="post-category">技术 / Nginx</span>
+            
+          </div>
+        </header>
+
+        
+        <p class="post-excerpt" itemprop="description">从 CDN 到源站 Nginx 的缓存语义、键设计与失效策略，给出微缓存/静态长缓存配置与动静分离实践，附协同与排错清单。</p>
+        
+
+        
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            
+            <span class="tag">技术</span>
+            
+            <span class="tag">Nginx</span>
+            
+            <span class="tag">缓存</span>
+            
+          </div>
+        </footer>
+        
+      </article>
     </li>
     
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="2020-07-19T00:00:00+08:00">2020-07-19</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html">MySQL 索引设计与回表优化实战</a>
-      </h3>
-      
-      <p class="excerpt">围绕查询模式而非字段建索引：B+树原理、列序与覆盖索引、SARGable 改写、回表优化与 Seek 分页、统计信息与灰度验证的工程化清单。</p>
-      
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="/web3/2020/08/19/Web3-%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%A0%88.html">Web3 的链上基础：共识、状态机与扩容栈</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="2020-08-19T00:00:00+08:00">
+              2020-08-19
+            </time>
+            
+            <span class="separator">·</span>
+            <span class="post-category">Web3</span>
+            
+          </div>
+        </header>
+
+        
+        <p class="post-excerpt" itemprop="description">以“可验证状态机复制”为主线，梳理状态转换、共识与数据可用性（DA），并给出节点/索引/扩容的工程建议与代码片段。</p>
+        
+
+        
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            
+            <span class="tag">区块链</span>
+            
+            <span class="tag">共识</span>
+            
+            <span class="tag">Layer2</span>
+            
+          </div>
+        </footer>
+        
+      </article>
     </li>
     
-    <li itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <span class="post-meta"><time itemprop="datePublished" datetime="2019-12-14T00:00:00+08:00">2019-12-14</time></span>
-      <h3 itemprop="headline">
-        <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html">Java 垃圾回收调优：从 G1 到 ZGC</a>
-      </h3>
-      
-      <p class="excerpt">从 JVM 内存/暂停机制到 G1/ZGC 的收集原理与调参方法论，结合日志示例与案例拆解，提供延迟敏感系统可直接落地的 GC 优化路径。</p>
-      
+    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+      <article>
+        <header class="post-item-header">
+          <h3 class="post-item-title" itemprop="headline">
+            <a class="post-link" itemprop="url" href="/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html">MySQL 索引设计与回表优化实战</a>
+          </h3>
+          <div class="post-item-meta">
+            <time itemprop="datePublished" datetime="2020-07-19T00:00:00+08:00">
+              2020-07-19
+            </time>
+            
+            <span class="separator">·</span>
+            <span class="post-category">技术 / MySQL</span>
+            
+          </div>
+        </header>
+
+        
+        <p class="post-excerpt" itemprop="description">围绕查询模式而非字段建索引：B+树原理、列序与覆盖索引、SARGable 改写、回表优化与 Seek 分页、统计信息与灰度验证的工程化清单。</p>
+        
+
+        
+        <footer class="post-item-footer">
+          <div class="post-tags">
+            
+            <span class="tag">技术</span>
+            
+            <span class="tag">MySQL</span>
+            
+            <span class="tag">索引</span>
+            
+          </div>
+        </footer>
+        
+      </article>
     </li>
     
   </ul>
@@ -196,26 +597,214 @@
   
   <nav class="pagination" role="navigation">
     
-      <a class="previous" href="/page2/">上一页</a>
+    <a class="btn btn-outline" href="/page2/">← 上一页</a>
     
 
     <span class="page-number">第 3 / 5 页</span>
 
     
-      <a class="next" href="/page4/">下一页</a>
+    <a class="btn btn-outline" href="/page4/">下一页 →</a>
     
   </nav>
   
 </div>
 
 <style>
-.pagination{display:flex; gap:12px; align-items:center; margin-top:24px}
-.pagination .previous,.pagination .next{padding:6px 10px; border:1px solid #ddd}
-.pagination .page-number{color:#666}
+  /* Hero Section */
+  .hero-section {
+    text-align: center;
+    padding: 4rem 0 3rem;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .hero-avatar {
+    margin: 0 auto 1.5rem;
+    width: 120px;
+    height: 120px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 4px;
+    display: inline-block;
+  }
+
+  .hero-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    background: var(--bg-card);
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin: 0 0 1.5rem;
+    line-height: 1.6;
+  }
+
+  .hero-social {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero-social a {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all var(--transition-base);
+  }
+
+  .hero-social a:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Section Title */
+  .section-title {
+    font-size: 1.75rem;
+    margin: 2rem 0 1.5rem;
+    font-weight: 600;
+  }
+
+  /* Post List */
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .post-item {
+    padding: 1.5rem;
+  }
+
+  .post-item-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .post-item-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+
+  .post-link {
+    color: var(--text-primary);
+    transition: color var(--transition-fast);
+  }
+
+  .post-link:hover {
+    color: var(--primary-color);
+  }
+
+  .post-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .separator {
+    color: var(--text-muted);
+  }
+
+  .post-category {
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+
+  .post-excerpt {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0.75rem 0 0;
+  }
+
+  .post-item-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--divider-color);
+  }
+
+  .post-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--bg-code);
+    color: var(--primary-color);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--divider-color);
+  }
+
+  .pagination .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .page-number {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .hero-section {
+      padding: 3rem 0 2rem;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .hero-description {
+      font-size: 1rem;
+    }
+
+    .post-item-title {
+      font-size: 1.25rem;
+    }
+  }
 </style>
-
-
-
       </div>
     </main><footer class="site-footer h-card">
   <data class="u-url" href="/"></data>
