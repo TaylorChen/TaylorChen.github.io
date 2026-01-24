@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="MySQL 索引设计与回表优化实战" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2020-07-19T00:00:00+08:00","description":"围绕查询模式而非字段建索引：B+树原理、列序与覆盖索引、SARGable 改写、回表优化与 Seek 分页、统计信息与灰度验证的工程化清单。","headline":"MySQL 索引设计与回表优化实战","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://chen.zz.ac"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2020-07-19T00:00:00+08:00","description":"围绕查询模式而非字段建索引：B+树原理、列序与覆盖索引、SARGable 改写、回表优化与 Seek 分页、统计信息与灰度验证的工程化清单。","headline":"MySQL 索引设计与回表优化实战","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
@@ -56,7 +56,7 @@
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "TayloyChen",
-    "url": "https://taylorchen.github.io",
+    "url": "https://chen.zz.ac",
     "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
   }
   </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
@@ -179,7 +179,7 @@
   "author": {
     "@type": "Person",
     "name": "TayloyChen",
-    "url": "https://taylorchen.github.io"
+    "url": "https://chen.zz.ac"
   },
   "publisher": {
     "@type": "Organization",

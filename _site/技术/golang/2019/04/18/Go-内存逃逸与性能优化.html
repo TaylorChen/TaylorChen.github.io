@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Go 内存逃逸与性能优化" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2019-04-18T00:00:00+08:00","description":"从跨语言视角解释逃逸的本质，深入 Go 编译器逃逸分析与典型触发场景，并给出值语义、接口边界、容器预分配与并发实践的系统优化清单。","headline":"Go 内存逃逸与性能优化","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2019/04/18/Go-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2019/04/18/Go-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://chen.zz.ac"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2019-04-18T00:00:00+08:00","description":"从跨语言视角解释逃逸的本质，深入 Go 编译器逃逸分析与典型触发场景，并给出值语义、接口边界、容器预分配与并发实践的系统优化清单。","headline":"Go 内存逃逸与性能优化","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2019/04/18/Go-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2019/04/18/Go-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
@@ -56,7 +56,7 @@
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "TayloyChen",
-    "url": "https://taylorchen.github.io",
+    "url": "https://chen.zz.ac",
     "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
   }
   </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
@@ -179,7 +179,7 @@
   "author": {
     "@type": "Person",
     "name": "TayloyChen",
-    "url": "https://taylorchen.github.io"
+    "url": "https://chen.zz.ac"
   },
   "publisher": {
     "@type": "Organization",

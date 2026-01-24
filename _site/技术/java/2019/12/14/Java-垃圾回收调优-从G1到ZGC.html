@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Java 垃圾回收调优：从 G1 到 ZGC" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2019-12-14T00:00:00+08:00","description":"从 JVM 内存/暂停机制到 G1/ZGC 的收集原理与调参方法论，结合日志示例与案例拆解，提供延迟敏感系统可直接落地的 GC 优化路径。","headline":"Java 垃圾回收调优：从 G1 到 ZGC","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://chen.zz.ac"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2019-12-14T00:00:00+08:00","description":"从 JVM 内存/暂停机制到 G1/ZGC 的收集原理与调参方法论，结合日志示例与案例拆解，提供延迟敏感系统可直接落地的 GC 优化路径。","headline":"Java 垃圾回收调优：从 G1 到 ZGC","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2019/12/14/Java-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E8%B0%83%E4%BC%98-%E4%BB%8EG1%E5%88%B0ZGC.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
@@ -56,7 +56,7 @@
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "TayloyChen",
-    "url": "https://taylorchen.github.io",
+    "url": "https://chen.zz.ac",
     "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
   }
   </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
@@ -179,7 +179,7 @@
   "author": {
     "@type": "Person",
     "name": "TayloyChen",
-    "url": "https://taylorchen.github.io"
+    "url": "https://chen.zz.ac"
   },
   "publisher": {
     "@type": "Organization",

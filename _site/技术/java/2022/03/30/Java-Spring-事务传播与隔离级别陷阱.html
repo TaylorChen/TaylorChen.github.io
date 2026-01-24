@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Java Spring 事务传播与隔离级别陷阱" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2022-03-30T00:00:00+08:00","description":"梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。","headline":"Java Spring 事务传播与隔离级别陷阱","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://chen.zz.ac"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2022-03-30T00:00:00+08:00","description":"梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。","headline":"Java Spring 事务传播与隔离级别陷阱","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
@@ -56,7 +56,7 @@
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "TayloyChen",
-    "url": "https://taylorchen.github.io",
+    "url": "https://chen.zz.ac",
     "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
   }
   </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
@@ -179,7 +179,7 @@
   "author": {
     "@type": "Person",
     "name": "TayloyChen",
-    "url": "https://taylorchen.github.io"
+    "url": "https://chen.zz.ac"
   },
   "publisher": {
     "@type": "Organization",

@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Nginx Ingress 在 Kubernetes 的高可用配置" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://taylorchen.github.io"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2023-12-05T00:00:00+08:00","description":"给出 Ingress-Nginx 在 K8s 的高可用与灰度配置：基础清单、金丝雀、反亲和/跨区扩散/PDB、升级收敛、HPA 与连接复用等实操要点。","headline":"Nginx Ingress 在 Kubernetes 的高可用配置","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2023/12/05/Nginx-Ingress-%E5%9C%A8Kubernetes%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2023/12/05/Nginx-Ingress-%E5%9C%A8Kubernetes%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://chen.zz.ac"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2023-12-05T00:00:00+08:00","description":"给出 Ingress-Nginx 在 K8s 的高可用与灰度配置：基础清单、金丝雀、反亲和/跨区扩散/PDB、升级收敛、HPA 与连接复用等实操要点。","headline":"Nginx Ingress 在 Kubernetes 的高可用配置","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2023/12/05/Nginx-Ingress-%E5%9C%A8Kubernetes%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2023/12/05/Nginx-Ingress-%E5%9C%A8Kubernetes%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
@@ -56,7 +56,7 @@
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "TayloyChen",
-    "url": "https://taylorchen.github.io",
+    "url": "https://chen.zz.ac",
     "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
   }
   </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
@@ -179,7 +179,7 @@
   "author": {
     "@type": "Person",
     "name": "TayloyChen",
-    "url": "https://taylorchen.github.io"
+    "url": "https://chen.zz.ac"
   },
   "publisher": {
     "@type": "Organization",
