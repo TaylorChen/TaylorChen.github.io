@@ -23,12 +23,14 @@
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
   <link rel="alternate" type="application/atom+xml" href="{{ '/feed.xml' | absolute_url }}" title="{{ site.title }}" />
-  
+
   {%- comment -%} Favicon 图标 {%- endcomment -%}
   <link rel="icon" href="{{ '/assets/images/favicons/favicon.ico' | relative_url }}" type="image/x-icon">
   <link rel="icon" href="{{ '/assets/images/favicons/favicon.svg' | relative_url }}" type="image/svg+xml">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/images/favicons/apple-touch-icon.png' | relative_url }}">
-  <link rel="icon" type="image/png" sizes="96x96" href="{{ '/assets/images/favicons/favicon-96x96.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="{{ '/assets/images/favicons/apple-touch-icon.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="{{ '/assets/images/favicons/favicon-96x96.png' | relative_url }}">
   {% assign share_img = page.image | default: site.og_image | default: site.logo %}
   {% if share_img %}
   <meta property="og:image" content="{{ share_img | absolute_url }}">
@@ -39,13 +41,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" />
 
   {%- comment -%} 自定义样式 {%- endcomment -%}
-  <link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/custom.css?v=1.0.1' | relative_url }}">
 
   {%- comment -%} 结构化数据：WebSite + SearchAction 与 Person {%- endcomment -%}
   <script type="application/ld+json">
