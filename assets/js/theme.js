@@ -1,5 +1,5 @@
 /**
- * TaylorChen Blog - 主题功能脚本
+ * 小黄鸭 博客 - 主题功能脚本
  * 包含：暗色模式切换、阅读进度、平滑滚动等
  */
 
@@ -338,7 +338,6 @@
         ReadingTime.init();
         BusuanziStats.init();
 
-        console.log('✨ TaylorChen Blog - 主题功能已加载');
     }
 
     // DOM加载完成后初始化
