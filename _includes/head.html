@@ -23,7 +23,12 @@
   {% endif %}
   <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
   <link rel="alternate" type="application/atom+xml" href="{{ '/feed.xml' | absolute_url }}" title="{{ site.title }}" />
+  
+  {%- comment -%} Favicon 图标 {%- endcomment -%}
   <link rel="icon" href="{{ '/assets/images/favicons/favicon.ico' | relative_url }}" type="image/x-icon">
+  <link rel="icon" href="{{ '/assets/images/favicons/favicon.svg' | relative_url }}" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/images/favicons/apple-touch-icon.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="96x96" href="{{ '/assets/images/favicons/favicon-96x96.png' | relative_url }}">
   {% assign share_img = page.image | default: site.og_image | default: site.logo %}
   {% if share_img %}
   <meta property="og:image" content="{{ share_img | absolute_url }}">
