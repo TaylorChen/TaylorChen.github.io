@@ -89,7 +89,12 @@ body {
 }
 
 /* ==================== 标题样式 ==================== */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--text-primary);
   font-weight: 600;
   line-height: 1.4;
@@ -97,8 +102,18 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 1rem;
 }
 
-h1 { font-size: 2.5rem; letter-spacing: -0.02em; }
-h2 { font-size: 2rem; border-bottom: none; position: relative; padding-bottom: 0.5rem; }
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 2rem;
+  border-bottom: none;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
 h2::after {
   content: '';
   position: absolute;
@@ -142,6 +157,115 @@ a:hover {
 .card:hover {
   box-shadow: var(--shadow-hover);
   transform: scale(1.05);
+}
+
+/* ==================== 首页 Hero 区域 2 行优化 ==================== */
+.hero-section {
+  padding: 2.5rem 0;
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  text-align: left;
+}
+
+.hero-avatar {
+  flex-shrink: 0;
+  margin-bottom: 0 !important;
+}
+
+.hero-avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid var(--bg-card);
+  box-shadow: var(--shadow-md);
+}
+
+.hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-title {
+  margin: 0 !important;
+  font-size: 2.25rem !important;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-description {
+  margin: 0.5rem 0 !important;
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.hero-social {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0 !important;
+}
+
+.hero-social a {
+  color: var(--primary-color);
+  opacity: 0.8;
+  transition: all var(--transition-fast);
+}
+
+.hero-social a:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  color: var(--primary-dark);
+}
+
+/* ==================== 博客卡片高度调低优化 ==================== */
+.post-item.card {
+  padding: 1.25rem 1.5rem !important;
+  /* 减少内边距 */
+  margin-bottom: 1.25rem !important;
+  /* 减少卡片距离 */
+}
+
+.post-item-header {
+  margin-bottom: 0 !important;
+}
+
+.post-item-title {
+  margin-top: 0 !important;
+  margin-bottom: 0.35rem !important;
+  font-size: 1.4rem !important;
+}
+
+.post-item-meta {
+  margin-bottom: 0 !important;
+  font-size: 0.875rem;
+}
+
+.post-excerpt {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-item-footer {
+  margin-top: 0.5rem !important;
 }
 
 /* ==================== 代码块优化 ==================== */
@@ -321,6 +445,28 @@ pre code {
   #theme-toggle,
   #back-to-top {
     right: 16px;
+  }
+
+  /* Hero 响应式回归 */
+  .hero-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .hero-title-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-avatar img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .hero-title {
+    font-size: 1.875rem !important;
   }
 }
 
