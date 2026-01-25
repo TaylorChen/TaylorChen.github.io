@@ -5,22 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线 | TayloyChen Blog</title>
+<title>智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线 | 小黄鸭</title>
 <meta name="generator" content="Jekyll v4.4.1" />
 <meta property="og:title" content="智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线" />
-<meta name="author" content="TayloyChen" />
+<meta name="author" content="小黄鸭" />
 <meta property="og:locale" content="zh_CN" />
 <meta name="description" content="以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。" />
 <meta property="og:description" content="以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。" />
 <link rel="canonical" href="http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" />
 <meta property="og:url" content="http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" />
-<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:site_name" content="小黄鸭" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2021-11-06T00:00:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://chen.zz.ac"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2021-11-06T00:00:00+08:00","description":"以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。","headline":"智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2021-11-06T00:00:00+08:00","description":"以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。","headline":"智能合约工程与安全最佳实践：Solidity/Foundry 上手到上线","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/web3/2021/11/06/Web3-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%B7%A5%E7%A8%8B%E4%B8%8E%E5%AE%89%E5%85%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
@@ -28,7 +28,7 @@
   <meta property="article:modified_time" content="2025-08-10T00:22:34+08:00">
   
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="TayloyChen Blog" />
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" />
   <link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
   
   
@@ -42,7 +42,7 @@
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "TayloyChen Blog",
+    "name": "小黄鸭",
     "url": "http://localhost:4000",
     "potentialAction": {
       "@type": "SearchAction",
@@ -55,14 +55,14 @@
   {
     "@context": "https://schema.org",
     "@type": "Person",
-    "name": "TayloyChen",
+    "name": "小黄鸭",
     "url": "https://chen.zz.ac",
     "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
   }
   </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </head><body><header class="site-header" role="banner">
   <div class="wrapper">
-    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
     <nav class="site-nav">
       <a class="page-link" href="/">首页</a>
       <a class="page-link" href="/categories/">分类</a>
@@ -178,12 +178,12 @@
   "description": "以工程与安全为先的智能合约落地指南：目录与依赖、测试金字塔、常见漏洞矩阵、审计工具链、上线与回滚预案及可观测运营清单。",
   "author": {
     "@type": "Person",
-    "name": "TayloyChen",
+    "name": "小黄鸭",
     "url": "https://chen.zz.ac"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "TayloyChen Blog",
+    "name": "小黄鸭",
     "logo": {
       "@type": "ImageObject",
       "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
@@ -402,6 +402,27 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
  </div>
     </div>
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -1378,7 +1399,7 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
   "dateModified": "2025-08-10T00:22:34+08:00",
   "author": {
     "@type": "Person",
-    "name": "TayloyChen"
+    "name": "小黄鸭"
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
@@ -1410,8 +1431,8 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
   <div class="wrapper">
     <div class="footer-content">
       <div class="footer-col footer-col-1">
-        <h2 class="footer-heading">TayloyChen Blog</h2>
-        <p class="footer-description">这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
       </div>
 
       <div class="footer-col footer-col-2">
@@ -1455,7 +1476,7 @@ contract V2 is V1 { uint256 b; } // 仅追加，不可重排/删除
         </span>
       </div>
       <div class="footer-copyright">
-        <p>© 2026 TayloyChen. All rights reserved.</p>
+        <p>© 2026 小黄鸭. All rights reserved.</p>
         <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
             href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
       </div>

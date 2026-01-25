@@ -5,22 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Java Spring 事务传播与隔离级别陷阱 | TayloyChen Blog</title>
+<title>Java Spring 事务传播与隔离级别陷阱 | 小黄鸭</title>
 <meta name="generator" content="Jekyll v4.4.1" />
 <meta property="og:title" content="Java Spring 事务传播与隔离级别陷阱" />
-<meta name="author" content="TayloyChen" />
+<meta name="author" content="小黄鸭" />
 <meta property="og:locale" content="zh_CN" />
 <meta name="description" content="梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。" />
 <meta property="og:description" content="梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。" />
 <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html" />
 <meta property="og:url" content="http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html" />
-<meta property="og:site_name" content="TayloyChen Blog" />
+<meta property="og:site_name" content="小黄鸭" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-03-30T00:00:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Java Spring 事务传播与隔离级别陷阱" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"TayloyChen","url":"https://chen.zz.ac"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2022-03-30T00:00:00+08:00","description":"梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。","headline":"Java Spring 事务传播与隔离级别陷阱","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"TayloyChen"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2025-08-10T00:22:34+08:00","datePublished":"2022-03-30T00:00:00+08:00","description":"梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。","headline":"Java Spring 事务传播与隔离级别陷阱","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
@@ -28,7 +28,7 @@
   <meta property="article:modified_time" content="2025-08-10T00:22:34+08:00">
   
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="TayloyChen Blog" />
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" />
   <link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
   
   
@@ -42,7 +42,7 @@
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "TayloyChen Blog",
+    "name": "小黄鸭",
     "url": "http://localhost:4000",
     "potentialAction": {
       "@type": "SearchAction",
@@ -55,14 +55,14 @@
   {
     "@context": "https://schema.org",
     "@type": "Person",
-    "name": "TayloyChen",
+    "name": "小黄鸭",
     "url": "https://chen.zz.ac",
     "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
   }
   </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </head><body><header class="site-header" role="banner">
   <div class="wrapper">
-    <a class="site-title" rel="author" href="/">TayloyChen Blog</a>
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
     <nav class="site-nav">
       <a class="page-link" href="/">首页</a>
       <a class="page-link" href="/categories/">分类</a>
@@ -178,12 +178,12 @@
   "description": "梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。",
   "author": {
     "@type": "Person",
-    "name": "TayloyChen",
+    "name": "小黄鸭",
     "url": "https://chen.zz.ac"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "TayloyChen Blog",
+    "name": "小黄鸭",
     "logo": {
       "@type": "ImageObject",
       "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
@@ -1116,6 +1116,29 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <section class="related-posts">
       <h2>相关阅读</h2>
       <ul>
@@ -1548,7 +1571,7 @@
   "dateModified": "2025-08-10T00:22:34+08:00",
   "author": {
     "@type": "Person",
-    "name": "TayloyChen"
+    "name": "小黄鸭"
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
@@ -1583,8 +1606,8 @@
   <div class="wrapper">
     <div class="footer-content">
       <div class="footer-col footer-col-1">
-        <h2 class="footer-heading">TayloyChen Blog</h2>
-        <p class="footer-description">这里是 TayloyChen 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
       </div>
 
       <div class="footer-col footer-col-2">
@@ -1628,7 +1651,7 @@
         </span>
       </div>
       <div class="footer-copyright">
-        <p>© 2026 TayloyChen. All rights reserved.</p>
+        <p>© 2026 小黄鸭. All rights reserved.</p>
         <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
             href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
       </div>
