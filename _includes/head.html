@@ -35,12 +35,14 @@
   <meta name="twitter:image" content="{{ share_img | absolute_url }}">
   {% endif %}
 
-  {%- comment -%} Google Fonts - 优化字体 {%- endcomment -%}
+  {%- comment -%} Google Fonts & Special Fonts {%- endcomment -%}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" />
 
   {%- comment -%} 自定义样式 {%- endcomment -%}
   <link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}">
