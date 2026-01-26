@@ -31,11 +31,12 @@
     href="{{ '/assets/images/favicons/apple-touch-icon.png' | relative_url }}">
   <link rel="icon" type="image/png" sizes="96x96"
     href="{{ '/assets/images/favicons/favicon-96x96.png' | relative_url }}">
-  {% assign share_img = page.image | default: site.og_image | default: site.logo %}
-  {% if share_img %}
+  {%- assign share_img = page.image | default: site.image | default: site.og_image -%}
+  {%- if share_img -%}
   <meta property="og:image" content="{{ share_img | absolute_url }}">
   <meta name="twitter:image" content="{{ share_img | absolute_url }}">
-  {% endif %}
+  {%- endif -%}
+
 
   {%- comment -%} Google Fonts & Special Fonts {%- endcomment -%}
   <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -33,12 +33,8 @@
   <link rel="apple-touch-icon" sizes="180x180"
     href="/assets/images/favicons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="96x96"
-    href="/assets/images/favicons/favicon-96x96.png">
-  
-  
-  <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -79,40 +75,7 @@
   </div>
 </header><main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "MySQL 索引设计与回表优化实战",
-  "description": "围绕查询模式而非字段建索引：B+树原理、列序与覆盖索引、SARGable 改写、回表优化与 Seek 分页、统计信息与灰度验证的工程化清单。",
-  "author": {
-    "@type": "Person",
-    "name": "小黄鸭",
-    "url": "https://chen.zz.ac"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "小黄鸭",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
-    }
-  },
-  "datePublished": "2020-07-19T00:00:00+08:00",
-  "dateModified": "2025-08-10T00:22:34+08:00",
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html"
-  },
-  
-  "image": "http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg",
-  
-  "keywords": "技术, MySQL, 索引, 调优",
-  "articleSection": "技术"
-}
-</script>
-
-<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
     <h1>MySQL 索引设计与回表优化实战</h1>
     <p class="post-meta">
       <time datetime="2020-07-19T00:00:00+08:00">2020-07-19</time>
@@ -140,12 +103,7 @@
       
       &nbsp;/&nbsp;<span aria-current="page">MySQL 索引设计与回表优化实战</span>
     </nav>
-    
-    <meta name="description" content="围绕查询模式而非字段建索引：B+树原理、列序与覆盖索引、SARGable 改写、回表优化与 Seek 分页、统计信息与灰度验证的工程化清单。">
-    
-    
-    <meta name="keywords" content="技术, MySQL, 索引, 调优">
-    
+
   </header>
 
   <div class="post-body" id="post-body">
@@ -986,43 +944,6 @@
       }
     });
   })();
-</script><script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "MySQL 索引设计与回表优化实战",
-  "description": "围绕查询模式而非字段建索引：B+树原理、列序与覆盖索引、SARGable 改写、回表优化与 Seek 分页、统计信息与灰度验证的工程化清单。",
-  "datePublished": "2020-07-19T00:00:00+08:00",
-  "dateModified": "2025-08-10T00:22:34+08:00",
-  "author": {
-    "@type": "Person",
-    "name": "小黄鸭"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html"
-  },
-  "url": "http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html"
-}
-</script><script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "首页", "item": "http://localhost:4000/"}
-    
-      
-      
-        ,{"@type": "ListItem", "position": 2, "name": "技术", "item": "http://localhost:4000/categories/"}
-        
-      
-        ,{"@type": "ListItem", "position": 3, "name": "MySQL", "item": "http://localhost:4000/categories/"}
-        
-      
-    
-    ,{"@type": "ListItem", "position": 4, "name": "MySQL 索引设计与回表优化实战", "item": "http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2020/07/19/MySQL-%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%9B%9E%E8%A1%A8%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98.html"}
-  ]
-}
 </script>
       </div>
     </main><footer class="site-footer h-card">

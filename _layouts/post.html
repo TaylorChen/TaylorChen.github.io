@@ -2,41 +2,7 @@
 layout: default
 ---
 
-{%- comment -%} BlogPosting 结构化数据 {%- endcomment -%}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": {{ page.title | jsonify }},
-  "description": {{ page.description | default: page.excerpt | strip_html | truncatewords: 50 | jsonify }},
-  "author": {
-    "@type": "Person",
-    "name": {{ site.author.name | jsonify }},
-    "url": {{ site.author.url | jsonify }}
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": {{ site.title | jsonify }},
-    "logo": {
-      "@type": "ImageObject",
-      "url": {{ site.logo | absolute_url | jsonify }}
-    }
-  },
-  "datePublished": {{ page.date | date_to_xmlschema | jsonify }},
-  "dateModified": {{ page.last_modified_at | default: page.date | date_to_xmlschema | jsonify }},
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": {{ page.url | absolute_url | jsonify }}
-  },
-  {% if page.image %}
-  "image": {{ page.image | absolute_url | jsonify }},
-  {% elsif site.og_image %}
-  "image": {{ site.og_image | absolute_url | jsonify }},
-  {% endif %}
-  "keywords": "{{ page.tags | join: ', ' }}",
-  "articleSection": "{{ page.categories | first }}"
-}
-</script>
+
 
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
@@ -69,12 +35,7 @@ layout: default
       {% endif %}
       &nbsp;/&nbsp;<span aria-current="page">{{ page.title }}</span>
     </nav>
-    {% if page.description %}
-    <meta name="description" content="{{ page.description | strip_html | strip_newlines | truncate: 160 }}">
-    {% endif %}
-    {% if page.tags %}
-    <meta name="keywords" content="{{ page.tags | join: ', ' }}">
-    {% endif %}
+
   </header>
 
   <div class="post-body" id="post-body">
@@ -213,47 +174,4 @@ layout: default
       }
     });
   })();
-</script>
-
-
-{%- comment -%} 结构化数据：Article {%- endcomment -%}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": {{ page.title | jsonify }},
-  "description": {{ page.description | default: site.description | jsonify }},
-  "datePublished": "{{ page.date | date_to_xmlschema }}",
-  "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
-  "author": {
-    "@type": "Person",
-    "name": {{ site.author.name | default: site.title | jsonify }}
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "{{ page.url | absolute_url }}"
-  },
-  "url": "{{ page.url | absolute_url }}"
-}
-</script>
-
-{%- comment -%} 结构化数据：BreadcrumbList {%- endcomment -%}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "首页", "item": "{{ '/' | absolute_url }}"}
-    {% if page.categories and page.categories.size > 0 %}
-      {% assign pos = 2 %}
-      {% for c in page.categories %}
-        ,{"@type": "ListItem", "position": {{ pos }}, "name": "{{ c }}", "item": "{{ '/categories/' | absolute_url }}"}
-        {% assign pos = pos | plus: 1 %}
-      {% endfor %}
-    {% else %}
-      {% assign pos = 2 %}
-    {% endif %}
-    ,{"@type": "ListItem", "position": {{ pos }}, "name": {{ page.title | jsonify }}, "item": "{{ page.url | absolute_url }}"}
-  ]
-}
 </script>

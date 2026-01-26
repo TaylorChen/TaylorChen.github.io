@@ -33,12 +33,8 @@
   <link rel="apple-touch-icon" sizes="180x180"
     href="/assets/images/favicons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="96x96"
-    href="/assets/images/favicons/favicon-96x96.png">
-  
-  
-  <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -79,40 +75,7 @@
   </div>
 </header><main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Java Spring 事务传播与隔离级别陷阱",
-  "description": "梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。",
-  "author": {
-    "@type": "Person",
-    "name": "小黄鸭",
-    "url": "https://chen.zz.ac"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "小黄鸭",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
-    }
-  },
-  "datePublished": "2022-03-30T00:00:00+08:00",
-  "dateModified": "2025-08-10T00:22:34+08:00",
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"
-  },
-  
-  "image": "http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg",
-  
-  "keywords": "技术, Java, Spring, 事务",
-  "articleSection": "技术"
-}
-</script>
-
-<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
     <h1>Java Spring 事务传播与隔离级别陷阱</h1>
     <p class="post-meta">
       <time datetime="2022-03-30T00:00:00+08:00">2022-03-30</time>
@@ -140,12 +103,7 @@
       
       &nbsp;/&nbsp;<span aria-current="page">Java Spring 事务传播与隔离级别陷阱</span>
     </nav>
-    
-    <meta name="description" content="梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。">
-    
-    
-    <meta name="keywords" content="技术, Java, Spring, 事务">
-    
+
   </header>
 
   <div class="post-body" id="post-body">
@@ -1141,43 +1099,6 @@
       }
     });
   })();
-</script><script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Java Spring 事务传播与隔离级别陷阱",
-  "description": "梳理数据库隔离级别与并发现象，深入 Spring 事务传播原理与源码路径，结合一致性策略（Outbox/Saga/TCC）给出工程化落地与测试建议。",
-  "datePublished": "2022-03-30T00:00:00+08:00",
-  "dateModified": "2025-08-10T00:22:34+08:00",
-  "author": {
-    "@type": "Person",
-    "name": "小黄鸭"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"
-  },
-  "url": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"
-}
-</script><script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "首页", "item": "http://localhost:4000/"}
-    
-      
-      
-        ,{"@type": "ListItem", "position": 2, "name": "技术", "item": "http://localhost:4000/categories/"}
-        
-      
-        ,{"@type": "ListItem", "position": 3, "name": "Java", "item": "http://localhost:4000/categories/"}
-        
-      
-    
-    ,{"@type": "ListItem", "position": 4, "name": "Java Spring 事务传播与隔离级别陷阱", "item": "http://localhost:4000/%E6%8A%80%E6%9C%AF/java/2022/03/30/Java-Spring-%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E9%99%B7%E9%98%B1.html"}
-  ]
-}
 </script>
       </div>
     </main><footer class="site-footer h-card">

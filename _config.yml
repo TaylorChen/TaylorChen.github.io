@@ -35,8 +35,10 @@ author:
   same_as:
     - "https://github.com/taylorchen"
     - "https://twitter.com/shlchen"
+# SEO settings
+image: /assets/images/favicons/web-app-manifest-512x512.png
+og_image: /assets/images/favicons/web-app-manifest-512x512.png
 logo: /assets/images/favicons/favicon-96x96.png
-og_image: /assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg
 
 # Build settings
 theme: minima

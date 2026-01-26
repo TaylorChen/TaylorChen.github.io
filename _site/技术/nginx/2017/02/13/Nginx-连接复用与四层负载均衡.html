@@ -33,12 +33,8 @@
   <link rel="apple-touch-icon" sizes="180x180"
     href="/assets/images/favicons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="96x96"
-    href="/assets/images/favicons/favicon-96x96.png">
-  
-  
-  <meta property="og:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  <meta name="twitter:image" content="http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -79,40 +75,7 @@
   </div>
 </header><main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Nginx 连接复用与四层负载均衡",
-  "description": "从 OS 并发与 I/O 机制出发，讲解 Nginx 事件模型、连接复用与上游 keepalive，附四层/七层配置片段、Linux 内核调优与观测压测清单。",
-  "author": {
-    "@type": "Person",
-    "name": "小黄鸭",
-    "url": "https://chen.zz.ac"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "小黄鸭",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "http://localhost:4000/assets/images/favicons/favicon-96x96.png"
-    }
-  },
-  "datePublished": "2017-02-13T00:00:00+08:00",
-  "dateModified": "2025-08-10T00:22:34+08:00",
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2017/02/13/Nginx-%E8%BF%9E%E6%8E%A5%E5%A4%8D%E7%94%A8%E4%B8%8E%E5%9B%9B%E5%B1%82%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html"
-  },
-  
-  "image": "http://localhost:4000/assets/images/2e9ea54a25bedd353d5e06c076d9c7e4.jpeg",
-  
-  "keywords": "技术, Nginx, 负载均衡",
-  "articleSection": "技术"
-}
-</script>
-
-<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
     <h1>Nginx 连接复用与四层负载均衡</h1>
     <p class="post-meta">
       <time datetime="2017-02-13T00:00:00+08:00">2017-02-13</time>
@@ -140,12 +103,7 @@
       
       &nbsp;/&nbsp;<span aria-current="page">Nginx 连接复用与四层负载均衡</span>
     </nav>
-    
-    <meta name="description" content="从 OS 并发与 I/O 机制出发，讲解 Nginx 事件模型、连接复用与上游 keepalive，附四层/七层配置片段、Linux 内核调优与观测压测清单。">
-    
-    
-    <meta name="keywords" content="技术, Nginx, 负载均衡">
-    
+
   </header>
 
   <div class="post-body" id="post-body">
@@ -906,43 +864,6 @@ h2load <span class="nt">-n</span> 100000 <span class="nt">-c</span> 200 <span cl
       }
     });
   })();
-</script><script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Nginx 连接复用与四层负载均衡",
-  "description": "从 OS 并发与 I/O 机制出发，讲解 Nginx 事件模型、连接复用与上游 keepalive，附四层/七层配置片段、Linux 内核调优与观测压测清单。",
-  "datePublished": "2017-02-13T00:00:00+08:00",
-  "dateModified": "2025-08-10T00:22:34+08:00",
-  "author": {
-    "@type": "Person",
-    "name": "小黄鸭"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2017/02/13/Nginx-%E8%BF%9E%E6%8E%A5%E5%A4%8D%E7%94%A8%E4%B8%8E%E5%9B%9B%E5%B1%82%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html"
-  },
-  "url": "http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2017/02/13/Nginx-%E8%BF%9E%E6%8E%A5%E5%A4%8D%E7%94%A8%E4%B8%8E%E5%9B%9B%E5%B1%82%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html"
-}
-</script><script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "首页", "item": "http://localhost:4000/"}
-    
-      
-      
-        ,{"@type": "ListItem", "position": 2, "name": "技术", "item": "http://localhost:4000/categories/"}
-        
-      
-        ,{"@type": "ListItem", "position": 3, "name": "Nginx", "item": "http://localhost:4000/categories/"}
-        
-      
-    
-    ,{"@type": "ListItem", "position": 4, "name": "Nginx 连接复用与四层负载均衡", "item": "http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2017/02/13/Nginx-%E8%BF%9E%E6%8E%A5%E5%A4%8D%E7%94%A8%E4%B8%8E%E5%9B%9B%E5%B1%82%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.html"}
-  ]
-}
 </script>
       </div>
     </main><footer class="site-footer h-card">

@@ -15,4 +15,4 @@ Allow: /assets/css/
 Allow: /assets/js/
 
 # 站点地图
-Sitemap: https://taylorchen.github.io/sitemap.xml
+Sitemap: https://chen.zz.ac/sitemap.xml
