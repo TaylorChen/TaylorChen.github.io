@@ -2,6 +2,8 @@
 title: "从 Vibe Coding 走向 Vibe Engineering"
 date: 2026-01-24
 categories: [AI , 技术]
+description: "真正的工程演进不在于对“感觉”的盲从，而在于如何建立一套驾驭 AI 产出的硬核纪律 Vibe Engineering"
+tags: [AI , 技术]
 ---
 
 # 软件工程的硬核重塑：从 Vibe Coding 走向 Vibe Engineering

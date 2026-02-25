@@ -10,8 +10,8 @@
 <meta property="og:title" content="2026年技术人的系统工程与自我设计" />
 <meta name="author" content="小黄鸭" />
 <meta property="og:locale" content="zh_CN" />
-<meta name="description" content="2026年技术人的系统工程与自我设计" />
-<meta property="og:description" content="2026年技术人的系统工程与自我设计" />
+<meta name="description" content="本期我们将从三个看似独立实则紧密相连的维度——高并发模型服务、中间件运维反思、技术人职业规划——来剖析这一趋势，并为身处其中的技术人提供一套完整的思考框架和实践指南" />
+<meta property="og:description" content="本期我们将从三个看似独立实则紧密相连的维度——高并发模型服务、中间件运维反思、技术人职业规划——来剖析这一趋势，并为身处其中的技术人提供一套完整的思考框架和实践指南" />
 <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/%E6%80%9D%E8%80%83/2026/02/18/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%B7%A5%E7%A8%8B%E4%B8%8E%E8%87%AA%E6%88%91%E8%AE%BE%E8%AE%A1.html" />
 <meta property="og:url" content="http://localhost:4000/%E6%8A%80%E6%9C%AF/%E6%80%9D%E8%80%83/2026/02/18/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%B7%A5%E7%A8%8B%E4%B8%8E%E8%87%AA%E6%88%91%E8%AE%BE%E8%AE%A1.html" />
 <meta property="og:site_name" content="小黄鸭" />
@@ -20,12 +20,12 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="2026年技术人的系统工程与自我设计" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-02-19T00:01:32+08:00","datePublished":"2026-02-18T00:00:00+08:00","description":"2026年技术人的系统工程与自我设计","headline":"2026年技术人的系统工程与自我设计","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/%E6%80%9D%E8%80%83/2026/02/18/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%B7%A5%E7%A8%8B%E4%B8%8E%E8%87%AA%E6%88%91%E8%AE%BE%E8%AE%A1.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/%E6%80%9D%E8%80%83/2026/02/18/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%B7%A5%E7%A8%8B%E4%B8%8E%E8%87%AA%E6%88%91%E8%AE%BE%E8%AE%A1.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-02-19T00:02:26+08:00","datePublished":"2026-02-18T00:00:00+08:00","description":"本期我们将从三个看似独立实则紧密相连的维度——高并发模型服务、中间件运维反思、技术人职业规划——来剖析这一趋势，并为身处其中的技术人提供一套完整的思考框架和实践指南","headline":"2026年技术人的系统工程与自我设计","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/%E6%80%9D%E8%80%83/2026/02/18/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%B7%A5%E7%A8%8B%E4%B8%8E%E8%87%AA%E6%88%91%E8%AE%BE%E8%AE%A1.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/%E6%80%9D%E8%80%83/2026/02/18/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%B7%A5%E7%A8%8B%E4%B8%8E%E8%87%AA%E6%88%91%E8%AE%BE%E8%AE%A1.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
   
-  <meta property="article:modified_time" content="2026-02-19T00:01:32+08:00">
+  <meta property="article:modified_time" content="2026-02-19T00:02:26+08:00">
   
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
@@ -79,9 +79,9 @@
     <h1>2026年技术人的系统工程与自我设计</h1>
     <p class="post-meta">
       <time datetime="2026-02-18T00:00:00+08:00">2026-02-18</time>
-       · 最后更新于 <time datetime="2026-02-19T00:01:32+08:00">2026-02-19</time>
+       · 最后更新于 <time datetime="2026-02-19T00:02:26+08:00">2026-02-19</time>
        · 技术 / 思考
-       · 
+       · 技术, 思考
       <span id="busuanzi_container_page_pv" style="display: none;">
         ·
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
