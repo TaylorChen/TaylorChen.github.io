@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>AI 能力跃迁：从 Prompt 到 Skill 的三个认知框架 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="AI 能力跃迁：从 Prompt 到 Skill 的三个认知框架" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="用 AI 的人分两种：一种每天重复同样的上下文，30天后效率跟第一天一模一样；另一种让 AI 自动用他的语气写作、按他的格式输出。本文分享三个让 AI 能力持续复利的认知框架。" />
+<meta property="og:description" content="用 AI 的人分两种：一种每天重复同样的上下文，30天后效率跟第一天一模一样；另一种让 AI 自动用他的语气写作、按他的格式输出。本文分享三个让 AI 能力持续复利的认知框架。" />
+<link rel="canonical" href="http://localhost:4000/ai/2026/04/10/AI%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81-%E4%BB%8EPrompt%E5%88%B0Skill%E7%9A%84%E4%B8%89%E4%B8%AA%E6%A1%86%E6%9E%B6.html" />
+<meta property="og:url" content="http://localhost:4000/ai/2026/04/10/AI%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81-%E4%BB%8EPrompt%E5%88%B0Skill%E7%9A%84%E4%B8%89%E4%B8%AA%E6%A1%86%E6%9E%B6.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-04-10T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="AI 能力跃迁：从 Prompt 到 Skill 的三个认知框架" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-04-18T23:56:22+08:00","datePublished":"2026-04-10T00:00:00+08:00","description":"用 AI 的人分两种：一种每天重复同样的上下文，30天后效率跟第一天一模一样；另一种让 AI 自动用他的语气写作、按他的格式输出。本文分享三个让 AI 能力持续复利的认知框架。","headline":"AI 能力跃迁：从 Prompt 到 Skill 的三个认知框架","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/2026/04/10/AI%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81-%E4%BB%8EPrompt%E5%88%B0Skill%E7%9A%84%E4%B8%89%E4%B8%AA%E6%A1%86%E6%9E%B6.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/2026/04/10/AI%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81-%E4%BB%8EPrompt%E5%88%B0Skill%E7%9A%84%E4%B8%89%E4%B8%AA%E6%A1%86%E6%9E%B6.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-04-18T23:56:22+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>AI 能力跃迁：从 Prompt 到 Skill 的三个认知框架</h1>
+    <p class="post-meta">
+      <time datetime="2026-04-10T00:00:00+08:00">2026-04-10</time>
+       · 最后更新于 <time datetime="2026-04-18T23:56:22+08:00">2026-04-18</time>
+       · AI
+       · AI, Prompt, Skill, 效率, 方法论
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">AI</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">AI 能力跃迁：从 Prompt 到 Skill 的三个认知框架</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>用 AI 的人分两种：一种每天打开对话框，输入一大段背景描述，得到回答，关掉页面。第二天再来，重新输入同样的描述。30天后，他的效率跟第一天一模一样。</p>
+
+<p>另一种同样用 AI，但30天后，他的 AI 已经变成了一个完全不同的东西——自动用他的语气写作，自动按他的格式输出，自动调用他教过的方法论。而且他每天花在”指导 AI”上的时间反而越来越少。</p>
+
+<p>同一个工具，同一个模型，同一个价格。差距是怎么产生的？</p>
+
+<p><strong>不是技巧的差距。是认知框架的差距。</strong></p>
+
+<p>今天分享三个框架。理解它们，你对 AI 的使用方式会发生根本性的改变。</p>
+
+<h2 id="框架一三层进化论你在哪一层">框架一：三层进化论——你在哪一层？</h2>
+
+<p>用 AI 有三个层级。绝大部分人永远停在第一层。</p>
+
+<h3 id="第一层prompt">第一层：Prompt</h3>
+
+<p>Prompt 就是你在对话框里临时输入的指令。”你是一个资深文案”“用简洁的风格”“给我三个方案”。</p>
+
+<p>它在当下有效。会话关闭就消失。</p>
+
+<p>这就像每天早上跟一个失忆的天才解释你是谁。它确实很聪明，但明天它又不认识你了。你的语气偏好、品牌规范、输出格式、行业术语——全部归零，全部要重新解释。</p>
+
+<p>30天下来是什么样的？第1天写了个好 Prompt，得到好结果。第15天你已经重复输入了大致相同的上下文15次。第30天你的生产力跟第1天一模一样。<strong>零积累。</strong></p>
+
+<p>而且在疲倦的那天你会漏掉细节，输出质量下降。在忙碌的那天你干脆跳过上下文，AI 给你一个泛泛的通用版本。</p>
+
+<p><strong>你自己就是瓶颈。每一次对话都是。</strong></p>
+
+<h3 id="第二层project">第二层：Project</h3>
+
+<p>你在 Project 里上传了参考文档、风格说明、系统指令。这个 Project 里的每次对话都知道你的上下文。</p>
+
+<p>这就像给新员工一份入职手册。比天天口头交代强多了。</p>
+
+<p>但还有一个问题：你得记得打开正确的 Project。你的知识被锁在特定的 Project 里，换一个场景又得从头来。</p>
+
+<h3 id="第三层skill">第三层：Skill</h3>
+
+<p>Skill 是一个结构化的文件——你写一次、装一次，之后 AI 自动在识别到相关任务时触发。</p>
+
+<p>不需要你打开特定的 Project。不需要你输入任何提示词。AI 就是知道该怎么做。</p>
+
+<p>这就像培训一个员工，培训一次，永久生效。</p>
+
+<p>三个层级用的是同一个 AI。但第一层是聊天工具，第三层是<strong>工作系统</strong>。</p>
+
+<p>那么，理解了这个分层之后，怎么从第一层跳到第三层？这就需要第二个框架。</p>
+
+<h2 id="框架二交易思维-vs-复利思维">框架二：交易思维 vs 复利思维</h2>
+
+<p>这是三个框架中最重要的一个。它不是一个工具使用技巧，而是一个认知模型。</p>
+
+<p><strong>Prompt 是交易。</strong> 你投入时间写一段指令，得到一次产出。下次再投入，再得到一次。投入和产出是 1:1 的线性关系。你停止投入，产出立刻归零。</p>
+
+<p><strong>Skill 是复利。</strong> 你第一天投入10分钟写一个 Skill，第二天它已经在起作用了。第15天你累积了3个 Skill，每个都在之前的基础上叠加。第30天你的 AI 跟所有人的都不一样。</p>
+
+<p>搭建成本是第一周分散投入的一小时。回报是此后每一次对话都在更高的基线上运行。</p>
+
+<p>第一周的工作，在第六个月还在产生回报。这就是<strong>复利</strong>。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>思维模式</th>
+      <th>每天问的问题</th>
+      <th>30天后的结果</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>交易思维</td>
+      <td>“今天怎么用 AI 做好这件事？”</td>
+      <td>效率归零，每次从零开始</td>
+    </tr>
+    <tr>
+      <td>复利思维</td>
+      <td>“怎么让 AI 永远知道该怎么做？”</td>
+      <td>AI 越来越强，你越来越轻松</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>如果你用复利思维去使用 AI，30天后你会发现一件神奇的事：你花在”教 AI”上的时间越来越少，AI 帮你完成的工作越来越多。因为你之前教过的每一个 Skill 都在持续生效。</p>
+
+<p>这就引出了一个实操问题：<strong>Skill 到底该怎么写？该把什么放进去、什么不放？</strong> 这就是第三个框架。</p>
+
+<h2 id="框架三thin-harness-fat-skills把-90-的精力花在对的地方">框架三：Thin Harness, Fat Skills——把 90% 的精力花在对的地方</h2>
+
+<p>这个框架来自 YC 掌门人 Garry Tan，他把它提炼成了一个极其精炼的架构原则：<strong>薄 Harness，厚 Skills。</strong></p>
+
+<p>什么意思？</p>
+
+<p>你在用 AI 工作时，实际上在搭建一个三层系统——不管你有没有意识到：</p>
+
+<ul>
+  <li><strong>最上层：Skills</strong>。你教给 AI 的操作手册——流程、判断标准、领域知识。这是<strong>价值的 90% 所在</strong>。</li>
+  <li><strong>中间层：Harness</strong>。运行 AI 的那个程序或环境——调用模型、管理上下文、读写文件。保持极薄。</li>
+  <li><strong>最底层：确定性工具</strong>。数据库查询、代码编译、数学计算——输入一样、输出一样、每次都一样的操作。</li>
+</ul>
+
+<p><strong>原则是：把智能推到 Skills 里。把执行推到确定性工具里。中间的 Harness 越薄越好。</strong></p>
+
+<p>反模式是什么？<strong>厚 Harness、薄 Skills。</strong> 你见过那种情况：花了大量时间调试工具链、配置各种插件、优化 API 调用，但真正教给 AI”怎么做好这件事”的内容——一个字都没写。</p>
+
+<p>结果就是：工具链很漂亮，但 AI 产出的质量跟裸聊没有本质区别。因为你优化了管道，但管道里流的还是自来水。</p>
+
+<p>模型的智能已经足够了。它失败不是因为不够聪明，而是因为不理解你的具体情况——你的规范、你的惯例、你的问题的特殊形状。<strong>Skill 解决的就是这个问题。</strong></p>
+
+<p>这个框架的另一个重要推论是：当下一个更强的模型发布时，你所有的 Skill 都会自动变得更好。</p>
+
+<p>因为 Skill 定义的是流程和标准，底层判断力的提升会让这些流程执行得更精准。你不需要重写任何东西。模型升级对你来说不是”又要重新学”，而是”<strong>我的系统免费升级了</strong>“。</p>
+
+<p><strong>Skill 是永久资产。</strong></p>
+
+<h2 id="三个框架怎么串起来用">三个框架怎么串起来用</h2>
+
+<p>理论讲完了，串一遍实操。</p>
+
+<h3 id="第一步用三层进化论定位自己">第一步：用三层进化论定位自己</h3>
+
+<p>你现在在哪一层？如果你每次对话都在重新输入上下文——你在<strong>第一层</strong>。如果你在用 Project 但没有 Skill——你在<strong>第二层</strong>。知道自己在哪，才知道该往哪走。</p>
+
+<h3 id="第二步用复利思维找到你的-skill-候选清单">第二步：用复利思维找到你的 Skill 候选清单</h3>
+
+<p>回想过去一个月跟 AI 的对话。哪些指令你重复说过？哪些上下文你反复解释过？哪些格式要求你每次都得提醒？哪些流程你一步步手动引导过？</p>
+
+<p><strong>如果你重复超过三次，那就是一个 Skill 在等着被创建。</strong></p>
+
+<p>还有一条更激进的原则：如果你让 AI 做了一件事，而且这件事将来还会再做——第一次就应该变成 Skill。手动做第一次，看看输出，满意就立刻编码成 Skill 文件。</p>
+
+<blockquote>
+  <p>检验标准：如果你需要第二次要求同样的事，说明系统失败了。</p>
+</blockquote>
+
+<h3 id="第三步用-thin-harness-fat-skills-决定该把精力花在哪">第三步：用 Thin Harness, Fat Skills 决定该把精力花在哪</h3>
+
+<p>不要花三天调试工具链然后用裸 Prompt 跑任务。反过来——<strong>花三天写好你的核心 Skill，工具链用最简单的就行。</strong></p>
+
+<h2 id="你的第一个-skill-怎么建">你的第一个 Skill 怎么建</h2>
+
+<p>一个 Skill 到底长什么样？极其简单，就是一个文本文件：</p>
+
+<ul>
+  <li><strong>名字</strong>——叫什么</li>
+  <li><strong>描述</strong>——干什么（一句话）。这是最关键的部分，AI 靠这句话判断什么时候自动触发</li>
+  <li><strong>指令</strong>——怎么做（具体步骤）</li>
+  <li><strong>约束</strong>——什么不能做</li>
+</ul>
+
+<p>Skill 不是告诉 AI “做什么”——那是 Prompt 的事。Skill 告诉 AI 的是”<strong>怎么做</strong>“。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th>Prompt</th>
+      <th>Skill</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>任务</td>
+      <td>“帮我写一份竞品分析”</td>
+      <td>“做竞品分析时，先锁定3-5个核心竞品，按功能/定价/市场定位三个维度对比，输出SWOT格式，每个结论附数据来源，最后给3条可执行建议”</td>
+    </tr>
+    <tr>
+      <td>本质</td>
+      <td>提供任务</td>
+      <td>提供方法论</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Prompt 说：”帮我写一份竞品分析。”
+Skill 说：”做竞品分析时，先锁定3-5个核心竞品，按功能/定价/市场定位三个维度对比，输出SWOT格式，每个结论附数据来源，最后给3条可执行建议。”</p>
+
+<p>Prompt 提供任务。Skill 提供方法论。两者配合时，AI 才从”等你告诉它每一步该做什么的实习生”变成”知道怎么干活的员工”。</p>
+
+<p>而且同一个 Skill 可以被不同的输入反复调用——输入一家竞品公司，你得到竞品分析；输入一个行业趋势，你得到趋势报告；输入一个投资标的，你得到尽调简报。同样的流程，不同的对象，完全不同的产出。</p>
+
+<p><strong>这不是 Prompt 工程。这是用 Markdown 做软件设计。</strong></p>
+
+<h3 id="最快的方式让-ai-帮你建">最快的方式：让 AI 帮你建</h3>
+
+<p>很多 AI 助手内置了”Skill Creator”——一个能创建 Skill 的 Skill。你只需要说：”帮我创建一个 Skill，用来做[你的具体任务]。”</p>
+
+<p>AI 会采访你，提炼流程，输出一个结构化的 .md 文件。你存下来就能用。</p>
+
+<p>一个下午，你可以搭好整个人的 Skill 体系。每个花10到15分钟。写作风格、竞品分析、会议纪要、邮件回复、报告生成、内容日历——<strong>加起来不到两小时，这两小时的复利回报没有上限。</strong></p>
+
+<h2 id="结语">结语</h2>
+
+<p>三个框架，三句话：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>框架</th>
+      <th>一句话总结</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>三层进化论</td>
+      <td>从 Prompt 到 Project 到 Skill，同一个 AI，三种完全不同的体验</td>
+    </tr>
+    <tr>
+      <td>交易 vs 复利</td>
+      <td>Prompt 是每天归零的交易。Skill 是每天增值的资产</td>
+    </tr>
+    <tr>
+      <td>Thin Harness, Fat Skills</td>
+      <td>不要把精力花在工具链上。把90%的注意力花在写好 Skill 上</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>你建的每一个 Skill，都是对你 AI 系统的永久升级。它不退化，不遗忘，模型更新时自动变强。</strong></p>
+
+<p>Prompt 是口头指令。Skill 是 SOP 手册。一个每天归零，一个每天复利。</p>
+
+<p>从今天开始：<strong>找到你重复超过三次的那个任务。花10分钟，写你的第一个 Skill。</strong></p>
+
+<p>然后你就再也不想回到只用 Prompt 的日子了。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/2026/04/12/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E7%AB%9E%E4%BA%89%E5%8A%9B-%E4%BB%8E%E6%89%A7%E8%A1%8C%E8%80%85%E5%88%B0%E5%88%A4%E6%96%AD%E8%80%85%E7%9A%84%E8%9C%95%E5%8F%98.html">AI 时代的竞争力：不是比谁用得更勤，是比谁判断得更准</a> <small>(2026-04-12)</small></li>
+        
+        <li><a href="/ai/2026/04/05/AI%E4%BF%A1%E6%81%AF%E6%BA%90-%E5%85%A8%E7%90%83%E9%A1%B6%E7%BA%A7AI%E4%BC%98%E8%B4%A8%E8%B5%84%E6%BA%90%E6%B1%87%E6%80%BB.html">AI 脉搏：全球顶级 AI 优质资源汇总</a> <small>(2026-04-05)</small></li>
+        
+        <li><a href="/ai/2026/04/03/%E4%BB%8EAI%E5%B7%A5%E5%85%B7%E5%88%B0AI%E7%B3%BB%E7%BB%9F-Skill%E6%98%AF%E7%BC%BA%E5%A4%B1%E7%9A%84%E9%82%A3%E5%9D%97%E7%A0%96.html">从 AI 工具到 AI 系统：Skill 是缺失的那块砖</a> <small>(2026-04-03)</small></li>
+        
+        <li><a href="/ai/2026/03/25/AI-Agent%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E5%9D%97%E6%8B%BC%E5%9B%BE-Harness%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5.html">AI Agent 的最后一块拼图：Harness 工程实践</a> <small>(2026-03-25)</small></li>
+        
+        <li><a href="/ai/2026/03/18/%E4%B8%BA%E4%BB%80%E4%B9%8899%E7%9A%84%E4%BA%BA%E7%94%A8%E4%B8%8D%E5%A5%BDAI-%E8%AE%A4%E7%9F%A5%E6%A1%86%E6%9E%B6%E7%9A%84%E9%87%8D%E6%9E%84.html">为什么99%的人用不好 AI：一场认知框架的暴力重构</a> <small>(2026-03-18)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/ai/2026/04/05/AI%E4%BF%A1%E6%81%AF%E6%BA%90-%E5%85%A8%E7%90%83%E9%A1%B6%E7%BA%A7AI%E4%BC%98%E8%B4%A8%E8%B5%84%E6%BA%90%E6%B1%87%E6%80%BB.html" rel="prev">← 上一篇：AI 脉搏：全球顶级 AI 优质资源汇总</a>
+        
+        
+        <a class="next" href="/ai/2026/04/12/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E7%AB%9E%E4%BA%89%E5%8A%9B-%E4%BB%8E%E6%89%A7%E8%A1%8C%E8%80%85%E5%88%B0%E5%88%A4%E6%96%AD%E8%80%85%E7%9A%84%E8%9C%95%E5%8F%98.html" rel="next">下一篇：AI 时代的竞争力：不是比谁用得更勤，是比谁判断得更准 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=AI%20%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81%EF%BC%9A%E4%BB%8E%20Prompt%20%E5%88%B0%20Skill%20%E7%9A%84%E4%B8%89%E4%B8%AA%E8%AE%A4%E7%9F%A5%E6%A1%86%E6%9E%B6&url=http://localhost:4000/ai/2026/04/10/AI%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81-%E4%BB%8EPrompt%E5%88%B0Skill%E7%9A%84%E4%B8%89%E4%B8%AA%E6%A1%86%E6%9E%B6.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/ai/2026/04/10/AI%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81-%E4%BB%8EPrompt%E5%88%B0Skill%E7%9A%84%E4%B8%89%E4%B8%AA%E6%A1%86%E6%9E%B6.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/ai/2026/04/10/AI%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81-%E4%BB%8EPrompt%E5%88%B0Skill%E7%9A%84%E4%B8%89%E4%B8%AA%E6%A1%86%E6%9E%B6.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>
