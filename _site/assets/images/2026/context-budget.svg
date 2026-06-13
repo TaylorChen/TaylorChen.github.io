@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <rect width="760" height="340" fill="#f8fafc" rx="8"/>
+  <text x="380" y="32" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">健康的长程 Agent 上下文预算分配</text>
+
+  <!-- 堆叠条 -->
+  <g>
+    <rect x="80" y="70" width="48" height="44" fill="#6366f1" rx="4"/>
+    <rect x="128" y="70" width="78" height="44" fill="#0ea5e9" rx="4"/>
+    <rect x="206" y="70" width="210" height="44" fill="#10b981" rx="4"/>
+    <rect x="416" y="70" width="210" height="44" fill="#f59e0b" rx="4"/>
+    <rect x="626" y="70" width="104" height="44" fill="#e2e8f0" rx="4"/>
+  </g>
+  <g font-size="11" fill="#fff" text-anchor="middle">
+    <text x="104" y="96">8%</text>
+    <text x="167" y="96">12%</text>
+    <text x="311" y="90">工作记忆 35%</text>
+    <text x="311" y="104" font-size="9">计划 + 近期历史</text>
+    <text x="521" y="90">任务素材 35%</text>
+    <text x="521" y="104" font-size="9">文件 / 检索结果</text>
+  </g>
+  <text x="678" y="96" font-size="11" fill="#64748b" text-anchor="middle">预留 10%</text>
+  <g font-size="11" fill="#475569" text-anchor="middle">
+    <text x="104" y="135">系统指令</text>
+    <text x="167" y="135">工具定义</text>
+  </g>
+
+  <!-- 四操作 -->
+  <text x="380" y="180" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">预算超支时的四个操作</text>
+  <g text-anchor="middle">
+    <rect x="60" y="200" width="150" height="86" rx="10" fill="#fff" stroke="#6366f1" stroke-width="2"/>
+    <text x="135" y="226" font-size="13" font-weight="700" fill="#6366f1">写入 Write</text>
+    <text x="135" y="248" font-size="11" fill="#475569">中间结论落盘外部</text>
+    <text x="135" y="266" font-size="11" fill="#475569">notes / 状态存储</text>
+
+    <rect x="230" y="200" width="150" height="86" rx="10" fill="#fff" stroke="#0ea5e9" stroke-width="2"/>
+    <text x="305" y="226" font-size="13" font-weight="700" fill="#0ea5e9">选取 Select</text>
+    <text x="305" y="248" font-size="11" fill="#475569">按需注入相关部分</text>
+    <text x="305" y="266" font-size="11" fill="#475569">RAG / 工具裁剪</text>
+
+    <rect x="400" y="200" width="150" height="86" rx="10" fill="#fff" stroke="#10b981" stroke-width="2"/>
+    <text x="475" y="226" font-size="13" font-weight="700" fill="#10b981">压缩 Compact</text>
+    <text x="475" y="248" font-size="11" fill="#475569">历史摘要 / 裁剪返回</text>
+    <text x="475" y="266" font-size="11" fill="#475569">可再生信息优先压</text>
+
+    <rect x="570" y="200" width="150" height="86" rx="10" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
+    <text x="645" y="226" font-size="13" font-weight="700" fill="#f59e0b">隔离 Isolate</text>
+    <text x="645" y="248" font-size="11" fill="#475569">子任务拆给 sub-agent</text>
+    <text x="645" y="266" font-size="11" fill="#475569">只带结论回主窗口</text>
+  </g>
+  <text x="380" y="318" text-anchor="middle" font-size="11" fill="#94a3b8">原则：窗口是工作台不是仓库 · 占用率 &gt; 70% 触发压缩 · 工具定义超 15% 先做裁剪</text>
+</svg>

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>异步 Agent：把任务扔进后台之后 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="异步 Agent：把任务扔进后台之后" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="背景 Agent 今年开始真正可用。但「把任务扔进后台」这件事，工程上的问题远比看起来多：任务怎么描述、进度怎么跟踪、失败了怎么办、多人协作怎么共享上下文。记录一些实际经历。" />
+<meta property="og:description" content="背景 Agent 今年开始真正可用。但「把任务扔进后台」这件事，工程上的问题远比看起来多：任务怎么描述、进度怎么跟踪、失败了怎么办、多人协作怎么共享上下文。记录一些实际经历。" />
+<link rel="canonical" href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html" />
+<meta property="og:url" content="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-05-14T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="异步 Agent：把任务扔进后台之后" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-06-13T14:30:50+08:00","datePublished":"2026-05-14T00:00:00+08:00","description":"背景 Agent 今年开始真正可用。但「把任务扔进后台」这件事，工程上的问题远比看起来多：任务怎么描述、进度怎么跟踪、失败了怎么办、多人协作怎么共享上下文。记录一些实际经历。","headline":"异步 Agent：把任务扔进后台之后","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-06-13T14:30:50+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>异步 Agent：把任务扔进后台之后</h1>
+    <p class="post-meta">
+      <time datetime="2026-05-14T00:00:00+08:00">2026-05-14</time>
+       · 最后更新于 <time datetime="2026-06-13T14:30:50+08:00">2026-06-13</time>
+       · AI / 技术
+       · AI, Agent, 异步, 工程实践, background agent
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">AI</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">异步 Agent：把任务扔进后台之后</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>今年明显感受到一个变化：越来越多的任务开始用「扔进后台跑」的方式处理，而不是坐在终端前盯着模型一步步走。Cognition 的 Walden Yan 在一次访谈里提到，Devin 自己仓库里 AI 贡献的 commit 占比从一月的 16% 涨到三月的 80%，工程团队人数只增加了 10%。这个数字我觉得代表了行业正在发生的变化方向。</p>
+
+<p>但背景 Agent 真的能用，是最近几个月的事。更早之前，模型能力还撑不住「给任务、等结果」这种交互方式，中间需要人不断扶着走。Opus 4.5 之后，一些任务开始可以真正放手——写好 spec 扔进去，几小时后拿 PR。这对工作方式影响挺大的，但随之带来的工程问题也不少。</p>
+
+<h2 id="任务描述是最大的坑">任务描述是最大的坑</h2>
+
+<p>背景 Agent 和同步 Agent 最大的操作差异，在于你没机会在中途纠偏。同步模式下，Agent 走偏了，你看到了可以立刻打断重来；异步模式下，你发出任务去做别的事，回来发现它跑了两小时、方向整个错了。</p>
+
+<p>所以任务描述的质量决定了异步 Agent 能不能用。我现在发一个异步任务之前，会强制给自己写三件事：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>目标：要解决什么问题（不是「要做什么」，是「解决什么」）
+约束：不能动什么、不能假设什么
+验收标准：怎么判断任务完成了
+</code></pre></div></div>
+
+<p>这三件事写不清楚就不发，因为 Agent 填充模糊空间的方式通常不是你想要的。最常见的问题是「目标」写成了「行动」——「重构 user.go 里的数据库查询」和「降低 user.go 里数据库查询的延迟 P99」，同样的起点，Agent 的行为路径可以差很远。</p>
+
+<p>约束那栏经常被忽略。我有一次让 Agent 「优化这个模块的性能」，没写约束，它把数据库查询从 ORM 改成了手写 SQL，顺手删掉了几个它觉得「冗余」的封装层。技术上没错，但打破了团队的编码规范，review 打回来重来。后来约束那栏开始写：「不改变代码结构，只在现有框架内优化；不删除任何现有函数，只能修改实现」。</p>
+
+<p>验收标准最容易写成「代码跑通就行」，但这往往不够。现在我会加「运行 <code class="language-plaintext highlighter-rouge">just test</code> 全绿」「新增函数必须有测试覆盖」「不引入新的外部依赖」这类可以机器验证的标准，让 Agent 自己在提交前跑一遍检查。</p>
+
+<h2 id="进度跟踪是个没有标准答案的问题">进度跟踪是个没有标准答案的问题</h2>
+
+<p>任务扔进后台之后，你怎么知道它在干什么、有没有卡住？</p>
+
+<p>目前我试过几种方式，各有缺陷。</p>
+
+<p><strong>定期回来看输出</strong>：最简单，但 Agent 的输出是流式的，你回来看到的是一堆工具调用记录，读起来费劲，很难判断进展是否正常。</p>
+
+<p><strong>让 Agent 写进度日志</strong>：在任务描述里要求 Agent 每完成一个阶段就向 <code class="language-plaintext highlighter-rouge">progress.md</code> 写一行记录。好处是可以 tail -f，坏处是 Agent 有时候忘写，有时候写了很多废话，真正有用的进展信息反而不清楚。</p>
+
+<p><strong>关键检查点 + 等待确认</strong>：把任务拆成几个阶段，每个阶段结束要求 Agent 等待人工 <code class="language-plaintext highlighter-rouge">approve</code> 再继续。这是最可控的，但破坏了「不用盯着它跑」的初衷，变成了另一种形式的同步。</p>
+
+<p>我现在用的是折中方案：非关键任务（内容生成、测试补充）纯异步，不看进度，看结果；关键任务（涉及数据库变更、影响线上服务的重构）强制设检查点，至少在「开始写代码之前」和「准备提交之前」各要求一次人工确认。</p>
+
+<h2 id="多人协作slack-session-的问题">多人协作：Slack session 的问题</h2>
+
+<p>这是一个大家不太讲但实际很痛的问题。</p>
+
+<p>团队用 Agent 的常见模式是：有人在自己的 Slack 里启动一个 Claude session，发任务，等结果。但这个 session 绑定在发起人的身份和对话历史里，其他人如果想接手这个任务——看看进展、追加需求、让 Agent 继续——基本上做不到，只能靠复制粘贴上下文重开一个新 session。</p>
+
+<p>这是一个真实存在的协作摩擦。背景 Agent 的价值有很大一部分在于「不是一个人的专属工具」——PM 可以发起需求，工程师可以接手执行，另一个工程师可以做 review——但如果每次任务都绑定在发起人的私人 session 里，这个价值就打了折。</p>
+
+<p>短期解法是把任务上下文外化：任务描述写在任务管理系统里（Jira/Linear），Agent 的产出存到仓库里，关键决策写到 <code class="language-plaintext highlighter-rouge">task_notes.md</code> 里，session 本身只是执行容器，不存储关键信息。这样换人接手时，新人拿到的材料是完整的。</p>
+
+<p>长期来看这可能是工具层要解决的问题。但现在工具还没到那一步，只能靠工作习惯来补。</p>
+
+<h2 id="背景-agent-改变了什么">背景 Agent 改变了什么</h2>
+
+<p>跑了几个月异步任务之后，工作节奏确实变了，但变化的方向不是「省了很多时间」，而是「深度和等待的比例变了」。</p>
+
+<p>以前一天里大部分时间是持续的、中等深度的工作——写代码、调 bug、看文档。现在变成了几个短的深度爆发（写 spec、验收 PR、做判断）加上大段的「后台等待」时间。如果等待时间用来做另一件深度工作，整体产出是提升的；如果等待时间消耗在切换和碎片处理上，感觉很忙但实际上不比以前高效。</p>
+
+<p>这个变化对工作安排的要求提高了。以前「坐下来打开编辑器就能干活」，现在需要想清楚「这段时间用来做什么、哪些任务可以并行放进后台」。它不会自动让你更高效，但如果你有意识地设计自己的任务流，它的杠杆效应是真实的。</p>
+
+<p>Cognition 那篇访谈里还有一句话我印象深刻：背景 Agent 落地的关键不再只是模型能力，而是围绕模型的整套工程系统。这句话在我自己折腾了半年之后，觉得比刚看到时更对。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html">上下文工程：比 Prompt 更重要的那一层</a> <small>(2026-06-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">多 Agent 系统的协作模式：从单兵到军团</a> <small>(2026-06-06)</small></li>
+        
+        <li><a href="/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html">AI 时代的深度工作：注意力是最后的稀缺资源</a> <small>(2026-05-31)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html">AI Coding 落地存量大项目：规范先于工具</a> <small>(2026-05-27)</small></li>
+        
+        <li><a href="/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html">MySQL 向量检索实践：当数据库遇上 Embedding</a> <small>(2026-05-23)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/ai/%E6%8A%80%E6%9C%AF/2026/05/09/MCP%E5%8D%8F%E8%AE%AE%E6%B7%B1%E5%85%A5-AI%E5%BA%94%E7%94%A8%E7%9A%84USB-C%E6%8E%A5%E5%8F%A3.html" rel="prev">← 上一篇：MCP 协议深入：AI 应用的 USB-C 接口</a>
+        
+        
+        <a class="next" href="/%E6%8A%80%E6%9C%AF/golang/2026/05/17/Go-pprof%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%E5%AE%9E%E6%88%98-%E4%BB%8E%E7%81%AB%E7%84%B0%E5%9B%BE%E5%88%B0%E6%A0%B9%E5%9B%A0.html" rel="next">下一篇：Go pprof 性能剖析实战：从火焰图到根因 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=%E5%BC%82%E6%AD%A5%20Agent%EF%BC%9A%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E&url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>

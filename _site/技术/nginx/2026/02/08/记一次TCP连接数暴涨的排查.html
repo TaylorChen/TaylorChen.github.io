@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>记一次 TCP 连接数暴涨的排查 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="记一次 TCP 连接数暴涨的排查" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="周四晚上值班，网关机连接数报警，从 6 万涨到 19 万。最后定位到一行被注释掉的 keepalive 配置。记录一下排查过程，给以后的自己看。" />
+<meta property="og:description" content="周四晚上值班，网关机连接数报警，从 6 万涨到 19 万。最后定位到一行被注释掉的 keepalive 配置。记录一下排查过程，给以后的自己看。" />
+<link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2026/02/08/%E8%AE%B0%E4%B8%80%E6%AC%A1TCP%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%9A%B4%E6%B6%A8%E7%9A%84%E6%8E%92%E6%9F%A5.html" />
+<meta property="og:url" content="http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2026/02/08/%E8%AE%B0%E4%B8%80%E6%AC%A1TCP%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%9A%B4%E6%B6%A8%E7%9A%84%E6%8E%92%E6%9F%A5.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-02-08T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="记一次 TCP 连接数暴涨的排查" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-06-13T14:10:43+08:00","datePublished":"2026-02-08T00:00:00+08:00","description":"周四晚上值班，网关机连接数报警，从 6 万涨到 19 万。最后定位到一行被注释掉的 keepalive 配置。记录一下排查过程，给以后的自己看。","headline":"记一次 TCP 连接数暴涨的排查","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2026/02/08/%E8%AE%B0%E4%B8%80%E6%AC%A1TCP%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%9A%B4%E6%B6%A8%E7%9A%84%E6%8E%92%E6%9F%A5.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2026/02/08/%E8%AE%B0%E4%B8%80%E6%AC%A1TCP%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%9A%B4%E6%B6%A8%E7%9A%84%E6%8E%92%E6%9F%A5.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-06-13T14:10:43+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>记一次 TCP 连接数暴涨的排查</h1>
+    <p class="post-meta">
+      <time datetime="2026-02-08T00:00:00+08:00">2026-02-08</time>
+       · 最后更新于 <time datetime="2026-06-13T14:10:43+08:00">2026-06-13</time>
+       · 技术 / Nginx
+       · Nginx, TCP, 排查, keepalive, 线上故障
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">Nginx</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">记一次 TCP 连接数暴涨的排查</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>周四晚上九点四十，值班手机响了。网关集群其中一台机器的 TCP 连接数从平时的 6 万左右涨到 19 万，还在涨。业务指标倒是正常，错误率没动，延迟 P99 略微抬头但不算难看。</p>
+
+<p>第一反应是被攻击了，看了眼接入层的 QPS，平稳。不是流量的问题，那就是连接的问题——请求数没变，连接数翻了三倍，说明连接没被复用，或者没被释放。</p>
+
+<h2 id="先看连接都处于什么状态">先看连接都处于什么状态</h2>
+
+<p>上机器：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ss <span class="nt">-s</span>
+Total: 192243
+TCP:   191876 <span class="o">(</span>estab 23104, closed 145632, orphaned 89, timewait 145630<span class="o">)</span>
+</code></pre></div></div>
+
+<p>timewait 14 万。心里basically有数了，TIME_WAIT 堆积，大概率是哪里在疯狂建短连接。</p>
+
+<p>TIME_WAIT 本身不算事故，它是 TCP 正常挥手后主动关闭方的必经状态，2MSL 也就一分钟。14 万的存量意味着每秒大概有两千多个连接在被主动关闭。问题是：谁在关，关的是哪边的连接？</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ss <span class="nt">-tan</span> state time-wait | <span class="nb">awk</span> <span class="s1">'{print $4}'</span> | <span class="nb">awk</span> <span class="nt">-F</span>: <span class="s1">'{print $2}'</span> | <span class="nb">sort</span> | <span class="nb">uniq</span> <span class="nt">-c</span> | <span class="nb">sort</span> <span class="nt">-rn</span> | <span class="nb">head
+ </span>145203 48392...（本地随机端口，对端是 上游服务:8080）
+    427 443
+</code></pre></div></div>
+
+<p>几乎全部 TIME_WAIT 的对端都指向 10.3 网段的 8080 端口——是我们自己的一组上游服务。也就是说，是 Nginx 作为客户端去连 upstream，用完就关，每个请求一个新连接。</p>
+
+<h2 id="为什么突然不复用了">为什么突然不复用了</h2>
+
+<p>这套网关到 upstream 的 keepalive 是一直开着的，运行两年没出过事。先确认配置：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nginx <span class="nt">-T</span> | <span class="nb">grep</span> <span class="nt">-A</span> 5 <span class="s2">"upstream order_svc"</span>
+upstream order_svc <span class="o">{</span>
+    server 10.0.1.1:8080<span class="p">;</span>
+    server 10.0.1.2:8080<span class="p">;</span>
+    <span class="c"># keepalive 128;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>keepalive 那行被注释了。</p>
+
+<p>翻 git 历史，下午五点有一次配置变更，diff 里这行注释赫然在列。提交信息写的是「调整 order_svc 上游节点」。找变更的同事问了下，他说改节点列表的时候是从另一个 upstream 块复制过来改的，那个块本来就没开 keepalive——也就是说不是手抖注释掉的，是整块替换的时候带进来的。</p>
+
+<p>到这里其实可以直接改回去收工了，但有两个问题没想通，不弄明白睡不着：</p>
+
+<p>一是为什么业务没报错？因为短连接虽然浪费，但每个请求功能上是完整的，只是多了握手开销。P99 抬头的那一点就是三次握手的代价。</p>
+
+<p>二是为什么连接数是慢慢涨上来的，而不是配置生效后立刻跳变？后来想明白了，reload 之后旧 worker 带着旧连接 graceful shutdown，存量长连接还在服务，新 worker 全走短连接。旧连接随着自然到期逐渐退出，短连接占比慢慢爬升，TIME_WAIT 才呈现出那种斜坡式增长。报警阈值是绝对值，所以延迟了四个多小时才触发。</p>
+
+<h2 id="修复与复盘">修复与复盘</h2>
+
+<p>改回去很简单：</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">upstream</span> <span class="s">order_svc</span> <span class="p">{</span>
+    <span class="kn">server</span> <span class="nf">10.0.1.1</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">10.0.1.2</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+    <span class="kn">keepalive</span> <span class="mi">128</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>顺带提醒一句，upstream 开 keepalive 还需要 location 里这两行配合，少一行都不生效，这是 Nginx 一个老生常谈的坑：</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">proxy_http_version</span> <span class="mf">1.1</span><span class="p">;</span>
+<span class="k">proxy_set_header</span> <span class="s">Connection</span> <span class="s">""</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>reload 之后十分钟，TIME_WAIT 从 14 万掉回 4000，estab 稳定在 2 万出头。</p>
+
+<p>复盘会上定了三条改进，都不是什么新鲜东西，但确实管用：</p>
+
+<p>配置变更的 diff 必须逐行 review，「整块复制」这种操作方式要在 review 时格外警惕——diff 看起来是「改了节点列表」，实际语义变化藏在被一起带走的行里。</p>
+
+<p>给网关加了一个连接复用率的监控指标（请求数/新建连接数），这个比值掉到个位数就报警。比起绝对连接数，这个指标对「keepalive 失效」类问题敏感得多，而且不会因为业务量自然增长产生误报。</p>
+
+<p>压测环境的配置和线上做了自动 diff 巡检。这次的配置在压测环境其实也错了一周了，没人发现，因为压测环境连接数再高也没人看。</p>
+
+<h2 id="两周后的回马枪">两周后的回马枪</h2>
+
+<p>本来以为这事翻篇了，结果新加的连接复用率指标两周后又报了一次——另一个 upstream，复用率从 200 多掉到 30。这次不是配置问题，keepalive 好好地开着。</p>
+
+<p>排查发现是 upstream 那边的服务做了一次发布，新版本给响应加了个 <code class="language-plaintext highlighter-rouge">Connection: close</code> 头。问他们为什么加，答曰：排查一个内存问题的时候临时加的，想让连接快点回收，「忘了删，而且当时看也没什么影响」。</p>
+
+<p>确实没什么影响——对他们没影响，握手成本都在我们这边。这种「成本在别人家」的改动是最难防的，谁也不会为别人的指标做回归。好在这次从报警到定位只花了二十分钟，新指标算是立了一功。后来我们干脆把连接复用率做成了按 upstream 维度拆分的面板，哪个后端发布搞了小动作一眼就能看出来。</p>
+
+<h2 id="几个顺带学到的细节">几个顺带学到的细节</h2>
+
+<p>排查过程里翻了些资料，记几个以前理解不准确的点。</p>
+
+<p><code class="language-plaintext highlighter-rouge">net.ipv4.tcp_tw_reuse</code> 只对「出站连接」（自己是客户端）生效，而且只在时间戳满足条件时复用，它不是清理 TIME_WAIT 的开关。网上一堆文章教人开 <code class="language-plaintext highlighter-rouge">tcp_tw_recycle</code>，那个参数因为在 NAT 环境下丢包，4.12 内核已经删掉了，2026 年了不要再抄了。</p>
+
+<p>TIME_WAIT 真正的资源消耗比想象中小，一个大概占 0.2KB 内存，14 万个也就 30MB。真正的风险是本地端口耗尽——出站连接的四元组里本地端口是有限的（<code class="language-plaintext highlighter-rouge">ip_local_port_range</code> 默认大概 28000 个），短连接打满之后新连接会拿不到端口，报 <code class="language-plaintext highlighter-rouge">Cannot assign requested address</code>。我们这次距离打满还有一段余量，算是运气。</p>
+
+<p>如果实在要扛短连接场景,正经做法是扩大端口范围、开 tw_reuse、或者干脆多挂几个本地 IP，而不是去动 TIME_WAIT 的回收。</p>
+
+<p>还有一个差点忘了的细节：排查中途我顺手看了眼 conntrack 表，<code class="language-plaintext highlighter-rouge">conntrack -C</code> 显示 38 万，离 <code class="language-plaintext highlighter-rouge">nf_conntrack_max</code> 的 52 万不算远。这台机器因为历史原因装过防火墙规则，conntrack 模块一直加载着。如果连接数再涨一倍，会先撞上 conntrack 表打满——那个的症状是随机丢包，比端口耗尽难排查得多。当晚顺手把这批网关机的 conntrack 上限调大了一档，也算这次报警的意外收获。这种「排查 A 问题时撞见 B 隐患」的情况，我的习惯是当场处理或者当场建工单，过夜必忘。</p>
+
+<p>就这些。这次问题本身不复杂，但「配置整块复制夹带私货 + 报警滞后四小时 + 压测环境同样烂了一周没人知道」这三件事叠在一起，还是挺值得记一笔的。写完翻了下博客存档，发现 2017 年我写过一篇 Nginx 连接复用的文章，里面郑重其事地讲了 keepalive 的配置要点——九年后栽在同一个知识点上，只不过这次不是不懂，是没看住。知识会过时，但「人会犯的错」这部分知识保质期是真的长。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html">上下文工程：比 Prompt 更重要的那一层</a> <small>(2026-06-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">多 Agent 系统的协作模式：从单兵到军团</a> <small>(2026-06-06)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html">AI Coding 落地存量大项目：规范先于工具</a> <small>(2026-05-27)</small></li>
+        
+        <li><a href="/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html">MySQL 向量检索实践：当数据库遇上 Embedding</a> <small>(2026-05-23)</small></li>
+        
+        <li><a href="/%E6%8A%80%E6%9C%AF/golang/2026/05/17/Go-pprof%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%E5%AE%9E%E6%88%98-%E4%BB%8E%E7%81%AB%E7%84%B0%E5%9B%BE%E5%88%B0%E6%A0%B9%E5%9B%A0.html">Go pprof 性能剖析实战：从火焰图到根因</a> <small>(2026-05-17)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/%E6%88%90%E9%95%BF/%E6%80%9D%E8%80%83/2026/01/25/%E9%80%89%E4%B8%8E%E6%B2%A1%E5%BE%97%E9%80%89.html" rel="prev">← 上一篇：选与没得选</a>
+        
+        
+        <a class="next" href="/ai/%E6%8A%80%E6%9C%AF/2026/02/14/AI%E9%A9%B1%E5%8A%A8%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E9%9D%A9%E5%91%BD%E4%BB%8E%E8%87%AA%E5%8A%A8%E7%BC%96%E7%A8%8B%E5%88%B0%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E7%9A%84%E8%9E%8D%E5%90%88%E6%BC%94%E8%BF%9B.html" rel="next">下一篇：从自动编程到分布式架构的融合演进 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=%E8%AE%B0%E4%B8%80%E6%AC%A1%20TCP%20%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%9A%B4%E6%B6%A8%E7%9A%84%E6%8E%92%E6%9F%A5&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2026/02/08/%E8%AE%B0%E4%B8%80%E6%AC%A1TCP%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%9A%B4%E6%B6%A8%E7%9A%84%E6%8E%92%E6%9F%A5.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2026/02/08/%E8%AE%B0%E4%B8%80%E6%AC%A1TCP%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%9A%B4%E6%B6%A8%E7%9A%84%E6%8E%92%E6%9F%A5.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/%E6%8A%80%E6%9C%AF/nginx/2026/02/08/%E8%AE%B0%E4%B8%80%E6%AC%A1TCP%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%9A%B4%E6%B6%A8%E7%9A%84%E6%8E%92%E6%9F%A5.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>

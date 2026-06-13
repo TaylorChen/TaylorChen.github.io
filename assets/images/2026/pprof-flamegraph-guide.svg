@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <rect width="760" height="340" fill="#f8fafc" rx="8"/>
+  <text x="380" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">火焰图判读：找最宽的塔，盯平顶的帧</text>
+  <!-- 火焰图模拟，自下而上 -->
+  <g font-size="11" fill="#7c2d12" text-anchor="middle">
+    <rect x="60" y="260" width="640" height="30" rx="3" fill="#fde68a" stroke="#f59e0b"/><text x="380" y="280">main.main（100%）</text>
+    <rect x="60" y="226" width="430" height="30" rx="3" fill="#fdba74" stroke="#f97316"/><text x="275" y="246">handleRequest（67%）</text>
+    <rect x="500" y="226" width="200" height="30" rx="3" fill="#fed7aa" stroke="#fb923c"/><text x="600" y="246">background（31%）</text>
+    <rect x="60" y="192" width="370" height="30" rx="3" fill="#fdba74" stroke="#f97316"/><text x="245" y="212">report（58%）</text>
+    <rect x="60" y="158" width="370" height="30" rx="3" fill="#fb923c" stroke="#ea580c"/><text x="245" y="178" fill="#fff">json.Marshal（58%）</text>
+    <rect x="60" y="124" width="340" height="30" rx="3" fill="#ef4444" stroke="#dc2626"/><text x="230" y="144" fill="#fff">reflect.Value.Interface（53% · self 高）</text>
+    <rect x="500" y="192" width="120" height="30" rx="3" fill="#fed7aa" stroke="#fb923c"/><text x="560" y="212">gc（18%）</text>
+  </g>
+  <!-- 标注 -->
+  <g font-size="12" fill="#dc2626">
+    <path d="M230 90 L230 118" stroke="#dc2626" stroke-width="1.5" fill="none"/>
+    <text x="230" y="80" text-anchor="middle" font-weight="700">① 平顶 = CPU 真正烧在这里（优化目标）</text>
+  </g>
+  <g font-size="11" fill="#475569">
+    <text x="80" y="312">② 横轴 = 采样占比（非时间顺序）</text>
+    <text x="330" y="312">③ 纵轴 = 调用栈，自下而上</text>
+    <text x="540" y="312">④ list 命令下钻到代码行</text>
+  </g>
+</svg>

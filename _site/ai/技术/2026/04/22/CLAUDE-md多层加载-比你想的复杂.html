@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>CLAUDE.md 多层加载：比你想的复杂 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="CLAUDE.md 多层加载：比你想的复杂" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="以为 CLAUDE.md 只有「用户级 + 项目级」两份？我也这么以为，直到在一个子模块里跑出了薛定谔的输出格式。把踩坑过程和加载机制拆清楚，记录一下。" />
+<meta property="og:description" content="以为 CLAUDE.md 只有「用户级 + 项目级」两份？我也这么以为，直到在一个子模块里跑出了薛定谔的输出格式。把踩坑过程和加载机制拆清楚，记录一下。" />
+<link rel="canonical" href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html" />
+<meta property="og:url" content="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-04-22T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="CLAUDE.md 多层加载：比你想的复杂" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-06-13T14:30:43+08:00","datePublished":"2026-04-22T00:00:00+08:00","description":"以为 CLAUDE.md 只有「用户级 + 项目级」两份？我也这么以为，直到在一个子模块里跑出了薛定谔的输出格式。把踩坑过程和加载机制拆清楚，记录一下。","headline":"CLAUDE.md 多层加载：比你想的复杂","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-06-13T14:30:43+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>CLAUDE.md 多层加载：比你想的复杂</h1>
+    <p class="post-meta">
+      <time datetime="2026-04-22T00:00:00+08:00">2026-04-22</time>
+       · 最后更新于 <time datetime="2026-06-13T14:30:43+08:00">2026-06-13</time>
+       · AI / 技术
+       · AI, Claude, CLAUDE.md, AGENTS.md, 工程实践
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">AI</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">CLAUDE.md 多层加载：比你想的复杂</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>事情的起点是一份飘忽不定的报告。</p>
+
+<p>我们内部有个日志分析 Agent，输出格式是 HTML，这个写在那个模块的 CLAUDE.md 里，白纸黑字。结果某天开始变得不稳定：同样的指令，有时候出 HTML，有时候出 Markdown，跑三次三种结果。</p>
+
+<p>第一反应是 prompt 问题。把那个模块的 CLAUDE.md 改到几乎只剩一句「输出格式必须是 HTML」，还是抽奖。查用户级的 <code class="language-plaintext highlighter-rouge">~/.claude/CLAUDE.md</code>，没有相关规则。查子目录，没有。</p>
+
+<p>折腾了两个小时，才想起来：上周我在父目录 <code class="language-plaintext highlighter-rouge">aiworking/</code> 建了一份 CLAUDE.md，用来给底下几个子模块做统筹，里面有一行「分析类报告默认 Markdown」。</p>
+
+<p>目录结构是这样的：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>aiworking/
+    CLAUDE.md          ← 写着「分析类报告默认 Markdown」
+    loganalysis/
+        CLAUDE.md      ← 我在这里启动 Agent，写着「输出 HTML」
+</code></pre></div></div>
+
+<p>我以为只有 <code class="language-plaintext highlighter-rouge">loganalysis/CLAUDE.md</code> 在生效，但实际上两份都进了上下文，Claude 在两条冲突规则之间，看心情选一个。</p>
+
+<h2 id="加载机制是什么">加载机制是什么</h2>
+
+<p>搞清楚这件事之后，我仔细查了 Claude Code 的文档，把加载逻辑整理了一下。</p>
+
+<p><strong>向上遍历</strong>：从你启动 Claude 的目录出发，一级一级往上走，每一级有 CLAUDE.md 就纳入，一直到磁盘根目录为止。<code class="language-plaintext highlighter-rouge">loganalysis/</code> 目录下启动，实际加载路径是：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/root/...（各级祖先目录，一般没有）
+~/.claude/CLAUDE.md      ← 用户级，固定加载
+aiworking/CLAUDE.md      ← 父目录，向上遍历命中
+loganalysis/CLAUDE.md    ← 当前目录
+loganalysis/CLAUDE.local.md   ← 本地覆盖（如果有）
+</code></pre></div></div>
+
+<p><strong>拼接不覆盖</strong>：找到的所有文件不是「近的覆盖远的」，而是全部拼在一起注入上下文，从根到叶顺序排列。所以两条冲突规则同时存在，距离近的排在后面，但不是必然胜出——这取决于 Claude 怎么处理上下文里的矛盾，不保证严格遵守。</p>
+
+<p><strong>子目录懒加载</strong>：这个知道的人更少。启动工作目录下的子目录里如果有 CLAUDE.md，启动时不会加载。要等到 Agent 在会话中真正访问那个子目录里的文件时，该 CLAUDE.md 才会被动态挂载进来。整个会话没有访问那个子目录，它的 CLAUDE.md 不进上下文。</p>
+
+<p>还有一点：CLAUDE.md 不在系统提示词里，它是作为一条用户消息追加在系统提示后面的。这解释了为什么它「不保证严格遵守」——它不是强制配置，Claude 会尽量照做，但遇到矛盾时怎么处理有随机性。</p>
+
+<h2 id="踩坑之后我改了什么">踩坑之后我改了什么</h2>
+
+<p>首先把父目录那条「分析类报告默认 Markdown」删掉，改成了更精确的指向：</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- aiworking/CLAUDE.md --&gt;</span>
+适用范围：本目录下各子模块的通用规范
+
+<span class="gu">### 代码规范</span>
+<span class="p">-</span> Go 1.22+，禁止使用 init()
+<span class="p">-</span> 错误处理用 pkg/errors 包装，禁止裸 fmt.Errorf
+
+<span class="gu">### 注意</span>
+各子模块的输出格式以各自的 CLAUDE.md 为准，本文件不约定格式
+</code></pre></div></div>
+
+<p>加了最后那句，明确把格式决策权交给子目录，避免父级规则模糊覆盖。</p>
+
+<p>第二个改动是控制规则密度。Augment Code 团队做过一个实验，从一个 monorepo 里提取了几十份 AGENTS.md 逐一测试，发现最好的 AGENTS.md 带来的提升相当于把模型从 Haiku 换成 Opus，而最差的比完全不写还糟。坑在于：同一份文件在常规任务上把质量提升了 25%，在复杂任务上让完整性下降了 30%——写太多规则，规则之间会干扰，Agent 开始在「中间迷失」。</p>
+
+<p>现在我的主文件控制在 100 行以内，只写高频场景的规范；细节推到按需加载的子文件里，在主文件里只写「需要时参考 <code class="language-plaintext highlighter-rouge">@docs/api-rules.md</code>」这样的入口。</p>
+
+<p>第三个改动是清理注释。CLAUDE.md 里的块级 HTML 注释（<code class="language-plaintext highlighter-rouge">&lt;!-- 备注 --&gt;</code>）在注入上下文前会被剥掉，不占 token。所以现在我在文件里保留了大量维护注释，说明每条规则的来源和生效日期，这些注释只给写文件的人看，不会进 Claude 的上下文：</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!-- 
+2026-06-15 添加：排查完 loganalysis 输出格式冲突问题后
+明确父目录不约定格式，避免向下覆盖子模块规则 
+--&gt;
+各子模块的输出格式以各自的 CLAUDE.md 为准
+</code></pre></div></div>
+
+<h2 id="agentsmd-vs-claudemd">AGENTS.md vs CLAUDE.md</h2>
+
+<p>顺带提一下这两个文件的区别，网上说法很乱。</p>
+
+<p><code class="language-plaintext highlighter-rouge">CLAUDE.md</code> 是 Claude Code 专用的，只有 Claude Code 会去读它。<code class="language-plaintext highlighter-rouge">AGENTS.md</code> 是一个更通用的约定，OpenAI Codex、Cursor、一些开源 Agent 框架都在尝试认这个文件名。</p>
+
+<p>如果你用的是 Claude Code，两个都认，CLAUDE.md 优先。如果你想同时兼容多个工具，用 AGENTS.md。如果只用 Claude Code，CLAUDE.md 就够了，不用两份都维护。</p>
+
+<p>有一个我自己的做法：在项目根目录建一份 <code class="language-plaintext highlighter-rouge">AGENTS.md</code>，内容是通用规范；然后建一个 <code class="language-plaintext highlighter-rouge">CLAUDE.md</code>，内容只有一行：</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@AGENTS.md
+</code></pre></div></div>
+
+<p>这样 Claude Code 读到 CLAUDE.md，拉取 AGENTS.md 的内容，其他工具直接读 AGENTS.md，一份规范两边都能用。这个 symlink 式的做法不是官方推荐的，属于民间发现，用了几个月没出问题。</p>
+
+<h2 id="一句话总结">一句话总结</h2>
+
+<p>CLAUDE.md 的加载是「全量拼接，不是近者优先」。如果你在大型 monorepo 里或者多级目录结构里用 Agent，需要主动管理每一级 CLAUDE.md 的作用域，并且在父级规则里明确标注「以子目录为准」的边界，否则冲突规则会让 Agent 的行为变得不可预测，排查起来很费劲。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html">上下文工程：比 Prompt 更重要的那一层</a> <small>(2026-06-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">多 Agent 系统的协作模式：从单兵到军团</a> <small>(2026-06-06)</small></li>
+        
+        <li><a href="/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html">AI 时代的深度工作：注意力是最后的稀缺资源</a> <small>(2026-05-31)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html">AI Coding 落地存量大项目：规范先于工具</a> <small>(2026-05-27)</small></li>
+        
+        <li><a href="/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html">MySQL 向量检索实践：当数据库遇上 Embedding</a> <small>(2026-05-23)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/ai/%E6%8A%80%E6%9C%AF/2026/04/16/Harness%E5%B7%A5%E7%A8%8B-%E4%B8%8D%E5%8F%AA%E6%98%AF%E7%BB%99Agent%E5%8C%85%E4%B8%80%E5%B1%82.html" rel="prev">← 上一篇：Harness 工程：不只是给 Agent 包一层</a>
+        
+        
+        <a class="next" href="/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html" rel="next">下一篇：Hermes 多 Agent 工作流：从看到到跑起来 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=CLAUDE.md%20%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD%EF%BC%9A%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82&url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>

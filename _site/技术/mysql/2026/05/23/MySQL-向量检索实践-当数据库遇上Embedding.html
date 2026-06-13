@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>MySQL 向量检索实践：当数据库遇上 Embedding | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="MySQL 向量检索实践：当数据库遇上 Embedding" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="MySQL 9 引入 VECTOR 类型后，「要不要为 RAG 单独养一个向量数据库」有了新答案。本文实测 MySQL 向量能力的边界，并给出一套务实的选型决策框架。" />
+<meta property="og:description" content="MySQL 9 引入 VECTOR 类型后，「要不要为 RAG 单独养一个向量数据库」有了新答案。本文实测 MySQL 向量能力的边界，并给出一套务实的选型决策框架。" />
+<link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html" />
+<meta property="og:url" content="http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-05-23T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="MySQL 向量检索实践：当数据库遇上 Embedding" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-06-13T08:13:18+08:00","datePublished":"2026-05-23T00:00:00+08:00","description":"MySQL 9 引入 VECTOR 类型后，「要不要为 RAG 单独养一个向量数据库」有了新答案。本文实测 MySQL 向量能力的边界，并给出一套务实的选型决策框架。","headline":"MySQL 向量检索实践：当数据库遇上 Embedding","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-06-13T08:13:18+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>MySQL 向量检索实践：当数据库遇上 Embedding</h1>
+    <p class="post-meta">
+      <time datetime="2026-05-23T00:00:00+08:00">2026-05-23</time>
+       · 最后更新于 <time datetime="2026-06-13T08:13:18+08:00">2026-06-13</time>
+       · 技术 / MySQL
+       · MySQL, 向量检索, Embedding, RAG, 架构设计
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">MySQL</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">MySQL 向量检索实践：当数据库遇上 Embedding</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>做 RAG 的团队都绕不开一个选型问题：向量存哪？专用向量库（Milvus、Qdrant）功能强但要多养一套系统；MySQL 9 开始原生支持 <code class="language-plaintext highlighter-rouge">VECTOR</code> 类型后，「就用现有 MySQL」成了一个真实选项。这篇文章实测 MySQL 向量能力的边界，给出选型决策框架。</p>
+
+<h2 id="mysql-的向量能力现状">MySQL 的向量能力现状</h2>
+
+<p>MySQL 9.x 提供了 <code class="language-plaintext highlighter-rouge">VECTOR(N)</code> 列类型和基础的距离函数。建表和写入：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">doc_chunks</span> <span class="p">(</span>
+  <span class="n">id</span> <span class="nb">BIGINT</span> <span class="n">AUTO_INCREMENT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">doc_id</span> <span class="nb">BIGINT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">chunk_text</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">embedding</span> <span class="n">VECTOR</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">tenant_id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">created_at</span> <span class="nb">DATETIME</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="n">idx_tenant_doc</span> <span class="p">(</span><span class="n">tenant_id</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">doc_chunks</span> <span class="p">(</span><span class="n">doc_id</span><span class="p">,</span> <span class="n">chunk_text</span><span class="p">,</span> <span class="n">embedding</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'...'</span><span class="p">,</span> <span class="n">STRING_TO_VECTOR</span><span class="p">(</span><span class="s1">'[0.0231, -0.114, ...]'</span><span class="p">),</span> <span class="mi">42</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>查询用距离函数排序：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">chunk_text</span><span class="p">,</span>
+       <span class="n">DISTANCE</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">STRING_TO_VECTOR</span><span class="p">(</span><span class="o">?</span><span class="p">),</span> <span class="s1">'COSINE'</span><span class="p">)</span> <span class="k">AS</span> <span class="n">dist</span>
+<span class="k">FROM</span> <span class="n">doc_chunks</span>
+<span class="k">WHERE</span> <span class="n">tenant_id</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">dist</span>
+<span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>关键问题来了：<strong>社区版 MySQL 的这条查询是全表暴力扫描</strong>。每一行都要算一次 1024 维余弦距离，没有 ANN（近似最近邻）索引加持。HeatWave 版本有向量索引和加速，但那是云上付费能力。所以社区版 MySQL 做向量检索的真实边界，取决于暴力扫描扛到多大数据量。</p>
+
+<h2 id="实测暴力扫描能扛多少">实测：暴力扫描能扛多少</h2>
+
+<p>测试环境 8C16G，MySQL 9.3，1024 维 float 向量，单表测试 cosine 距离 + LIMIT 10：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>行数</th>
+      <th>无过滤条件</th>
+      <th>tenant 过滤后剩 5%</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>10 万</td>
+      <td>~180ms</td>
+      <td>~15ms</td>
+    </tr>
+    <tr>
+      <td>50 万</td>
+      <td>~900ms</td>
+      <td>~55ms</td>
+    </tr>
+    <tr>
+      <td>200 万</td>
+      <td>~3.8s</td>
+      <td>~210ms</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>两个结论。第一，裸扫 50 万行就接近交互式应用的容忍上限了。第二，<strong>带过滤条件的场景表现完全不同</strong>——只要二级索引能先把候选集裁到几万行，距离计算就只发生在小集合上，性能立刻回到可用区间。</p>
+
+<p>这正好戳中专用向量库的软肋：预过滤（pre-filtering）。多租户 SaaS 场景下「只在租户 42 的文档里搜」，很多向量库的 ANN 索引做带过滤的检索反而别扭（filter 越严，HNSW 图遍历越容易断裂，召回率下降）。MySQL 用 B+ 树索引先过滤再暴力算距离，是「精确解」，没有召回损失。</p>
+
+<p><img loading="lazy" src="/assets/images/2026/mysql-vector-decision.svg" alt="向量检索选型决策" /></p>
+
+<h2 id="务实的混合架构">务实的混合架构</h2>
+
+<p>基于实测，我在生产中采用的判断标准：</p>
+
+<p><strong>用 MySQL 的场景</strong>：候选集经过业务条件过滤后在 10 万行以内；向量数据和业务数据强关联（要 JOIN 用户表、权限表）；团队没有专人运维新组件。典型如内部知识库、客服工单检索、中小规模 SaaS 的租户内搜索。</p>
+
+<p><strong>上专用向量库的场景</strong>：全局检索千万级以上向量；需要高 QPS（&gt;500）低延迟（&lt;50ms）的纯向量查询;需要标量量化、多向量、稀疏向量等高级能力。</p>
+
+<p>很多团队的真实情况是第一种，却按第二种做了架构，平白多养一个有状态集群，还要解决 MySQL 与向量库之间的数据同步一致性——这往往才是最大的隐性成本。双写丢数据、CDC 链路延迟、删除不同步导致检索出已删内容，每一个都是真实事故来源。</p>
+
+<h2 id="几个落地细节">几个落地细节</h2>
+
+<p><strong>维度越低越好，够用就行。</strong> 1024 维和 256 维在很多业务召回评测上差距不到 2%，但存储和计算差 4 倍。新一代 embedding 模型普遍支持 Matryoshka 降维（截断前 N 维即可用），生产里我用 256 维起步，评测不达标再升。</p>
+
+<p><strong>距离计算下推，不要捞回应用层算。</strong> 见过把 embedding 全部 SELECT 回 Python 再算相似度的，网络传输比计算还慢。距离函数永远在 SQL 里执行。</p>
+
+<p><strong>chunk 表要做冷热分离。</strong> 文档更新会产生大量死 chunk，定期归档，控制参与扫描的行数——既然是暴力扫描，行数就是生命线。</p>
+
+<p><strong>召回之后必须重排。</strong> 向量检索只是粗筛，top 50 召回后用轻量 reranker（如 bge-reranker）精排到 top 5，端到端效果提升远大于把向量库换来换去。RAG 的瓶颈大概率不在检索引擎，而在 chunking 策略和重排。</p>
+
+<h2 id="容易被问到的三个问题">容易被问到的三个问题</h2>
+
+<p><strong>「为什么不用 PostgreSQL + pgvector？」</strong> pgvector 确实更成熟，有 HNSW 索引，社区版就能用，如果你的技术栈本来就是 PG，无脑选它。本文的前提是「存量系统是 MySQL」——为了向量检索把主数据库从 MySQL 迁到 PG，比引入一个向量库的动静还大。选型永远要带着存量约束讨论，脱离存量谈最优解是纸上谈兵。</p>
+
+<p><strong>「暴力扫描的 CPU 占用会不会影响业务查询？」</strong> 会，这是真实风险。距离计算是纯 CPU 密集操作，200 万行一次扫描能把一个核打满几秒。两个缓解手段：向量查询走只读副本，与交易流量物理隔离；用 <code class="language-plaintext highlighter-rouge">MAX_EXECUTION_TIME</code> hint 给向量查询设置超时上限，宁可检索降级也不拖垮副本。</p>
+
+<p><strong>「embedding 模型升级了怎么办？」</strong> 这是所有方案共同的痛：换模型意味着全量重算向量。MySQL 方案在这里反而有点优势——加一列 <code class="language-plaintext highlighter-rouge">embedding_v2 VECTOR(256)</code>，后台任务批量回填，灌完后切换查询列、删旧列，全程不停服，用的都是 DBA 最熟悉的在线变更套路，不需要学习向量库的 collection 迁移机制。设计 schema 时建议直接带上 <code class="language-plaintext highlighter-rouge">model_version</code> 字段，给未来的自己留路。</p>
+
+<h2 id="一段-python-接入示例">一段 Python 接入示例</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">aiomysql</span><span class="p">,</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">query_vec</span><span class="p">:</span> <span class="n">np</span><span class="p">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+    <span class="n">vec_str</span> <span class="o">=</span> <span class="sh">"</span><span class="s">[</span><span class="sh">"</span> <span class="o">+</span> <span class="sh">"</span><span class="s">,</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="p">.</span><span class="mi">6</span><span class="n">f</span><span class="si">}</span><span class="sh">"</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">query_vec</span><span class="p">)</span> <span class="o">+</span> <span class="sh">"</span><span class="s">]</span><span class="sh">"</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">pool</span><span class="p">.</span><span class="nf">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">conn</span><span class="p">.</span><span class="nf">cursor</span><span class="p">(</span><span class="n">aiomysql</span><span class="p">.</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">execute</span><span class="p">(</span><span class="sh">"""</span><span class="s">
+                SELECT id, chunk_text,
+                       DISTANCE(embedding, STRING_TO_VECTOR(%s), </span><span class="sh">'</span><span class="s">COSINE</span><span class="sh">'</span><span class="s">) AS dist
+                FROM doc_chunks
+                WHERE tenant_id = %s
+                ORDER BY dist LIMIT %s
+            </span><span class="sh">"""</span><span class="p">,</span> <span class="p">(</span><span class="n">vec_str</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">fetchall</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>注意向量序列化成字符串传参的开销在高 QPS 下不可忽略，可以预编译语句并复用连接；批量写入时一个事务攒 500~1000 行提交，吞吐能差一个数量级。</p>
+
+<h2 id="结语">结语</h2>
+
+<p>我们最后的落地方案就是最朴素的那种：MySQL 存向量，只读副本跑检索，候选集靠租户过滤压到万级以内，top 50 召回后过一遍 reranker。上线三个月，没有为它新增任何组件，也没有为它起过一次夜。</p>
+
+<p>MySQL 的向量能力不是用来对标 Milvus 的，它的价值是让一大批中等规模、强业务关联的场景不用引入新组件。等哪天数据量真长到这个方案撑不住，再迁也来得及——到那时业务也验证过了，迁移的钱花得不冤。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html">上下文工程：比 Prompt 更重要的那一层</a> <small>(2026-06-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">多 Agent 系统的协作模式：从单兵到军团</a> <small>(2026-06-06)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html">AI Coding 落地存量大项目：规范先于工具</a> <small>(2026-05-27)</small></li>
+        
+        <li><a href="/%E6%8A%80%E6%9C%AF/golang/2026/05/17/Go-pprof%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%E5%AE%9E%E6%88%98-%E4%BB%8E%E7%81%AB%E7%84%B0%E5%9B%BE%E5%88%B0%E6%A0%B9%E5%9B%A0.html">Go pprof 性能剖析实战：从火焰图到根因</a> <small>(2026-05-17)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html">异步 Agent：把任务扔进后台之后</a> <small>(2026-05-14)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/%E6%8A%80%E6%9C%AF/golang/2026/05/17/Go-pprof%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%E5%AE%9E%E6%88%98-%E4%BB%8E%E7%81%AB%E7%84%B0%E5%9B%BE%E5%88%B0%E6%A0%B9%E5%9B%A0.html" rel="prev">← 上一篇：Go pprof 性能剖析实战：从火焰图到根因</a>
+        
+        
+        <a class="next" href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html" rel="next">下一篇：AI Coding 落地存量大项目：规范先于工具 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=MySQL%20%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5%EF%BC%9A%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8A%20Embedding&url=http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>

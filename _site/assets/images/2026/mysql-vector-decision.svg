@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="760" height="380" fill="#f8fafc" rx="8"/>
+  <text x="380" y="32" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">向量存储选型决策树</text>
+  <!-- 决策节点 -->
+  <rect x="280" y="52" width="200" height="44" rx="22" fill="#6366f1"/>
+  <text x="380" y="79" text-anchor="middle" font-size="13" fill="#fff">过滤后候选集 &lt; 10 万行？</text>
+  <line x1="320" y1="96" x2="200" y2="140" stroke="#64748b" stroke-width="1.5" marker-end="url(#a2)"/>
+  <text x="240" y="116" font-size="12" fill="#10b981" font-weight="700">是</text>
+  <line x1="440" y1="96" x2="560" y2="140" stroke="#64748b" stroke-width="1.5" marker-end="url(#a2)"/>
+  <text x="510" y="116" font-size="12" fill="#ef4444" font-weight="700">否</text>
+
+  <rect x="90" y="142" width="220" height="44" rx="22" fill="#6366f1"/>
+  <text x="200" y="169" text-anchor="middle" font-size="13" fill="#fff">需要与业务表 JOIN / 强一致？</text>
+  <rect x="450" y="142" width="220" height="44" rx="22" fill="#6366f1"/>
+  <text x="560" y="169" text-anchor="middle" font-size="13" fill="#fff">QPS &gt; 500 或全局千万级检索？</text>
+
+  <line x1="160" y1="186" x2="130" y2="232" stroke="#64748b" stroke-width="1.5" marker-end="url(#a2)"/>
+  <text x="130" y="208" font-size="12" fill="#10b981" font-weight="700">是</text>
+  <line x1="250" y1="186" x2="330" y2="232" stroke="#64748b" stroke-width="1.5" marker-end="url(#a2)"/>
+  <text x="305" y="208" font-size="12" fill="#64748b">否</text>
+  <line x1="560" y1="186" x2="560" y2="232" stroke="#64748b" stroke-width="1.5" marker-end="url(#a2)"/>
+  <text x="575" y="208" font-size="12" fill="#ef4444" font-weight="700">是</text>
+
+  <!-- 结果 -->
+  <g text-anchor="middle">
+    <rect x="40" y="234" width="190" height="56" rx="10" fill="#10b981"/>
+    <text x="135" y="258" font-size="13" font-weight="700" fill="#fff">MySQL VECTOR</text>
+    <text x="135" y="278" font-size="11" fill="#d1fae5">精确解 · 无新组件 · 无同步链路</text>
+    <rect x="260" y="234" width="190" height="56" rx="10" fill="#f59e0b"/>
+    <text x="355" y="258" font-size="13" font-weight="700" fill="#fff">MySQL 起步，留迁移口</text>
+    <text x="355" y="278" font-size="11" fill="#fef3c7">抽象检索接口，数据量大再换</text>
+    <rect x="480" y="234" width="190" height="56" rx="10" fill="#0ea5e9"/>
+    <text x="575" y="258" font-size="13" font-weight="700" fill="#fff">专用向量库（ANN）</text>
+    <text x="575" y="278" font-size="11" fill="#e0f2fe">Milvus / Qdrant · 接受同步成本</text>
+  </g>
+  <g font-size="11" fill="#64748b">
+    <text x="60" y="330">实测参考（8C16G · 1024 维 · cosine）：10 万行裸扫 ~180ms；过滤至 5% 后 ~15ms；200 万行裸扫 ~3.8s</text>
+    <text x="60" y="352">隐性成本提醒：双写一致性、CDC 延迟、删除不同步——多养一个组件的代价常被低估</text>
+  </g>
+</svg>

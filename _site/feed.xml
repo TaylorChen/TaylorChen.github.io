@@ -1,2363 +1,839 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="zh-CN" /><updated>2026-04-19T00:30:10+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">小黄鸭</title><subtitle>这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><author><name>小黄鸭</name></author><entry><title type="html">AI 时代的竞争力：不是比谁用得更勤，是比谁判断得更准</title><link href="http://localhost:4000/ai/2026/04/12/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E7%AB%9E%E4%BA%89%E5%8A%9B-%E4%BB%8E%E6%89%A7%E8%A1%8C%E8%80%85%E5%88%B0%E5%88%A4%E6%96%AD%E8%80%85%E7%9A%84%E8%9C%95%E5%8F%98.html" rel="alternate" type="text/html" title="AI 时代的竞争力：不是比谁用得更勤，是比谁判断得更准" /><published>2026-04-12T00:00:00+08:00</published><updated>2026-04-19T00:19:43+08:00</updated><id>http://localhost:4000/ai/2026/04/12/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E7%AB%9E%E4%BA%89%E5%8A%9B-%E4%BB%8E%E6%89%A7%E8%A1%8C%E8%80%85%E5%88%B0%E5%88%A4%E6%96%AD%E8%80%85%E7%9A%84%E8%9C%95%E5%8F%98</id><content type="html" xml:base="http://localhost:4000/ai/2026/04/12/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E7%AB%9E%E4%BA%89%E5%8A%9B-%E4%BB%8E%E6%89%A7%E8%A1%8C%E8%80%85%E5%88%B0%E5%88%A4%E6%96%AD%E8%80%85%E7%9A%84%E8%9C%95%E5%8F%98.html"><![CDATA[<p>一个普遍现象：程序员用 AI 写代码，效率提升了 4 倍。然后呢？继续提升不知道该怎么办了。</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="zh-CN" /><updated>2026-06-13T14:37:22+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">小黄鸭</title><subtitle>这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><author><name>小黄鸭</name></author><entry><title type="html">上下文工程：比 Prompt 更重要的那一层</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html" rel="alternate" type="text/html" title="上下文工程：比 Prompt 更重要的那一层" /><published>2026-06-13T00:00:00+08:00</published><updated>2026-06-13T08:13:49+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html"><![CDATA[<p>2023 年大家卷 Prompt 工程，2025 年之后行业共识逐渐转向一个更大的概念：上下文工程（Context Engineering）。两者的区别一句话能说清——Prompt 工程优化「你怎么对模型说话」，上下文工程管理「模型做决策的那一刻，窗口里到底有什么」。</p>
 
-<p>成百上千倍的效率提升怎么实现？质变需要什么？</p>
+<p>单轮问答时代两者几乎是一回事。但当任务变成长程 Agent——跑几十分钟、调几百次工具、处理几万行代码——窗口里的内容 95% 不再是你写的 prompt，而是系统注入的工具定义、检索结果、历史消息、文件内容。这时候决定产出质量的，是这 95% 的管理水平。</p>
 
-<p>这问题的答案，决定了一个人在 AI 时代是”被淘汰”还是”被放大”。</p>
+<h2 id="上下文是稀缺资源要当预算管">上下文是稀缺资源，要当预算管</h2>
 
-<h2 id="四阶段效率模型">四阶段效率模型</h2>
+<p>先建立一个核心心智：<strong>上下文窗口不是仓库，是工作台</strong>。仓库越大越好，工作台不是——堆满杂物的工作台干不了精细活。</p>
 
-<p>AI 提效不是线性的，而是分阶段的：</p>
+<p>这不只是比喻。实证上有两个效应：一是「迷失在中间」（lost in the middle），窗口中部的信息被利用的概率显著低于首尾；二是上下文腐烂（context rot），随着无关信息占比上升，模型遵循指令的能力整体退化，哪怕关键信息明明还在窗口里。窗口标称 100 万 token，不代表你应该塞 100 万——有效注意力远小于标称容量。</p>
 
-<table>
-  <thead>
-    <tr>
-      <th>阶段</th>
-      <th>效率</th>
-      <th>本质</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>第一阶段</td>
-      <td>2-4x</td>
-      <td>用 AI 写代码</td>
-    </tr>
-    <tr>
-      <td>第二阶段</td>
-      <td>5-10x</td>
-      <td>AI 领导力 + 工程化</td>
-    </tr>
-    <tr>
-      <td>第三阶段</td>
-      <td>10-100x</td>
-      <td>工作流编排 + 自动化</td>
-    </tr>
-    <tr>
-      <td>第四阶段</td>
-      <td>100x+</td>
-      <td>系统性重构思维</td>
-    </tr>
-  </tbody>
-</table>
+<p>所以上下文工程的本质是预算管理：每一段进入窗口的内容,都要回答「它在这个决策时刻的边际价值，配得上它占的位置吗」。</p>
 
-<p>大多数人在第一阶段就被卡住了。他们用 AI 写代码，但 AI 没有改变他们构建软件的方式。最终做出来的，依然是传统 IT 时代的产物。</p>
+<p><img src="/assets/images/2026/context-budget.svg" alt="上下文预算分配" /></p>
 
-<p><strong>AI 帮他们提升了”搬砖”的速度，但没有改变”建什么”这个根本问题。</strong></p>
+<h2 id="四个操作写入选取压缩隔离">四个操作：写入、选取、压缩、隔离</h2>
 
-<h2 id="三类人截然不同的命运">三类人，截然不同的命运</h2>
+<p>业内逐渐收敛出四个基本操作，几乎所有上下文工程技巧都是它们的组合。</p>
 
-<p>观察 AI 时代的人，会发现三种截然不同的存在：</p>
+<p><strong>写入（Write）：把信息移出窗口，存到外部。</strong> Agent 的中间结论、计划、待办，写到文件或状态存储里，而不是依赖对话历史。典型实现是让 Agent 维护一个 <code class="language-plaintext highlighter-rouge">notes.md</code> / 任务清单文件——窗口会被挤爆，文件不会。跨会话的记忆系统也属于这类。</p>
 
-<p><strong>第一类：AI 代码使用者</strong>
-能把开发效率提得很高，但做出来的大多还是旧范式产品。他们是 AI 时代的流水线工人，产量高了，但不可替代性没有。</p>
+<p><strong>选取（Select）：按需拉回来。</strong> 决策时刻只注入相关的部分。RAG 是选取，工具的动态裁剪是选取（一百个工具只注入语义相关的十个），Agent 主动 <code class="language-plaintext highlighter-rouge">grep</code>/<code class="language-plaintext highlighter-rouge">read</code> 文件也是选取。选取的关键指标不是召回率，是<strong>信噪比</strong>——多拉进来的每一段无关内容都在划伤工作台。</p>
 
-<p><strong>第二类：AI 工作流设计者</strong>
-开始理解怎么把模型、工具、知识库、状态流、反馈机制串起来。产品已经开始比传统软件更进一步，但还不够。</p>
+<p><strong>压缩（Compact）：有损地缩小占用。</strong> 对话历史超过阈值时做摘要压缩；工具返回的 5000 行 JSON 先裁剪成关键字段再入窗。压缩的风险是丢掉后来才知道重要的细节，所以原则是：可再生的信息（随时能重新读到的文件内容）激进压缩，不可再生的信息（一次性的执行结果、用户的口头约束）保守压缩。</p>
 
-<p><strong>第三类：AI Native 架构师</strong>
-他们思考的核心问题是：人在这个系统里到底该做什么？AI 该接管什么？界面该保留多少？流程该压缩到什么程度？</p>
+<p><strong>隔离（Isolate）：拆给子上下文。</strong> 把高消耗的子任务委托给 sub-agent，它在自己的窗口里烧几十万 token，最后只把三段结论带回主窗口。上一篇讲的多 Agent 协作，从上下文工程视角看就是隔离操作的系统化。</p>
 
-<p><strong>第三类人，才最稀缺。</strong></p>
+<h2 id="一个真实的调优案例">一个真实的调优案例</h2>
 
-<h2 id="五项真正的基本功">五项真正的基本功</h2>
+<p>我们一个内部代码审查 Agent，初版效果很差：审到第 30 个文件时开始胡言乱语，把第 5 个文件的问题安到第 28 个文件头上。排查后发现窗口已被三类东西塞满：全量工具定义（18k token）、每个文件的完整内容（平均 6k×30）、以及越滚越长的审查历史。</p>
 
-<p>真正值得长期修炼的，不是某个具体的 AI 工具使用技巧，而是这几个底层能力：</p>
+<p>按四操作改造：</p>
 
-<h3 id="第一ai-first-的思维习惯">第一：AI First 的思维习惯</h3>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>写入  审查发现实时写入 findings.json，窗口里只保留
+      「当前文件 + 最近 3 条发现的摘要」
+选取  文件内容不再全量注入，先注入结构骨架（函数签名+行数），
+      Agent 按需读具体函数体
+压缩  每审完 10 个文件做一次历史压缩，保留结论丢弃过程
+隔离  跨文件的一致性检查拆给独立 sub-agent，
+      输入是 findings.json 而非对话历史
+</code></pre></div></div>
 
-<p>不是”遇到问题想想能不能用 AI”，而是”遇到任何问题，先想 AI 能参与到哪一层”。</p>
+<p>改造后单文件审查的窗口占用从持续增长变成稳定在 25k token 左右，30 文件之后的准确率和前 5 个文件无显著差异。值得注意的是：模型没换、prompt 几乎没动，<strong>纯上下文结构的改造带来了从不可用到可用的跨越</strong>。这就是我说「比 Prompt 更重要」的依据。</p>
 
-<p>哪些步骤该由 AI 先跑一遍？哪些地方需要人来判断和兜底？</p>
+<h2 id="给上下文做监控">给上下文做监控</h2>
 
-<p>这个习惯一旦养成，工作方式会发生根本性变化。</p>
+<p>工程化的标志是可度量。我们现在给所有 Agent 加了三个上下文指标：</p>
 
-<h3 id="第二审美">第二：审美</h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ContextMetrics</span><span class="p">:</span>
+    <span class="n">window_usage</span><span class="p">:</span> <span class="nb">float</span>      <span class="c1"># 窗口占用率，&gt;70% 触发压缩
+</span>    <span class="n">composition</span><span class="p">:</span> <span class="nb">dict</span>        <span class="c1"># 构成比例：指令/工具/历史/检索各占多少
+</span>    <span class="n">staleness</span><span class="p">:</span> <span class="nb">float</span>         <span class="c1"># 陈旧度：窗口中多少 token 与最近
+</span>                             <span class="c1"># 5 次决策无关（采样评估）
+</span></code></pre></div></div>
 
-<p>同样用 AI 生成 50 个方案，为什么有人能一眼挑出那个直击灵魂的，有人只能选个平均水平的？</p>
+<p>构成比例（composition）最有诊断价值。健康的长程 Agent 大致是：系统指令 5~10%、工具定义 10~15%、工作记忆（计划+近期历史）30~40%、当前任务素材 30~40%、预留 15~20%。如果发现工具定义占了 35%，不用看效果就知道该做工具裁剪了。</p>
 
-<p>审美的差异不在于你知道多少，在于你对好坏、高低、是否值得的感知有多敏锐。</p>
+<h2 id="几个容易踩的反模式">几个容易踩的反模式</h2>
 
-<p><strong>审美越高，AI 产出的上限越高。</strong> AI 能生成，但判断还是靠人。</p>
+<p>落地过程中见过的典型错误，列出来供对照自查。</p>
 
-<h3 id="第三经验">第三：经验</h3>
+<p><strong>反模式一：把系统提示词当垃圾抽屉。</strong> 每次出 bad case 就往 system prompt 里加一条规则，半年后系统提示词膨胀到八千 token，规则之间互相打架，模型无所适从。正确做法是定期重构提示词，就像重构代码一样——合并同类规则、删除已被模型默认行为覆盖的规则，把场景化的规则移到 Skill 里按需加载。</p>
 
-<p>AI 可以给你很多答案，但它不知道什么方案更适合当下的业务、更符合现实约束。</p>
+<p><strong>反模式二：检索结果不设预算上限。</strong> RAG 召回 top-k 的 k 拍脑袋设成 20，每段 chunk 500 token，单次检索就吃掉一万 token，其中真正相关的往往只有前三段。检索预算应该从答案质量倒推：先用小 k 跑评测集，k 加大到指标不再提升就停——多数场景这个拐点出现在 3~5。</p>
 
-<p>真正有经验的人，能快速识别哪些建议能落地，哪些只是纸面好看，哪些地方要补边界、补流程、补验证。</p>
+<p><strong>反模式三：用「重新开一个会话」代替压缩策略。</strong> 窗口满了就让用户开新会话，所有上下文清零重来。这是把成本转嫁给了用户——他们要手动复述背景。哪怕最朴素的自动压缩（保留系统指令 + 最近 N 轮 + 一段历史摘要）都比清零体验好得多。</p>
 
-<p><strong>AI 给的是参考答案，有经验的人才能判断这道题该不该这么解。</strong></p>
+<p><strong>反模式四：只在出问题时才看上下文。</strong> 上下文构成应该和延迟、错误率一样进日常监控面板。腐烂是渐进的，等用户投诉”AI 变笨了”再去看，往往已经烂了几周。</p>
 
-<h3 id="第四判断力最关键">第四：判断力（最关键）</h3>
+<h2 id="和-skillharness-的关系">和 Skill、Harness 的关系</h2>
 
-<p>未来信息越来越多，模型越来越强，工具越来越泛滥。</p>
-
-<p>这个时候最重要的能力是：<strong>在大量可能性里做取舍</strong>。</p>
-
-<p>知道什么值得做，什么可以暂时不做，什么应该先做，什么要长期投入。</p>
-
-<p><strong>判断力决定方向。方向对了，效率才有意义。方向错了，越高效越浪费。</strong></p>
-
-<h3 id="第五迭代能力">第五：迭代能力</h3>
-
-<p>AI 时代很少存在一次性做对的方案，更多是快速试、快速看反馈、快速修正。</p>
-
-<p>谁更愿意小步快跑，谁更能在不确定中持续优化，谁就更容易把 AI 变成真正的生产力。</p>
-
-<h2 id="悬浮战略家的诅咒">悬浮战略家的诅咒</h2>
-
-<p>我见过太多这样的例子：</p>
-
-<p>一个人学了很多 AI 技巧，效率提升明显，信心爆棚。然后某天他做一个需要专业判断的任务，AI 给了一个漂亮的答案，他直接发出去了。</p>
-
-<p>然后被专业人士指出低级错误。他慌了，改来改去，越改越烂。最后放弃，自己重做。</p>
-
-<p><strong>问题不是 AI 给的答案不够好。问题是他没有能力判断 AI 的答案接近到什么程度、偏差在哪里、该怎么纠正。</strong></p>
-
-<p>这就是”悬浮战略家诅咒”——执行经验是孕育判断力的土壤，没有蹚过泥，你的品味就是空中楼阁。</p>
-
-<p>AI 帮你跳过了最枯燥的执行环节，但它跳不过你建立判断力的过程。</p>
-
-<h2 id="一个值得思考的问题">一个值得思考的问题</h2>
-
-<p>AI 越来越强，能做的事越来越多。</p>
-
-<p>但有一件事始终没变：<strong>你到底想要什么，这个问题只有你自己能回答。</strong></p>
-
-<p>AI 能生成 100 种方案，但选哪个？为什么选这个？这个判断从来都不是 AI 能替你做的。</p>
-
-<p>所以 AI 时代最核心的问题是：</p>
-
-<p><strong>不是 AI 能帮你做什么，而是你怎么判断什么值得让 AI 做？</strong></p>
-
-<p>这个问题的答案，决定了你在 AI 时代的位置。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="AI" /><category term="领导力" /><category term="判断力" /><category term="效率" /><category term="能力模型" /><summary type="html"><![CDATA[AI 能做 100 件事，但挑不出哪件值得做的，是人。AI 时代的竞争力，不在于你用 AI 做了什么，而在于你怎么判断什么值得让 AI 做。]]></summary></entry><entry><title type="html">AI 能力跃迁：从 Prompt 到 Skill 的三个认知框架</title><link href="http://localhost:4000/ai/2026/04/10/AI%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81-%E4%BB%8EPrompt%E5%88%B0Skill%E7%9A%84%E4%B8%89%E4%B8%AA%E6%A1%86%E6%9E%B6.html" rel="alternate" type="text/html" title="AI 能力跃迁：从 Prompt 到 Skill 的三个认知框架" /><published>2026-04-10T00:00:00+08:00</published><updated>2026-04-18T23:56:22+08:00</updated><id>http://localhost:4000/ai/2026/04/10/AI%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81-%E4%BB%8EPrompt%E5%88%B0Skill%E7%9A%84%E4%B8%89%E4%B8%AA%E6%A1%86%E6%9E%B6</id><content type="html" xml:base="http://localhost:4000/ai/2026/04/10/AI%E8%83%BD%E5%8A%9B%E8%B7%83%E8%BF%81-%E4%BB%8EPrompt%E5%88%B0Skill%E7%9A%84%E4%B8%89%E4%B8%AA%E6%A1%86%E6%9E%B6.html"><![CDATA[<p>用 AI 的人分两种：一种每天打开对话框，输入一大段背景描述，得到回答，关掉页面。第二天再来，重新输入同样的描述。30天后，他的效率跟第一天一模一样。</p>
-
-<p>另一种同样用 AI，但30天后，他的 AI 已经变成了一个完全不同的东西——自动用他的语气写作，自动按他的格式输出，自动调用他教过的方法论。而且他每天花在”指导 AI”上的时间反而越来越少。</p>
-
-<p>同一个工具，同一个模型，同一个价格。差距是怎么产生的？</p>
-
-<p><strong>不是技巧的差距。是认知框架的差距。</strong></p>
-
-<p>今天分享三个框架。理解它们，你对 AI 的使用方式会发生根本性的改变。</p>
-
-<h2 id="框架一三层进化论你在哪一层">框架一：三层进化论——你在哪一层？</h2>
-
-<p>用 AI 有三个层级。绝大部分人永远停在第一层。</p>
-
-<h3 id="第一层prompt">第一层：Prompt</h3>
-
-<p>Prompt 就是你在对话框里临时输入的指令。”你是一个资深文案”“用简洁的风格”“给我三个方案”。</p>
-
-<p>它在当下有效。会话关闭就消失。</p>
-
-<p>这就像每天早上跟一个失忆的天才解释你是谁。它确实很聪明，但明天它又不认识你了。你的语气偏好、品牌规范、输出格式、行业术语——全部归零，全部要重新解释。</p>
-
-<p>30天下来是什么样的？第1天写了个好 Prompt，得到好结果。第15天你已经重复输入了大致相同的上下文15次。第30天你的生产力跟第1天一模一样。<strong>零积累。</strong></p>
-
-<p>而且在疲倦的那天你会漏掉细节，输出质量下降。在忙碌的那天你干脆跳过上下文，AI 给你一个泛泛的通用版本。</p>
-
-<p><strong>你自己就是瓶颈。每一次对话都是。</strong></p>
-
-<h3 id="第二层project">第二层：Project</h3>
-
-<p>你在 Project 里上传了参考文档、风格说明、系统指令。这个 Project 里的每次对话都知道你的上下文。</p>
-
-<p>这就像给新员工一份入职手册。比天天口头交代强多了。</p>
-
-<p>但还有一个问题：你得记得打开正确的 Project。你的知识被锁在特定的 Project 里，换一个场景又得从头来。</p>
-
-<h3 id="第三层skill">第三层：Skill</h3>
-
-<p>Skill 是一个结构化的文件——你写一次、装一次，之后 AI 自动在识别到相关任务时触发。</p>
-
-<p>不需要你打开特定的 Project。不需要你输入任何提示词。AI 就是知道该怎么做。</p>
-
-<p>这就像培训一个员工，培训一次，永久生效。</p>
-
-<p>三个层级用的是同一个 AI。但第一层是聊天工具，第三层是<strong>工作系统</strong>。</p>
-
-<p>那么，理解了这个分层之后，怎么从第一层跳到第三层？这就需要第二个框架。</p>
-
-<h2 id="框架二交易思维-vs-复利思维">框架二：交易思维 vs 复利思维</h2>
-
-<p>这是三个框架中最重要的一个。它不是一个工具使用技巧，而是一个认知模型。</p>
-
-<p><strong>Prompt 是交易。</strong> 你投入时间写一段指令，得到一次产出。下次再投入，再得到一次。投入和产出是 1:1 的线性关系。你停止投入，产出立刻归零。</p>
-
-<p><strong>Skill 是复利。</strong> 你第一天投入10分钟写一个 Skill，第二天它已经在起作用了。第15天你累积了3个 Skill，每个都在之前的基础上叠加。第30天你的 AI 跟所有人的都不一样。</p>
-
-<p>搭建成本是第一周分散投入的一小时。回报是此后每一次对话都在更高的基线上运行。</p>
-
-<p>第一周的工作，在第六个月还在产生回报。这就是<strong>复利</strong>。</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>思维模式</th>
-      <th>每天问的问题</th>
-      <th>30天后的结果</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>交易思维</td>
-      <td>“今天怎么用 AI 做好这件事？”</td>
-      <td>效率归零，每次从零开始</td>
-    </tr>
-    <tr>
-      <td>复利思维</td>
-      <td>“怎么让 AI 永远知道该怎么做？”</td>
-      <td>AI 越来越强，你越来越轻松</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>如果你用复利思维去使用 AI，30天后你会发现一件神奇的事：你花在”教 AI”上的时间越来越少，AI 帮你完成的工作越来越多。因为你之前教过的每一个 Skill 都在持续生效。</p>
-
-<p>这就引出了一个实操问题：<strong>Skill 到底该怎么写？该把什么放进去、什么不放？</strong> 这就是第三个框架。</p>
-
-<h2 id="框架三thin-harness-fat-skills把-90-的精力花在对的地方">框架三：Thin Harness, Fat Skills——把 90% 的精力花在对的地方</h2>
-
-<p>这个框架来自 YC 掌门人 Garry Tan，他把它提炼成了一个极其精炼的架构原则：<strong>薄 Harness，厚 Skills。</strong></p>
-
-<p>什么意思？</p>
-
-<p>你在用 AI 工作时，实际上在搭建一个三层系统——不管你有没有意识到：</p>
-
-<ul>
-  <li><strong>最上层：Skills</strong>。你教给 AI 的操作手册——流程、判断标准、领域知识。这是<strong>价值的 90% 所在</strong>。</li>
-  <li><strong>中间层：Harness</strong>。运行 AI 的那个程序或环境——调用模型、管理上下文、读写文件。保持极薄。</li>
-  <li><strong>最底层：确定性工具</strong>。数据库查询、代码编译、数学计算——输入一样、输出一样、每次都一样的操作。</li>
-</ul>
-
-<p><strong>原则是：把智能推到 Skills 里。把执行推到确定性工具里。中间的 Harness 越薄越好。</strong></p>
-
-<p>反模式是什么？<strong>厚 Harness、薄 Skills。</strong> 你见过那种情况：花了大量时间调试工具链、配置各种插件、优化 API 调用，但真正教给 AI”怎么做好这件事”的内容——一个字都没写。</p>
-
-<p>结果就是：工具链很漂亮，但 AI 产出的质量跟裸聊没有本质区别。因为你优化了管道，但管道里流的还是自来水。</p>
-
-<p>模型的智能已经足够了。它失败不是因为不够聪明，而是因为不理解你的具体情况——你的规范、你的惯例、你的问题的特殊形状。<strong>Skill 解决的就是这个问题。</strong></p>
-
-<p>这个框架的另一个重要推论是：当下一个更强的模型发布时，你所有的 Skill 都会自动变得更好。</p>
-
-<p>因为 Skill 定义的是流程和标准，底层判断力的提升会让这些流程执行得更精准。你不需要重写任何东西。模型升级对你来说不是”又要重新学”，而是”<strong>我的系统免费升级了</strong>“。</p>
-
-<p><strong>Skill 是永久资产。</strong></p>
-
-<h2 id="三个框架怎么串起来用">三个框架怎么串起来用</h2>
-
-<p>理论讲完了，串一遍实操。</p>
-
-<h3 id="第一步用三层进化论定位自己">第一步：用三层进化论定位自己</h3>
-
-<p>你现在在哪一层？如果你每次对话都在重新输入上下文——你在<strong>第一层</strong>。如果你在用 Project 但没有 Skill——你在<strong>第二层</strong>。知道自己在哪，才知道该往哪走。</p>
-
-<h3 id="第二步用复利思维找到你的-skill-候选清单">第二步：用复利思维找到你的 Skill 候选清单</h3>
-
-<p>回想过去一个月跟 AI 的对话。哪些指令你重复说过？哪些上下文你反复解释过？哪些格式要求你每次都得提醒？哪些流程你一步步手动引导过？</p>
-
-<p><strong>如果你重复超过三次，那就是一个 Skill 在等着被创建。</strong></p>
-
-<p>还有一条更激进的原则：如果你让 AI 做了一件事，而且这件事将来还会再做——第一次就应该变成 Skill。手动做第一次，看看输出，满意就立刻编码成 Skill 文件。</p>
-
-<blockquote>
-  <p>检验标准：如果你需要第二次要求同样的事，说明系统失败了。</p>
-</blockquote>
-
-<h3 id="第三步用-thin-harness-fat-skills-决定该把精力花在哪">第三步：用 Thin Harness, Fat Skills 决定该把精力花在哪</h3>
-
-<p>不要花三天调试工具链然后用裸 Prompt 跑任务。反过来——<strong>花三天写好你的核心 Skill，工具链用最简单的就行。</strong></p>
-
-<h2 id="你的第一个-skill-怎么建">你的第一个 Skill 怎么建</h2>
-
-<p>一个 Skill 到底长什么样？极其简单，就是一个文本文件：</p>
-
-<ul>
-  <li><strong>名字</strong>——叫什么</li>
-  <li><strong>描述</strong>——干什么（一句话）。这是最关键的部分，AI 靠这句话判断什么时候自动触发</li>
-  <li><strong>指令</strong>——怎么做（具体步骤）</li>
-  <li><strong>约束</strong>——什么不能做</li>
-</ul>
-
-<p>Skill 不是告诉 AI “做什么”——那是 Prompt 的事。Skill 告诉 AI 的是”<strong>怎么做</strong>“。</p>
-
-<table>
-  <thead>
-    <tr>
-      <th> </th>
-      <th>Prompt</th>
-      <th>Skill</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>任务</td>
-      <td>“帮我写一份竞品分析”</td>
-      <td>“做竞品分析时，先锁定3-5个核心竞品，按功能/定价/市场定位三个维度对比，输出SWOT格式，每个结论附数据来源，最后给3条可执行建议”</td>
-    </tr>
-    <tr>
-      <td>本质</td>
-      <td>提供任务</td>
-      <td>提供方法论</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Prompt 说：”帮我写一份竞品分析。”
-Skill 说：”做竞品分析时，先锁定3-5个核心竞品，按功能/定价/市场定位三个维度对比，输出SWOT格式，每个结论附数据来源，最后给3条可执行建议。”</p>
-
-<p>Prompt 提供任务。Skill 提供方法论。两者配合时，AI 才从”等你告诉它每一步该做什么的实习生”变成”知道怎么干活的员工”。</p>
-
-<p>而且同一个 Skill 可以被不同的输入反复调用——输入一家竞品公司，你得到竞品分析；输入一个行业趋势，你得到趋势报告；输入一个投资标的，你得到尽调简报。同样的流程，不同的对象，完全不同的产出。</p>
-
-<p><strong>这不是 Prompt 工程。这是用 Markdown 做软件设计。</strong></p>
-
-<h3 id="最快的方式让-ai-帮你建">最快的方式：让 AI 帮你建</h3>
-
-<p>很多 AI 助手内置了”Skill Creator”——一个能创建 Skill 的 Skill。你只需要说：”帮我创建一个 Skill，用来做[你的具体任务]。”</p>
-
-<p>AI 会采访你，提炼流程，输出一个结构化的 .md 文件。你存下来就能用。</p>
-
-<p>一个下午，你可以搭好整个人的 Skill 体系。每个花10到15分钟。写作风格、竞品分析、会议纪要、邮件回复、报告生成、内容日历——<strong>加起来不到两小时，这两小时的复利回报没有上限。</strong></p>
+<p>把这半年聊过的几个概念串起来：Harness 是 Agent 的执行框架（循环、工具、权限），Skill 是按需加载的能力包，上下文工程是贯穿其中的资源管理纪律。Skill 的「渐进式披露」——先给模型看一行摘要，需要时才加载全文——本身就是上下文工程里「选取」操作的优雅实现。这些东西不是并列的三个 buzzword，是同一套系统的三个切面：<strong>Harness 定义边界，Skill 提供能力，上下文工程决定单位注意力的产出效率。</strong></p>
 
 <h2 id="结语">结语</h2>
 
-<p>三个框架，三句话：</p>
+<p>回头看这几年的路线，从优化一句话（Prompt），到优化一次调用的输入（RAG），再到管理一个长程系统里信息的全生命周期，方向是一致的：把炼丹一步步变成工程，可度量、可监控、可优化。</p>
 
-<table>
-  <thead>
-    <tr>
-      <th>框架</th>
-      <th>一句话总结</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>三层进化论</td>
-      <td>从 Prompt 到 Project 到 Skill，同一个 AI，三种完全不同的体验</td>
-    </tr>
-    <tr>
-      <td>交易 vs 复利</td>
-      <td>Prompt 是每天归零的交易。Skill 是每天增值的资产</td>
-    </tr>
-    <tr>
-      <td>Thin Harness, Fat Skills</td>
-      <td>不要把精力花在工具链上。把90%的注意力花在写好 Skill 上</td>
-    </tr>
-  </tbody>
-</table>
+<p>如果只能带走一条：下次 Agent 表现退化，先别急着改 prompt 或者换模型，把那一刻的窗口内容完整 dump 出来，自己从头读一遍。我每次这么做都会看到一个被工具返回值、过期历史和无关检索塞满的工作台，然后改法自然就出来了。这个笨办法教给过好几个同事，没有一次落空。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="上下文工程" /><category term="Context Engineering" /><category term="Agent" /><category term="工程实践" /><summary type="html"><![CDATA[Prompt 工程优化的是「怎么说」，上下文工程管理的是「模型在决策时刻能看到什么」。当任务从单轮问答变成长程 Agent，后者才是质量的决定因素。本文给出一套可落地的上下文预算管理方法。]]></summary></entry><entry><title type="html">多 Agent 系统的协作模式：从单兵到军团</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html" rel="alternate" type="text/html" title="多 Agent 系统的协作模式：从单兵到军团" /><published>2026-06-06T00:00:00+08:00</published><updated>2026-06-13T08:13:39+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html"><![CDATA[<p>2025 年是单 Agent 成熟的一年，2026 年的主战场明显转向了多 Agent。但「多」不等于「强」——我见过太多团队把三个 Agent 串起来，效果还不如调教好的一个。多 Agent 系统的能力上限不取决于 Agent 数量，取决于协作结构的设计。这篇文章拆解四种主流协作模式、各自的适用边界，以及那个最大的暗坑。</p>
 
-<p><strong>你建的每一个 Skill，都是对你 AI 系统的永久升级。它不退化，不遗忘，模型更新时自动变强。</strong></p>
+<h2 id="为什么需要多-agent">为什么需要多 Agent</h2>
 
-<p>Prompt 是口头指令。Skill 是 SOP 手册。一个每天归零，一个每天复利。</p>
+<p>先回答前置问题：单 Agent 不够用吗？很多场景确实不够，原因有三。</p>
 
-<p>从今天开始：<strong>找到你重复超过三次的那个任务。花10分钟，写你的第一个 Skill。</strong></p>
+<p><strong>上下文窗口是物理上限。</strong> 一个复杂任务（比如重构一个中型代码库）所需的上下文远超窗口容量，单 Agent 越往后跑，早期信息被挤出，质量塌方。拆成多个 Agent，每个只装自己需要的上下文，是对窗口限制的工程化绕行。</p>
 
-<p>然后你就再也不想回到只用 Prompt 的日子了。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="AI" /><category term="Prompt" /><category term="Skill" /><category term="效率" /><category term="方法论" /><summary type="html"><![CDATA[用 AI 的人分两种：一种每天重复同样的上下文，30天后效率跟第一天一模一样；另一种让 AI 自动用他的语气写作、按他的格式输出。本文分享三个让 AI 能力持续复利的认知框架。]]></summary></entry><entry><title type="html">AI 脉搏：全球顶级 AI 优质资源汇总</title><link href="http://localhost:4000/ai/2026/04/05/AI%E4%BF%A1%E6%81%AF%E6%BA%90-%E5%85%A8%E7%90%83%E9%A1%B6%E7%BA%A7AI%E4%BC%98%E8%B4%A8%E8%B5%84%E6%BA%90%E6%B1%87%E6%80%BB.html" rel="alternate" type="text/html" title="AI 脉搏：全球顶级 AI 优质资源汇总" /><published>2026-04-05T00:00:00+08:00</published><updated>2026-04-18T23:54:45+08:00</updated><id>http://localhost:4000/ai/2026/04/05/AI%E4%BF%A1%E6%81%AF%E6%BA%90-%E5%85%A8%E7%90%83%E9%A1%B6%E7%BA%A7AI%E4%BC%98%E8%B4%A8%E8%B5%84%E6%BA%90%E6%B1%87%E6%80%BB</id><content type="html" xml:base="http://localhost:4000/ai/2026/04/05/AI%E4%BF%A1%E6%81%AF%E6%BA%90-%E5%85%A8%E7%90%83%E9%A1%B6%E7%BA%A7AI%E4%BC%98%E8%B4%A8%E8%B5%84%E6%BA%90%E6%B1%87%E6%80%BB.html"><![CDATA[<p>AI 领域发展日新月异，信息源的质量直接决定了认知的深度与广度。本文汇总全球 65 个顶级 AI 优质资源，涵盖学术论文、工程实践、产品动态与社区讨论四大维度，帮助你高效构建 AI 信息体系。</p>
+<p><strong>角色专注度。</strong> 同一个模型，给它「你是测试工程师，只挑毛病」的窄指令，比「你又写又测」的宽指令表现更好。注意力被指令聚焦了。这和人类组织分工的逻辑相同。</p>
 
-<h2 id="一学术前沿论文与研究">一、学术前沿：论文与研究</h2>
+<p><strong>并行加速。</strong> 互不依赖的子任务（扫描十个模块找安全漏洞）天然适合并行,十个 Agent 同时跑就是十倍吞吐。</p>
 
-<h3 id="11-论文发现与追踪">1.1 论文发现与追踪</h3>
+<p>但这三个收益都有代价，代价就藏在协作模式里。</p>
 
-<ul>
-  <li>
-    <p><strong><a href="https://arxiv.org/list/cs.AI/recent">arXiv cs.AI/cs.LG/cs.CL</a></strong>：AI 领域最大的预印本库，涵盖机器学习、自然语言处理、计算机视觉等子领域。推荐使用 <a href="https://www.arxiv-vanity.com/">arXiv Vanity</a> 将 LaTeX 论文渲染为可读网页。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://www.semanticscholar.org/">Semantic Scholar</a></strong>：AI 驱动的学术搜索，能识别论文引用影响力，追踪指定学者或主题的最新进展。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://paperswithcode.com/">Papers With Code</a></strong>：将论文与对应代码结合，支持按任务、性能排名查看，是复现 State-of-the-Art 的首选。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://www.connectedpapers.io/">Connected Papers</a></strong>：基于引用关系可视化论文网络，帮助追溯某个方向的技术演进脉络。</p>
-  </li>
-</ul>
+<h2 id="四种协作模式">四种协作模式</h2>
 
-<h3 id="12-特定领域精选">1.2 特定领域精选</h3>
+<p><img src="/assets/images/2026/multi-agent-patterns.svg" alt="多 Agent 协作模式" /></p>
 
-<ul>
-  <li>
-    <p><strong><a href="https://importai.substack.com/">Import AI</a></strong>（Jack Clark）：深度学习与 AI 政策Newsletter，文风犀利，擅长跨领域串联。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://www.deeplearning.ai/the-batch/">The Batch</a></strong>（Andrew Ng）：每周精选 AI 要闻，视角偏向产业应用，适合快速了解行业动态。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://aitheory.substack.com/">AI Theory Weekly</a></strong>：聚焦 AI 理论进展，适合有数学背景的读者深挖。</p>
-  </li>
-</ul>
+<p><strong>模式一：Orchestrator-Worker（主从编排）。</strong> 一个主 Agent 负责理解任务、拆解、分发给 Worker、汇总结果。这是目前生产里最主流的模式，Claude 的 sub-agent、各家 Deep Research 产品都是这个结构。优点是控制流清晰、易调试；缺点是 Orchestrator 是单点——它拆错了任务，下面全白干。适用：任务可分解、子任务边界清晰的场景（研究、代码库分析、批量处理）。</p>
 
-<h2 id="二工程实践技术落地与开源">二、工程实践：技术落地与开源</h2>
+<p><strong>模式二：Pipeline（流水线）。</strong> Agent 按固定顺序接力：需求分析 → 编码 → 测试 → 审查。每个 Agent 的输出是下一个的输入。优点是质量门禁明确，每一环都可以独立优化和评测；缺点是错误会沿管道放大，且总延迟是各环节之和。适用：流程固定、每步产物可验证的场景（内容生产、代码 CI 流、数据 ETL）。</p>
 
-<h3 id="21-模型与框架">2.1 模型与框架</h3>
+<p><strong>模式三：Debate（辩论/对抗）。</strong> 两个以上 Agent 持不同立场互相批驳，第三方裁决或收敛共识。研究表明对抗结构能显著降低单模型的「自信幻觉」。成本是 token 翻几倍。适用：高风险判断类任务——安全审查、方案评审、事实核查，不适用于产出型任务。</p>
 
-<ul>
-  <li>
-    <p><strong><a href="https://huggingface.co/">Hugging Face</a></strong>：全球最大模型库与社区，Transformers、Datasets、Spaces 产品生态完善。每日活跃着大量模型演示与教程。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://github.com/trending?since=weekly&amp;l=python">GitHub Trending - AI</a></strong>：追踪开源 AI 项目热度，发现新兴工具与库。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://pytorch.org/blog/">PyTorch Blog</a></strong> / <strong><a href="https://blog.tensorflow.org/">TensorFlow Blog</a></strong>：官方深度解析新特性与最佳实践。</p>
-  </li>
-</ul>
+<p><strong>模式四：Swarm（群体投票）。</strong> 同一任务发给 N 个独立 Agent，对结果投票或聚合。本质是用冗余换可靠性，类似分布式系统的多数派。适用：答案可比较、正确性可投票的封闭性问题（分类、打分、数学题）；开放性产出（写一篇文档）没法投票，不适用。</p>
 
-<h3 id="22-工程实践社区">2.2 工程实践社区</h3>
+<p>实践中的组合拳通常是：Orchestrator 做骨架，关键节点插入 Debate 做质检，可并行处插 Swarm。</p>
 
-<ul>
-  <li>
-    <p><strong><a href="https://chat.lmsys.org/">LMSys Chatbot Arena</a></strong>：匿名对弈评测大模型性能，结果公开可查。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://opencompass.org.cn/">OpenCompass</a></strong>：国产大模型评测体系，支持多维度基准测试。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://reddit.com/r/machineLearning">r/MachineLearning</a></strong>：Reddit 最活跃的 ML 社区，论文解读、工程讨论与求职信息兼备。</p>
-  </li>
-</ul>
+<h2 id="最大的暗坑上下文割裂">最大的暗坑：上下文割裂</h2>
 
-<h2 id="三产品动态工具与商业应用">三、产品动态：工具与商业应用</h2>
+<p>多 Agent 系统第一大故障源不是模型能力，是<strong>信息在 Agent 之间传递时的损耗</strong>。</p>
 
-<h3 id="31-ai-产品情报">3.1 AI 产品情报</h3>
+<p>单 Agent 的所有决策共享同一份上下文；拆成多 Agent 后,每个 Worker 只看到 Orchestrator 转述的任务描述。转述必然有损：Worker A 在模块里发现的一个重要约束，Worker B 不知道；Orchestrator 汇总时把两个互相矛盾的结论拼在了一起，自己却看不出矛盾——因为支撑各自结论的证据都没传上来。</p>
 
-<ul>
-  <li>
-    <p><strong><a href="https://producthunt.com/">Product Hunt - AI</a></strong>：每日新发 AI 产品发布，评论区常有从业者深度点评。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://theresanaiforthat.com/">There’s An AI For That</a></strong>：收录 AI 工具库，按场景分类检索。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://www.futuretools.io/">Future Tools</a></strong>：AI 工具聚合平台，支持标签筛选与功能对比。</p>
-  </li>
-</ul>
+<p>这就是为什么很多多 Agent 系统的产出「每一段都对，整体是错的」。</p>
 
-<h3 id="32-商业与技术结合">3.2 商业与技术结合</h3>
+<p>工程上的缓解手段，按性价比排序：</p>
 
-<ul>
-  <li>
-    <p><strong><a href="https://strateosys.tech/">strateosys.dev</a></strong>（本博客定期追踪 AI 产品与技术融合趋势）</p>
-  </li>
-  <li>
-    <p><strong><a href="https://a16z.com/artificial-intelligence/">a16z AI Startup List</a></strong>：Andreessen Horowitz 的 AI 投资地图，反映资本视角下的赛道判断。</p>
-  </li>
-  <li>
-    <p><strong><a href="https://www.cbinsights.com/research/">CB Insights - AI</a></strong>：AI 创投数据与行业报告，适合了解商业化进程。</p>
-  </li>
-</ul>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. 共享黑板（Blackboard）：所有 Agent 读写同一份结构化状态
+   文件/数据库，关键发现必须落盘，而不是只存在于对话里
+2. 任务描述带上下文契约：Orchestrator 分发任务时显式附带
+   「已知约束」「禁止假设」「输出 schema」三段
+3. 汇总前做一致性检查：专设一个 Agent 校对各 Worker 结论
+   之间的冲突，冲突即打回重跑
+4. 控制扇出深度：层级不超过两层，Agent 套 Agent 套 Agent
+   的转述损耗是指数级的
+</code></pre></div></div>
 
-<h2 id="四twitterx-追踪清单全球-ai-零信息差">四、Twitter/X 追踪清单：全球 AI 零信息差</h2>
+<p>一个简化的 Orchestrator 骨架（基于消息而非框架，刻意展示裸逻辑）：</p>
 
-<p>想第一时间知道 OpenAI 发了什么、DeepSeek 又卷了什么、Karpathy 又说了什么？收藏这份清单，AI 圈的每一个重要时刻都不会错过。</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="k">def</span> <span class="nf">orchestrate</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Report</span><span class="p">:</span>
+    <span class="n">plan</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">llm</span><span class="p">(</span><span class="n">PLANNER</span><span class="p">,</span> <span class="n">task</span><span class="p">)</span>                  <span class="c1"># 拆解
+</span>    <span class="n">board</span> <span class="o">=</span> <span class="nc">Blackboard</span><span class="p">()</span>                             <span class="c1"># 共享黑板
+</span>    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="p">.</span><span class="nf">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span>
+        <span class="nf">run_worker</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">board</span><span class="p">.</span><span class="nf">snapshot</span><span class="p">())</span>            <span class="c1"># 带上下文契约分发
+</span>        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">plan</span><span class="p">.</span><span class="n">subtasks</span>
+    <span class="p">])</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="n">board</span><span class="p">.</span><span class="nf">merge</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">findings</span><span class="p">)</span>                      <span class="c1"># 关键发现落盘
+</span>    <span class="n">conflicts</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">llm</span><span class="p">(</span><span class="n">CHECKER</span><span class="p">,</span> <span class="n">board</span><span class="p">.</span><span class="nf">dump</span><span class="p">())</span>     <span class="c1"># 一致性检查
+</span>    <span class="k">if</span> <span class="n">conflicts</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">+=</span> <span class="k">await</span> <span class="nf">rerun</span><span class="p">(</span><span class="n">conflicts</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>     <span class="c1"># 冲突打回
+</span>    <span class="k">return</span> <span class="k">await</span> <span class="nf">llm</span><span class="p">(</span><span class="n">SYNTHESIZER</span><span class="p">,</span> <span class="n">board</span><span class="p">.</span><span class="nf">dump</span><span class="p">())</span>      <span class="c1"># 基于黑板汇总
+</span></code></pre></div></div>
 
-<blockquote>
-  <p>🌍 共 <strong>65 个账号</strong> = <strong>17 个顶级机构</strong> + <strong>48 位核心人物</strong></p>
-</blockquote>
+<p>注意汇总（SYNTHESIZER）的输入是黑板而不是各 Worker 的原始对话——这是刻意的。让汇总者面对结构化的事实清单，而不是 N 段冗长转述，幻觉率会明显下降。</p>
 
-<h3 id="41-机构账号">4.1 机构账号</h3>
+<h2 id="怎么评测一个多-agent-系统">怎么评测一个多 Agent 系统</h2>
 
-<table>
-  <thead>
-    <tr>
-      <th>账号</th>
-      <th>简介</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong><a href="https://twitter.com/OpenAI">@OpenAI</a></strong></td>
-      <td>GPT / Sora / o 系列模型第一手发布，AI 行业最重要的官方账号</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/GoogleDeepMind">@GoogleDeepMind</a></strong></td>
-      <td>Gemini、Veo、AlphaFold，全球顶级 AI 研究机构</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/nvidia">@nvidia</a> / <a href="https://twitter.com/NVIDIAAI">@NVIDIAAI</a></strong></td>
-      <td>GPU 算力与 AI 基础设施的绝对话语权</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/AnthropicAI">@AnthropicAI</a></strong></td>
-      <td>Claude 系列模型官方，AI 安全领域最前沿</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/MetaAI">@MetaAI</a></strong></td>
-      <td>LLaMA 开源生态，影响整个 AI 开源社区</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/deepseek_ai">@deepseek_ai</a></strong></td>
-      <td>开源大模型领域最强搅局者，每次发布都震动全球</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/Alibaba_Qwen">@Alibaba_Qwen</a></strong></td>
-      <td>阿里 Qwen 系列模型官方，多模态能力持续突破</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/midjourney">@midjourney</a></strong></td>
-      <td>AI 图像生成领域标杆，每次更新都是行业风向标</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/Kimi_Moonshot">@Kimi_Moonshot</a></strong></td>
-      <td>Kimi 官方，长上下文与推理能力国内标杆</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/MiniMax_AI">@MiniMax_AI</a></strong></td>
-      <td>MiniMax 官方，视频 + 语音 + 文本全模态布局</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/BytedanceTalk">@BytedanceTalk</a></strong></td>
-      <td>字节跳动官方，Seedance / Seedream 视频模型发布渠道</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/DeepMind">@DeepMind</a></strong></td>
-      <td>Google DeepMind 研究院，顶级 AI 论文发源地</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/GoogleAI">@GoogleAI</a></strong></td>
-      <td>Google AI 研究与产品动态</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/GroqInc">@GroqInc</a></strong></td>
-      <td>推理速度最快的 AI 芯片公司，LPU 技术引领者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/Hailuo_AI">@Hailuo_AI</a></strong></td>
-      <td>MiniMax 旗下视频生成产品，国内 Sora 最强对手</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/MIT_CSAIL">@MIT_CSAIL</a></strong></td>
-      <td>MIT AI 实验室，学术前沿研究第一梯队</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/IBMData">@IBMData</a></strong></td>
-      <td>IBM AI 企业应用与数据科学动态</td>
-    </tr>
-  </tbody>
-</table>
+<p>多 Agent 系统的评测比单 Agent 难，因为失败可能发生在任何一环，端到端指标好坏都说明不了原因。我们的做法是三层评测。</p>
 
-<h3 id="42-核心人物">4.2 核心人物</h3>
+<p><strong>单元层：每个 Agent 独立评测。</strong> 给每个角色（规划、执行、检查、汇总）建立独立的评测集，固定输入测输出。Worker 的评测集最好直接从线上失败案例里攒——Orchestrator 拆出来的真实子任务，比手造的测试用例有效得多。</p>
 
-<table>
-  <thead>
-    <tr>
-      <th>账号</th>
-      <th>简介</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong><a href="https://twitter.com/elonmusk">@elonmusk</a></strong></td>
-      <td>xAI 创始人 / X 平台掌舵者，Grok 模型背后的推手</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/sama">@sama</a></strong></td>
-      <td>Sam Altman，OpenAI CEO，每条推文都能引发行业震动</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/zuck">@zuck</a></strong></td>
-      <td>Mark Zuckerberg，Meta CEO，LLaMA 开源战略最终决策者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/demishassabis">@demishassabis</a></strong></td>
-      <td>Demis Hassabis，Google DeepMind CEO，AlphaFold 之父</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/DarioAmodei">@DarioAmodei</a></strong></td>
-      <td>Dario Amodei，Anthropic CEO / 联创，Claude 之父</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/karpathy">@karpathy</a></strong></td>
-      <td>Andrej Karpathy，最会讲 AI 的工程师，深度好文必读</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/ylecun">@ylecun</a></strong></td>
-      <td>Yann LeCun，图灵奖得主 / Meta AI 掌门，最敢怼 AGI 泡沫的大佬</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/geoffreyhinton">@geoffreyhinton</a></strong></td>
-      <td>Geoffrey Hinton，深度学习之父 / 图灵奖得主，AI 安全最受尊敬的警示者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/ilyasut">@ilyasut</a></strong></td>
-      <td>Ilya Sutskever，SSI 创始人 / 前 OpenAI 首席科学家，AGI 最接近的人之一</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/AndrewYNg">@AndrewYNg</a></strong></td>
-      <td>Andrew Ng，AI 教育布道者，行业趋势判断极准</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/jeffdean">@jeffdean</a></strong></td>
-      <td>Jeff Dean，Google DeepMind 首席科学家，AI 基础设施奠基人</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/drfeifei">@drfeifei</a></strong></td>
-      <td>Fei-Fei Li，ImageNet 之母 / World Labs 创始人，AI + 空间智能先驱</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/Thom_Wolf">@Thom_Wolf</a></strong></td>
-      <td>Thomas Wolf，Hugging Face 联创，开源 AI 生态核心人物</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/danielaamodei">@danielaamodei</a></strong></td>
-      <td>Daniela Amodei，Anthropic 总裁 / 联创，AI 安全与产品化核心推动者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/gdb">@gdb</a></strong></td>
-      <td>Greg Brockman，OpenAI 联创，技术与产品双重视角</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/GaryMarcus">@GaryMarcus</a></strong></td>
-      <td>Gary Marcus，AI 最犀利的批评者，泡沫预警必看</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/JustinLin610">@JustinLin610</a></strong></td>
-      <td>Junyang Lin，Qwen 团队负责人，大模型技术细节第一手</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/steipete">@steipete</a></strong></td>
-      <td>Peter Steinberger，OpenAI 工程师，开发者视角最接地气</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/ESYudkowsky">@ESYudkowsky</a></strong></td>
-      <td>Eliezer Yudkowsky，AI 安全领域”末日预言家”，极端但不可忽视</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/erikbryn">@erikbryn</a></strong></td>
-      <td>Erik Brynjolfsson，斯坦福经济学家，AI 对社会影响的权威分析</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/alliekmiller">@alliekmiller</a></strong></td>
-      <td>Allie K. Miller，AI 投资人，产业落地趋势嗅觉极灵</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/tunguz">@tunguz</a></strong></td>
-      <td>Bojan Tunguz，NVIDIA 数据科学家，实战 ML 干货多</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/Ronald_vanLoon">@Ronald_vanLoon</a></strong></td>
-      <td>AI 全球影响力榜单常客，行业综合动态聚合</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/DeepLearn007">@DeepLearn007</a></strong></td>
-      <td>AI 全球影响者，技术传播与趋势解读</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/nigewillson">@nigewillson</a></strong></td>
-      <td>AI 伦理与治理方向，关注 AI 负责任发展必看</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/petitegeek">@petitegeek</a></strong></td>
-      <td>Dr. Angelica Lim，机器人学教授，具身智能方向</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/YuHelenYu">@YuHelenYu</a></strong></td>
-      <td>Helen Yu，数字化转型与 AI 商业化领袖</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/TamaraMcCleary">@TamaraMcCleary</a></strong></td>
-      <td>AI 演讲者，企业 AI 应用与战略方向</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/swyx">@swyx</a></strong></td>
-      <td>Swyx，AI 工程师，知名技术作家，开发者社区影响力人物</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/joshwoodward">@joshwoodward</a></strong></td>
-      <td>Josh Woodward，Google Labs 产品负责人</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/kevinweil">@kevinweil</a></strong></td>
-      <td>Kevin Weil，OpenAI 产品负责人，前 Instagram 产品副总裁</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/petergyang">@petergyang</a></strong></td>
-      <td>Peter Yang，产品专家，产品管理领域知名作者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/thenanyu">@thenanyu</a></strong></td>
-      <td>Nan Yu，Anthropic 产品经理</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/realmadhuguru">@realmadhuguru</a></strong></td>
-      <td>Madhu Guru，AI 产品构建者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/_catwu">@_catwu</a></strong></td>
-      <td>Cat Wu，AI 产品经理</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/trq212">@trq212</a></strong></td>
-      <td>Thariq，AI 工程师</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/amasad">@amasad</a></strong></td>
-      <td>Amjad Masad，Replit CEO，AI 编程工具先驱</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/rauchg">@rauchg</a></strong></td>
-      <td>Guillermo Rauch，Vercel CEO，前端开发与 AI 结合的推动者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/alexalbert__">@alexalbert__</a></strong></td>
-      <td>Alex Albert，Anthropic 开发者关系负责人</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/levie">@levie</a></strong></td>
-      <td>Aaron Levie，Box CEO，企业 AI 应用先行者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/ryolu_">@ryolu_</a></strong></td>
-      <td>Ryo Lu，AI 构建者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/mattturck">@mattturck</a></strong></td>
-      <td>Matt Turck，FirstMark Capital 合伙人，AI 投资与趋势分析专家</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/zarazhangrui">@zarazhangrui</a></strong></td>
-      <td>Zara Zhang，AI 产品构建者，AI 学习工具创造者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/nikunj">@nikunj</a></strong></td>
-      <td>Nikunj Kothari，AI 工程师</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/danshipper">@danshipper</a></strong></td>
-      <td>Dan Shipper，Every 创始人，AI 生产力工具探索者</td>
-    </tr>
-    <tr>
-      <td><strong><a href="https://twitter.com/adityaag">@adityaag</a></strong></td>
-      <td>Aditya Agarwal，前 Dropbox CTO，AI 基础设施专家</td>
-    </tr>
-  </tbody>
-</table>
+<p><strong>链路层：注入故障测鲁棒性。</strong> 刻意让某个 Worker 返回错误结论、超时、返回格式损坏的输出，观察系统是否能识别和恢复。多 Agent 系统和分布式系统一样，部分失败是常态而不是异常，没测过故障注入的系统等于没测过。</p>
 
-<h3 id="43-追踪策略">4.3 追踪策略</h3>
+<p><strong>端到端层：人工评估抽样 + 配对对比。</strong> 终态产出用人工抽样打分，并且永远和单 Agent 基线做配对对比——同一批任务，单 Agent 调到最好 vs 多 Agent 系统，盲评。这一步经常给人泼冷水：相当比例的场景里，精心调优的单 Agent 能追平复杂的多 Agent 编排，而成本只有几分之一。这个对比实验做不做，决定了你的架构决策是基于证据还是基于时髦。</p>
 
-<ol>
-  <li><strong>必看核心</strong>：<code class="language-plaintext highlighter-rouge">@OpenAI</code> + <code class="language-plaintext highlighter-rouge">@deepseek_ai</code> + <code class="language-plaintext highlighter-rouge">@karpathy</code> + <code class="language-plaintext highlighter-rouge">@sama</code> — 覆盖行业最重要的官方与个人声音</li>
-  <li><strong>研究导向</strong>：加 <code class="language-plaintext highlighter-rouge">@GoogleDeepMind</code> + <code class="language-plaintext highlighter-rouge">@AnthropicAI</code> + <code class="language-plaintext highlighter-rouge">@MetaAI</code> — 追踪前沿研究动态</li>
-  <li><strong>中国视角</strong>：加 <code class="language-plaintext highlighter-rouge">@Alibaba_Qwen</code> + <code class="language-plaintext highlighter-rouge">@Kimi_Moonshot</code> + <code class="language-plaintext highlighter-rouge">@MiniMax_AI</code> + <code class="language-plaintext highlighter-rouge">@Hailuo_AI</code> — 国产模型与产品一手信息</li>
-  <li><strong>投资人视角</strong>：加 <code class="language-plaintext highlighter-rouge">@a16z</code> + <code class="language-plaintext highlighter-rouge">@mattturck</code> + <code class="language-plaintext highlighter-rouge">@alliekmiller</code> — 资本视角下的赛道判断</li>
-</ol>
+<h2 id="成本与可观测性">成本与可观测性</h2>
 
-<blockquote>
-  <p>关注这份清单 = 订阅全球 AI 的实时脉搏 🚀</p>
-</blockquote>
+<p>多 Agent 的 token 消耗通常是单 Agent 的 3~15 倍，上生产前必须算账：这个任务质量提升带来的价值，覆盖得了成本吗？我的粗规则：日常高频任务用单 Agent 调到极致；低频高价值任务（深度研究、全库审计、安全评审）才值得上多 Agent。</p>
 
-<h2 id="五信息消费策略如何构建个人体系">五、信息消费策略：如何构建个人体系</h2>
-
-<h3 id="51-筛选原则">5.1 筛选原则</h3>
-
-<p>AI 信息过载是常态，建立筛选机制比广撒网更重要：</p>
-
-<ol>
-  <li><strong>明确目的</strong>：研究导向优先论文社区，产品导向优先 Product Hunt 与行业报告。</li>
-  <li><strong>控制来源数量</strong>：每日核心阅读不超过 5 个，每周深度追踪不超过 15 个。</li>
-  <li><strong>定时消费</strong>：建议早间 20 分钟扫一遍 Newsletter，午间 10 分钟刷下 Twitter，晚间 30 分钟深读一篇论文或长文。</li>
-  <li><strong>输出沉淀</strong>：每读一篇有价值的文章，写 3 句话总结 + 1 个行动项。</li>
-</ol>
-
-<h3 id="52-推荐信息流组合">5.2 推荐信息流组合</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th>使用场景</th>
-      <th>组合</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>快速日更</td>
-      <td>The Batch + Twitter + Product Hunt</td>
-    </tr>
-    <tr>
-      <td>深度研究</td>
-      <td>arXiv + Papers With Code + Semantic Scholar</td>
-    </tr>
-    <tr>
-      <td>工程参考</td>
-      <td>Hugging Face Blog + PyTorch Blog + GitHub Trending</td>
-    </tr>
-    <tr>
-      <td>行业视野</td>
-      <td>a16z 文章 + CB Insights + 行业大会演讲</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="53-工具辅助">5.3 工具辅助</h3>
-
-<ul>
-  <li><strong><a href="https://reederapp.com/">Reeder</a></strong> / <strong><a href="https://netnewswire.com/">NetNewsWire</a></strong>：RSS 阅读器，聚合多个信息源。</li>
-  <li><strong><a href="https://readwise.io/">Readwise</a></strong> + <strong><a href="https://readwise.io/read">Reader</a></strong>：高亮批注同步，构建个人知识库。</li>
-  <li><strong><a href="https://obsidian.md/">Notion / Obsidian</a></strong>：笔记整理，建立 AI 知识图谱。</li>
-</ul>
+<p>可观测性是另一个必须前置的投入。多 Agent 跑挂了，你需要知道是哪个 Agent、在哪一步、基于什么输入做错的。最低配置：每个 Agent 调用记录输入/输出/耗时/token 的 trace，全链路一个 trace id 串起来。OpenTelemetry 的 GenAI 语义约定已经够用，别等出了事故再补。</p>
 
 <h2 id="结语">结语</h2>
 
-<p>信息源是认知的边界。在 AI 革命加速的当下，保持信息源的优质与多元，是每个从业者必修的基本功。建议从本文挑选 5-10 个最适合自己场景的来源，形成稳定的消费节奏，比追逐所有来源更重要。</p>
+<p>多 Agent 系统在重演分布式系统的老路：单机不够了才分布式，然后一致性、可观测性、部分失败这些问题排着队找上门。判断标准也可以直接抄分布式那套——能单 Agent 解决的别拆；确实要拆，先设计信息流（谁知道什么、怎么同步），再设计控制流（谁指挥谁）。</p>
 
-<p><em>本文会持续更新，欢迎推荐你心中的优质 AI 信息源。</em></p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="AI" /><category term="信息源" /><category term="资源" /><category term="学习" /><summary type="html"><![CDATA[系统梳理全球 AI 领域优质信息源：从学术前沿到工程落地，从模型研究到产品应用，构建个人 AI 信息体系]]></summary></entry><entry><title type="html">从 AI 工具到 AI 系统：Skill 是缺失的那块砖</title><link href="http://localhost:4000/ai/2026/04/03/%E4%BB%8EAI%E5%B7%A5%E5%85%B7%E5%88%B0AI%E7%B3%BB%E7%BB%9F-Skill%E6%98%AF%E7%BC%BA%E5%A4%B1%E7%9A%84%E9%82%A3%E5%9D%97%E7%A0%96.html" rel="alternate" type="text/html" title="从 AI 工具到 AI 系统：Skill 是缺失的那块砖" /><published>2026-04-03T00:00:00+08:00</published><updated>2026-04-19T00:24:38+08:00</updated><id>http://localhost:4000/ai/2026/04/03/%E4%BB%8EAI%E5%B7%A5%E5%85%B7%E5%88%B0AI%E7%B3%BB%E7%BB%9F-Skill%E6%98%AF%E7%BC%BA%E5%A4%B1%E7%9A%84%E9%82%A3%E5%9D%97%E7%A0%96</id><content type="html" xml:base="http://localhost:4000/ai/2026/04/03/%E4%BB%8EAI%E5%B7%A5%E5%85%B7%E5%88%B0AI%E7%B3%BB%E7%BB%9F-Skill%E6%98%AF%E7%BC%BA%E5%A4%B1%E7%9A%84%E9%82%A3%E5%9D%97%E7%A0%96.html"><![CDATA[<p>你有没有这种感觉：学了很多 Prompt 技巧，试了很多框架模板，但 AI 产出质量的上限似乎永远卡在某个地方。</p>
+<p>我们自己的代码审查系统折腾了三轮，最后稳定在「Orchestrator + 黑板 + 一个一致性检查角色」这个不算花哨的结构上。中间试过五层 Agent 嵌套的版本，看 demo 很酷，上线一周就退回来了——出了问题没人说得清是哪一层错的。供参考。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="多Agent" /><category term="架构设计" /><category term="工程实践" /><summary type="html"><![CDATA[单 Agent 的能力上限是上下文窗口，多 Agent 的能力上限是协作设计。本文拆解 Orchestrator、流水线、辩论、群体投票四种主流协作模式的适用边界，以及多 Agent 系统最大的暗坑：上下文割裂。]]></summary></entry><entry><title type="html">AI 时代的深度工作：注意力是最后的稀缺资源</title><link href="http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html" rel="alternate" type="text/html" title="AI 时代的深度工作：注意力是最后的稀缺资源" /><published>2026-05-31T00:00:00+08:00</published><updated>2026-06-13T08:13:31+08:00</updated><id>http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90</id><content type="html" xml:base="http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html"><![CDATA[<p>卡尔·纽波特写《深度工作》是 2016 年，那时的敌人是 Slack 和推送通知。十年后的今天，敌人换了——是那个随叫随到、永远在线、回答一切的 AI 助手。这听起来很怪：AI 不是来帮我们的吗？是，但它同时制造了一种新型的注意力碎片化，而且比通知更隐蔽。</p>
 
-<p>不是 AI 不够聪明。是你告诉它的全部加起来，也不过是”做什么”，从没告诉它”怎么判断做得好不好”。</p>
+<h2 id="新的碎片化等待与切换的缝隙">新的碎片化：等待与切换的缝隙</h2>
 
-<p><strong>Skill 解决的不是操作流程问题，是判断标准问题。</strong></p>
+<p>观察一下自己用 AI 编程的真实节奏：下达任务，Agent 跑两分钟，这两分钟干什么？大多数人会切去看消息、刷一眼群、开第二个任务。等 Agent 跑完，你已经离开了刚才的思维现场，要花几十秒甚至几分钟「重新加载」上下文。</p>
 
-<h2 id="90-的-skill-写错了">90% 的 Skill 写错了</h2>
+<p>这种模式有个特点：每个间隙都「短得不值得深入，长得无法忽略」。它不像写代码被打断那样有明显的痛感，反而带着一种「我在并行处理、效率很高」的错觉。但认知科学的结论很无情：人类不存在真正的并行深度思考，只有快速切换，而每次切换都有损耗——残留注意力（attention residue）会让你在新任务上的表现下降，哪怕你自我感觉良好。</p>
 
-<p>Skill 这个概念火起来后，市面上出现了大量”Skill 教程”。教你如何结构化、如何写描述、如何设计触发条件。</p>
+<p>更隐蔽的是依赖性碎片化：遇到一点点不确定就问 AI，得到答案再继续。每一次「问一下」都是一次思维中断。以前我们查文档前会先想十秒，现在连这十秒都省了。省掉的不是十秒，是形成自己判断的那个过程。</p>
 
-<p>但很少有人告诉你：<strong>Skill 的核心不是结构，是判断标准。</strong></p>
+<h2 id="瓶颈的转移">瓶颈的转移</h2>
 
-<p>大多数人写的 Skill 长这样：</p>
+<p>为什么这件事在 2026 年特别值得谈？因为瓶颈转移了。</p>
 
-<blockquote>
-  <p>做竞品分析时：</p>
-  <ol>
-    <li>搜索竞品官网</li>
-    <li>查找产品功能列表</li>
-    <li>对比定价策略</li>
-    <li>输出 Markdown 表格</li>
-  </ol>
-</blockquote>
+<p>AI 之前，工程师的产出公式约等于「思考质量 × 执行速度」，执行占大头——一个想法要变成上线的代码，中间隔着几天的体力活。所以行业奖励手快的人。</p>
 
-<p>这是<strong>操作清单</strong>，不是 Skill。</p>
+<p>AI 把执行成本压到接近于零之后，公式变成了「思考质量 × 判断次数」。Agent 一晚上能产出几千行代码，方向错了就是几千行的垃圾。你的杠杆不再是写得快，而是想得清：问题定义对不对、方案的约束找全没有、AI 产出的东西该不该收。</p>
 
-<p>真正的 Skill 长这样：</p>
+<p>而「想得清」恰恰是深度工作的产物。它需要不被打断的、连续的、有些枯燥的专注时段。也就是说：<strong>AI 越强，执行越廉价，深度思考的相对价值就越高</strong>——这是被很多「效率内容」完全说反的一点。他们教你怎么同时开五个 Agent，却不教你怎么保住那个决定五个 Agent 是否在做正确事情的脑子。</p>
 
-<blockquote>
-  <p>做竞品分析时：</p>
-  <ul>
-    <li><strong>锁定竞品的标准</strong>：月活 &gt; 1000万，或融资金额 &gt; 1000万美元，或所在赛道融资事件 &gt; 5起</li>
-    <li><strong>对比维度</strong>：功能完整度、定价策略、用户评价、技术壁垒</li>
-    <li><strong>判断”好”的标准</strong>：每个结论必须有数据支撑；必须包含用户原声引用；必须给出竞品当前的核心劣势</li>
-    <li><strong>判断”错”的标准</strong>：泛泛而谈”功能强大体验好”类表述；没有量化数据的对比；脱离业务场景的建议</li>
-    <li><strong>边界</strong>：不分析涉密信息；不引用未经核实的数据；不输出超出竞品范围的建议</li>
-  </ul>
-</blockquote>
+<h2 id="我调整后的工作结构">我调整后的工作结构</h2>
 
-<p>前者告诉你<strong>步骤</strong>，后者告诉你<strong>什么是对的</strong>。</p>
+<p>过去半年我重构了自己的工作模式，核心是把「与 AI 协作」也纳入深度/浅度的二分法管理。</p>
 
-<p><strong>AI 不缺步骤。AI 缺的是判断对错的标尺。</strong></p>
+<p><strong>深度时段不开 Agent。</strong> 每天上午保留两小时，只做问题定义、方案设计、架构权衡这类「上游思考」，纸笔或白板优先。这个时段的产出物是清晰的任务描述和判断标准——它们随后会成为 Agent 的输入。讽刺的是，这个不用 AI 的时段，恰恰是 AI 产出质量的决定因素：你给 Agent 的 spec 有多清楚，它的产出就有多能用。</p>
 
-<h2 id="为什么判断标准比操作步骤更重要">为什么判断标准比操作步骤更重要</h2>
+<p><strong>批处理 Agent 任务。</strong> 把可以委托的任务攒成批，集中在固定时段发出去，让多个 Agent 并行跑长任务（一小时以上的那种），而不是发一个等一个。等待期不再是「缝隙」，因为我此时整块地切去做另一件深度事务，回来后集中验收。关键区别：切换是计划内的、以小时为单位的，而不是被动的、以分钟为单位的。</p>
 
-<p>给你两个 AI：</p>
+<p><strong>给「问 AI」设置十秒规则。</strong> 遇到问题，先强迫自己用十秒形成一个预期答案，再去问。这十秒保住了两样东西：自己的判断肌肉，以及对 AI 答案的校验能力——你有了预期，才能在 AI 胡说时立刻闻出味儿来。没有预期的提问，得到的答案你只能全盘接受。</p>
 
-<ul>
-  <li>AI-1 知道做竞品分析的完整步骤</li>
-  <li>AI-2 知道什么样的竞品分析算好、什么样的算烂</li>
-</ul>
+<p><strong>验收是深度工作，不是浅度工作。</strong> 这是最容易出错的地方。Review AI 产出的代码看起来像浅活儿，划划屏幕点点头。但 AI 产出的错误往往是「局部完美、全局错位」型的——每个函数都对，组合起来方向不对。这种错误只有带着完整上下文深读才能发现。我现在把大块验收安排在精力好的时段，和写设计文档同等对待。</p>
 
-<p>同样的任务，AI-1 会输出一份流程完整的报告。看起来像那么回事，但结论浮于表面，数据引用随意，看不出任何业务判断。</p>
+<h2 id="一周的自我观测实验">一周的自我观测实验</h2>
 
-<p>AI-2 的报告可能步骤不那么完整，但每个结论都有明确的判断依据，每个建议都附带着”为什么这个建议是对的”的解释。</p>
+<p>道理讲完了，给一组自己的数据。今年三月我做了两周对照实验：第一周按旧习惯工作（Agent 随用随发、消息随到随看），第二周按上面的结构执行。每天记录三个指标：深度时段总时长（连续 25 分钟以上无切换才计入）、任务返工次数（AI 产出验收不通过需要重派的次数）、主观精力评分。</p>
 
-<p><strong>哪个更有价值？</strong></p>
+<p>结果比我预期的更明显。旧习惯那一周，日均深度时长只有 1.2 小时——我自以为「整天都在工作」，但符合深度标准的时间少得可怜，绝大多数时间花在了切换、等待和碎片化的对话里。返工率是另一个刺眼的数字：随手发出去的 Agent 任务，41% 需要返工；而第二周经过上午深度时段打磨过 spec 的任务，返工率降到 12%。换句话说，<strong>在任务定义上多花的二十分钟，平均省下了一个多小时的返工与扯皮</strong>。</p>
 
-<p>区别在哪里？AI-2 的 Skill 里有<strong>判断标准</strong>。AI-2 不只是知道怎么做，还知道怎么判断做得好不好。</p>
+<p>第二周的日程骨架大概是这样：9:00–11:00 深度时段（关机状态，只许纸笔和编辑器）；11:00–11:30 批量派发 Agent 任务，通常 3~5 个；11:30–12:30 处理消息与会议；下午两个 90 分钟块，一个用于验收与深读 AI 产出，一个用于第二优先级的深度事务；Agent 在后台跑它们的，我不看进度条。这个结构最大的反直觉之处是：<strong>AI 的使用时长下降了，AI 的有效产出反而上升了</strong>。</p>
 
-<p>这就是为什么很多人吐槽”AI 写的东西看起来很专业，但总觉得哪里不对”——因为它只有骨架，没有灵魂。骨架是步骤，灵魂是判断标准。</p>
+<p>当然，两周的自我实验谈不上严谨，样本是一个人，任务也不完全可比。但趋势与认知科学的既有结论一致，我愿意按这个方向继续押注。</p>
 
-<h2 id="skill-是认知脚手架不是操作手册">Skill 是认知脚手架，不是操作手册</h2>
+<h2 id="常见的两个反驳">常见的两个反驳</h2>
 
-<p>我一直觉得”Skill”这个词翻译成”技能”是种误导。听起来像是教你”怎么用 AI 做某件事”的操作手册。</p>
+<p><strong>「多 Agent 并行不就是为了榨干等待时间吗？你这是开倒车。」</strong> 不矛盾。并行本身没问题，问题在并行的粒度。以分钟为单位、被 Agent 进度驱动的被动切换是碎片化；以小时为单位、按自己节奏计划的主动切换是批处理。前者你是 Agent 的随从，后者你是调度者。区别不在并行数量，在谁掌握切换的主导权。</p>
 
-<p>但真正的 Skill，更像是<strong>认知脚手架</strong>——帮助 AI 建立和你一样的判断框架。</p>
+<p><strong>「初级工程师没有那么多上游思考可做，这套结构是不是只适合资深的人？」</strong> 恰恰相反，越早建立越好。初级阶段的深度时段可以用来做另一件事：深读 AI 产出，搞懂每一行为什么这么写。AI 时代初级工程师最大的危险不是被替代，而是从未真正写过、读懂过足够多的代码，导致判断力永远没机会长出来。深度时段就是判断力的健身房，资历越浅越需要。</p>
 
-<p>想象一下：你团队里有个资深产品经理，她做过上百个竞品分析。她的脑子里有一套隐形的判断标准：</p>
+<h2 id="防住认知外包的滑坡">防住「认知外包」的滑坡</h2>
 
-<ul>
-  <li>什么样的竞品值得分析，什么样的可以直接忽略</li>
-  <li>哪些数据来源可靠，哪些数据要打折看</li>
-  <li>什么样的结论有业务价值，什么样的结论是废话</li>
-  <li>这个行业特有的判断维度，外人根本不知道</li>
-</ul>
+<p>最后说一个更长期的担忧：认知外包的滑坡效应。</p>
 
-<p>这套标准，她可能从来没写成文档。但她的判断准确率就是比新手高。</p>
+<p>用进废退在认知能力上同样成立。如果所有难题第一反应都是丢给 AI，三年后你会发现自己丧失了「在没有答案提示的情况下硬想」的能力。而这个能力恰恰是处理全新问题——AI 训练数据里没有的问题——的唯一依靠。</p>
 
-<p><strong>Skill 的本质，是把这套隐形标准显性化。</strong></p>
+<p>我的对策不是少用 AI，而是刻意保留「徒手区」：每周留一些问题强制自己独立解决，像健身一样维持认知肌肉。读完 AI 的方案后强迫自己说出「它为什么这么做、我原本会怎么做、差异在哪」，把每次委托变成一次对照学习而不是一次卸载。</p>
 
-<p>当这套标准变成 .md 文件，被 AI 加载后，AI 的判断力就自动向这个资深产品经理看齐了。</p>
+<h2 id="结语">结语</h2>
 
-<p>这就是为什么说 Skill 是知识沉淀——它沉淀的不是操作步骤，是<strong>判断力</strong>。</p>
+<p>注意力是 AI 时代最后的稀缺资源——算力在变便宜，模型在变强，执行在变快，唯独人类清醒、连续、高质量的注意力，一天还是只有那么几个小时，而且正在被更多东西争夺。</p>
 
-<h2 id="好-skill-的三个层次">好 Skill 的三个层次</h2>
+<p>深度工作在前 AI 时代是效率优势，在 AI 时代更像生存前提：留给人的工作，剩下的基本都是必须深度才做得好的部分——定义问题、设定约束、做判断。浅的部分 AI 都拿走了。</p>
 
-<p>根据我自己的经验，一个有价值的 Skill 应该包含三个层次：</p>
+<p>如果想试试，给个最小起步：明天上午挑两小时，关掉所有 AI 对话窗口，只带一个明确的问题进去，比如「下季度这个系统最大的技术风险是什么」，结束时写成一页纸。拿这一页纸去派 Agent 任务，对比一下平时随手发任务的产出质量，自己感受。我赌你回不去了。</p>]]></content><author><name>小黄鸭</name></author><category term="思考" /><category term="思考" /><category term="深度工作" /><category term="注意力" /><category term="AI" /><category term="效率" /><summary type="html"><![CDATA[当 AI 把执行成本压到接近于零，产出的瓶颈从「做得多快」变成「想得多清」。这篇文章讨论一个反直觉的结论：AI 越强，深度工作越值钱。]]></summary></entry><entry><title type="html">AI Coding 落地存量大项目：规范先于工具</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html" rel="alternate" type="text/html" title="AI Coding 落地存量大项目：规范先于工具" /><published>2026-05-27T00:00:00+08:00</published><updated>2026-06-13T14:30:53+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html"><![CDATA[<p>前几天看到一篇文章，讲某团队用 AI 对 31 万行代码做重构的实践。里面有一句话让我想起了自己团队踩的坑：「没有统一规范的约束，不同人用 AI 写出的代码风格各异，系统反而会加速腐化。」这个说法我们亲身验证过，记录一下。</p>
 
-<h3 id="第一层边界什么不能做">第一层：边界（什么不能做）</h3>
+<h2 id="ai-进来之前问题就已经存在了">AI 进来之前，问题就已经存在了</h2>
 
-<p>这是最容易被忽略、却最重要的层次。</p>
+<p>我们有一个 Java 项目，五年历史，十几万行代码。架构本来是分层的（Controller → Service → Repository），但随着人员流动，各层的边界越来越模糊：有 Controller 直接调 DAO 的，有 Service 里写了大量业务逻辑又有 Service 把业务逻辑推到 DTO 里的，DTO 后缀有人写 <code class="language-plaintext highlighter-rouge">Dto</code>、有人写 <code class="language-plaintext highlighter-rouge">DTO</code>。同一件事有三种做法，没有一种是错的，但放在一起就是一团浆糊。</p>
 
-<blockquote>
-  <p>竞品分析 Skill 的边界：</p>
-  <ul>
-    <li>不分析成立时间 &lt; 2 年的公司（数据样本不足）</li>
-    <li>不引用没有原始链接的数据</li>
-    <li>不输出”行业第一”类无法证伪的结论</li>
-    <li>不对比没有直接竞争关系的产品</li>
-  </ul>
-</blockquote>
+<p>这个问题在 AI 之前就存在，但可以接受——新人来了，看看旁边的代码照着写，慢慢理解隐性规范，大约三个月能融入。有问题有人 review，偏差不会太大。</p>
 
-<p><strong>边界比步骤更重要。</strong> 知道什么不能做，才能避免在错误的方向上浪费精力。</p>
+<p>AI 进来之后，问题变成了五倍速。</p>
 
-<h3 id="第二层标准什么是好错">第二层：标准（什么是好/错）</h3>
+<p>工具链收拢到 Cursor + Claude CLI 之后，大家产出代码的速度快了，但因为每次 AI 对话都是独立的，AI 不知道这个项目的隐性规范，每次都靠「推断」——看见 Mapper 就直接注入，没看过项目规定必须走 Repository 接口；看见字段是 <code class="language-plaintext highlighter-rouge">userId</code> 就用 Long，没看见项目规定金额类字段必须用 BigDecimal。每个人的 AI 推断出来的默认值不同，合代码的时候就是一锅粥。review 成本比以前高了，因为不是偶尔有一两个风格问题，而是每个 PR 都有一批。</p>
 
-<blockquote>
-  <p>竞品分析的判断标准：</p>
-  <ul>
-    <li><strong>好结论的特征</strong>：有数据、有来源、有业务逻辑支撑</li>
-    <li><strong>坏结论的特征</strong>：泛泛而谈、无法证伪、脱离业务场景</li>
-    <li><strong>值得引用的用户评价</strong>：具体描述使用场景和痛点，非情绪性表述</li>
-    <li><strong>需要警惕的数据</strong>：来源不明的增长率、自我宣称的市场份额</li>
-  </ul>
-</blockquote>
+<h2 id="工具统一没用规范落地才有用">工具统一没用，规范落地才有用</h2>
 
-<h3 id="第三层流程怎么做">第三层：流程（怎么做）</h3>
+<p>第一个反应是统一工具——大家用同一套 IDE、同一套 prompt 模板。换了之后，情况确实稍微好一点，但没有本质改变。因为问题不是工具不同，是 AI 缺少项目的上下文。</p>
 
-<p>流程是最不重要的层次，因为它最通用。一个通用的分析框架可以用很多年。</p>
+<p>真正解决问题的是做了两件事：</p>
 
-<blockquote>
-  <p>竞品分析的通用流程：</p>
-  <ol>
-    <li>按标准锁定竞品范围</li>
-    <li>按维度收集信息</li>
-    <li>按标准筛选有效数据</li>
-    <li>按边界过滤不靠谱结论</li>
-    <li>输出结构化报告</li>
-  </ol>
-</blockquote>
+<p><strong>第一步：人人对齐。</strong> 开了一次两小时的架构规范讨论，把那些「大家心里知道但没写下来」的规则显式化：字段注入还是构造器注入？哪些工具类用？分层的边界在哪里？异常怎么包装？金额字段用什么类型？这些讨论并不轻松，因为不同历史时期加入的人有不同的理解，要对齐本身就是一次利益博弈——有人用了三年 <code class="language-plaintext highlighter-rouge">@Autowired</code>，不愿意改。但不对齐就没办法往下走，必须这一步先完成。</p>
 
-<p><strong>记住：流程是通用的，判断标准是独家的。</strong> 把 90% 的精力花在定义边界和标准上。</p>
+<p><strong>第二步：人机对齐。</strong> 把对齐后的规范写进 CLAUDE.md 和 Cursor Rules，让 AI 在生成代码前就能加载这些约束。不是写成「尽量使用构造器注入」，而是写成「必须使用构造器注入，不允许 <code class="language-plaintext highlighter-rouge">@Autowired</code> 字段注入，违反此规则的代码 review 时直接打回」。模糊的规则对 AI 和对人都没用。</p>
 
-<h2 id="一个反直觉的观点">一个反直觉的观点</h2>
+<p>这两步的顺序很重要。如果人没有对齐就直接去写 AI 规范，写出来的规范反映的是写规范那个人的习惯，不是团队共识。AI 照着执行，其他人依然不认，规范成了摆设。「人人对齐」必须先于「人机对齐」。</p>
 
-<p>很多人担心：Skill 写得这么好，会不会被 AI 学会后取代？</p>
+<h2 id="claudemd-写什么不写什么">CLAUDE.md 写什么、不写什么</h2>
 
-<p>不会。</p>
+<p>花了一些时间摸索规范文件的粒度，记几个经验。</p>
 
-<p>因为 <strong>Skill 的价值不在于”知道怎么做”，而在于”知道什么值得做”。</strong></p>
+<p><strong>不写太泛的原则，只写可验证的规则。</strong> 「代码要清晰易读」这种话对 AI 没意义，它不知道怎么评估。「所有 public 方法必须有 Javadoc，Javadoc 里必须包含参数说明和返回值说明」这种规则是可执行的。遇到模糊规则先不写，等出了具体的坏案例，反过来把规则提炼清楚再写进去。</p>
 
-<p>AI 可以学会完整的操作流程，但无法学会你的业务判断——什么样的机会值得追，什么样的风险值得避，什么样的用户值得服务。</p>
+<p><strong>写决策表，不写判断过程。</strong> 「优先用 X，但如果 Y 情况下用 Z，不过如果还有 W 情况……」这种条件链条对 AI 来说很混乱。改成「场景：分页查询 → 用 X；场景：全量加载 → 用 Z」的决策表形式，执行准确率高很多。</p>
 
-<p>这些判断背后是你的经验、你的直觉、你的价值观。</p>
+<p><strong>真实代码片段比描述有效。</strong> 在规范里直接贴从项目里截取的三到五行代码，比用文字描述「应该像这样做」效果好得多。注意是从生产代码里截，不是现写示意代码——AI 对「真实风格」和「演示风格」的识别比想象中敏感，示意代码有时候会被 AI 当成另一种新的风格来模仿。</p>
 
-<p><strong>Skill 不是把 AI 变成你，是把你的判断力注入 AI。</strong> 你依然在定义方向，AI 只是你的放大器。</p>
+<p><strong>总行数控制在 100~150 行以内。</strong> 超过这个长度，AI 在「中间」的注意力会下降，埋在文件中段的规则遵守率显著变差。如果规范很多，分到各子模块的 CLAUDE.md 里，主文件只写最高频、最关键的那些。</p>
 
-<h2 id="怎么开始">怎么开始</h2>
+<h2 id="一个月后的数据">一个月后的数据</h2>
 
-<p>从今天起，每次让 AI 做一件你满意的事情时，问自己一句：<strong>“我为什么觉得这个输出是好的？”</strong></p>
+<p>做完这两步大约一个月，有几个可以量化的变化。</p>
 
-<p>把答案写下来。这就是你的判断标准。</p>
+<p>review 打回次数降了约 60%。以前每个 PR 平均有 4~6 条风格类评论，现在降到 1~2 条，而且多数是「这个 edge case 考虑了吗」这类实质性问题，不是风格问题。</p>
 
-<p>然后把它加入你的 Skill 文档。</p>
+<p>新功能的 AI 代码采纳率从大约 40% 涨到 75%。「采纳率」是我自己定义的指标：AI 生成的代码未经大幅修改就进入最终 PR 的比例。这个数字高不代表 AI 在偷懒，代表 AI 生成的代码方向对了，减少了二次修改。</p>
 
-<p>不需要完美框架，不需要精美结构。先把判断标准从脑子里倒出来，变成文字。</p>
+<p>不好量化但能感受到的：大家对「AI 写出来的代码是不是我们的代码」的接受度提高了。以前合了 AI 生成的代码，总有一种「这不是我们的风格，只是凑合能跑」的感觉；现在因为规范一致，AI 的产出和人工写的代码混在一起，review 的时候不明显区分了。</p>
 
-<p>一个月后，你会发现你的 Skill 文档里积累的不是操作步骤清单，而是一套真正的<strong>判断系统</strong>。</p>
+<h2 id="还没解决的">还没解决的</h2>
 
-<p>这才是让 AI 持续变强的秘密。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="AI" /><category term="Skill" /><category term="工程化" /><category term="系统设计" /><category term="研发" /><summary type="html"><![CDATA[90%的人写 Skill 只是在写操作步骤清单。真正的 Skill 写的是判断标准——什么是对的，什么是错的，什么宁可不做。而这，恰恰是 AI 最缺的东西。]]></summary></entry><entry><title type="html">AI Agent 的最后一块拼图：Harness 工程实践</title><link href="http://localhost:4000/ai/2026/03/25/AI-Agent%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E5%9D%97%E6%8B%BC%E5%9B%BE-Harness%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5.html" rel="alternate" type="text/html" title="AI Agent 的最后一块拼图：Harness 工程实践" /><published>2026-03-25T00:00:00+08:00</published><updated>2026-04-19T00:19:22+08:00</updated><id>http://localhost:4000/ai/2026/03/25/AI-Agent%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E5%9D%97%E6%8B%BC%E5%9B%BE-Harness%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5</id><content type="html" xml:base="http://localhost:4000/ai/2026/03/25/AI-Agent%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E5%9D%97%E6%8B%BC%E5%9B%BE-Harness%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5.html"><![CDATA[<p>Prompt Engineering 解决了”怎么问”。Context Engineering 解决了”塞什么”。但 AI Agent 依然很难可靠地完成真实的多步骤任务。</p>
+<p>有两件事还没有好的解法。</p>
 
-<p>因为还缺一块：<strong>Harness Engineering——执行问题</strong>。</p>
+<p>一是规范的维护成本。CLAUDE.md 是个静态文件，项目的规范会演进，有新人加入带来新的约定，有旧的约定被废弃，文件容易腐烂。目前的做法是每季度做一次规范 review，但坦白说这件事很难坚持，往往是出了问题才回头更新。</p>
 
-<h2 id="一辆车和发动机是两回事">一辆车和发动机是两回事</h2>
+<p>二是架构层面的约束还是穿不进去。字段类型、命名规范这类表面的约束写进 CLAUDE.md 很有效；但「Service 不能直接访问 DAO」这种架构边界，AI 知道规则但不理解违反规则的系统性后果，在模糊情况下（比如一个临时的 one-off 查询）还是会绕过边界。这类约束真正有效的手段还是代码层面的封装——让违规在编译时就报错，而不只是写在文档里等 review 时发现。</p>
 
-<p>把 AI Agent 想象成一辆车：</p>
+<p>总结一下教训：AI Coding 在存量大项目里落地，工具和模型选型只是入场券，规范工程才是核心工作量。而规范工程最容易踩的坑，是跳过「人人对齐」直接去写 AI 规范——写出来的规范没有权威性，工具执行得再准也没有意义。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="AI Coding" /><category term="工程规范" /><category term="重构" /><category term="团队实践" /><summary type="html"><![CDATA[AI Coding 落地大型存量项目，遇到的最大问题不是模型能力，是规范缺失被 AI 放大了。聊一下我们团队在一个 Java 老项目上的踩坑经历，以及「人人对齐 → 人机对齐」这个顺序为什么重要。]]></summary></entry><entry><title type="html">MySQL 向量检索实践：当数据库遇上 Embedding</title><link href="http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html" rel="alternate" type="text/html" title="MySQL 向量检索实践：当数据库遇上 Embedding" /><published>2026-05-23T00:00:00+08:00</published><updated>2026-06-13T08:13:18+08:00</updated><id>http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding</id><content type="html" xml:base="http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html"><![CDATA[<p>做 RAG 的团队都绕不开一个选型问题：向量存哪？专用向量库（Milvus、Qdrant）功能强但要多养一套系统；MySQL 9 开始原生支持 <code class="language-plaintext highlighter-rouge">VECTOR</code> 类型后，「就用现有 MySQL」成了一个真实选项。这篇文章实测 MySQL 向量能力的边界，给出选型决策框架。</p>
 
-<ul>
-  <li><strong>模型</strong>是发动机。再强的发动机也只是动力来源。</li>
-  <li><strong>Harness</strong>是发动机之外的一切——底盘、悬挂、传动、转向。没有 Harness，发动机再好，车也跑不起来，或者跑得极其不稳定。</li>
-</ul>
+<h2 id="mysql-的向量能力现状">MySQL 的向量能力现状</h2>
 
-<p>Anthropic 给出了一个精炼的公式：<strong>Harness = Agent - Model</strong>。</p>
+<p>MySQL 9.x 提供了 <code class="language-plaintext highlighter-rouge">VECTOR(N)</code> 列类型和基础的距离函数。建表和写入：</p>
 
-<p>如果你觉得这个抽象，那就反过来想：当模型能力相同时，决定 Agent 表现差距的是什么？是 Harness。</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">doc_chunks</span> <span class="p">(</span>
+  <span class="n">id</span> <span class="nb">BIGINT</span> <span class="n">AUTO_INCREMENT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">doc_id</span> <span class="nb">BIGINT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">chunk_text</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">embedding</span> <span class="n">VECTOR</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">tenant_id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">created_at</span> <span class="nb">DATETIME</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span><span class="p">,</span>
+  <span class="k">KEY</span> <span class="n">idx_tenant_doc</span> <span class="p">(</span><span class="n">tenant_id</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span>
 
-<p>很多团队抱怨”AI 不靠谱”，但换了个更好的模型后，发现问题依然在。<strong>问题往往不在发动机，在传动系统。</strong></p>
-
-<h2 id="三层架构sessionharnesssandbox">三层架构：Session、Harness、Sandbox</h2>
-
-<p>Anthropic 的实践将 AI 系统拆解为三个彻底分离的组件：</p>
-
-<h3 id="session可恢复的事件流">Session：可恢复的事件流</h3>
-
-<p>传统对话记录的是历史。Session 记录的是状态。</p>
-
-<p>区别在于：你可以中断一个 Session，可以恢复，可以从任意节点继续。上下文不会因为对话结束而丢失。</p>
-
-<p>这对多步骤任务至关重要。一个需要三天的分析任务，不应该每次打开对话框都从零开始。</p>
-
-<h3 id="harness可替换的推理调度循环">Harness：可替换的推理调度循环</h3>
-
-<p>这是最核心的抽象。</p>
-
-<p>Harness 负责：</p>
-<ul>
-  <li>管理多步骤任务的执行顺序</li>
-  <li>处理分支和循环</li>
-  <li>维护任务状态</li>
-  <li>调用外部工具</li>
-  <li>处理异常和重试</li>
-</ul>
-
-<p>关键是<strong>可替换</strong>。模型升级时，Harness 不需要大改；业务逻辑变化时，只需要换 Harness 而不用换模型。</p>
-
-<h3 id="sandbox执行环境与工具">Sandbox：执行环境与工具</h3>
-
-<p>这是 AI 真正”做事”的地方——代码执行、浏览器、API 调用、文件读写。</p>
-
-<p>一个重要的原则：<strong>Sandbox 不应内化为 Agent 自身</strong>。工具是外部的，Agent 调用工具，而不是成为工具。</p>
-
-<h2 id="生成-评估三角架构各大厂殊途同归">生成-评估三角架构：各大厂殊途同归</h2>
-
-<p>有意思的是，Anthropic、Google DeepMind、Manus 等各家的 Harness 设计，架构惊人地相似：</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        ┌─────────────┐
-        │   Planner   │
-        │   规划器    │
-        └──────┬──────┘
-               │
-        ┌──────▼──────┐
-        │  Generator  │
-        │   生成器    │
-        └──────┬──────┘
-               │
-        ┌──────▼──────┐
-        │  Evaluator  │
-        │   评估器    │
-        └─────────────┘
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">doc_chunks</span> <span class="p">(</span><span class="n">doc_id</span><span class="p">,</span> <span class="n">chunk_text</span><span class="p">,</span> <span class="n">embedding</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'...'</span><span class="p">,</span> <span class="n">STRING_TO_VECTOR</span><span class="p">(</span><span class="s1">'[0.0231, -0.114, ...]'</span><span class="p">),</span> <span class="mi">42</span><span class="p">);</span>
 </code></pre></div></div>
 
-<ul>
-  <li><strong>Planner</strong> 理解任务，拆解步骤</li>
-  <li><strong>Generator</strong> 调用模型生成内容或执行动作</li>
-  <li><strong>Evaluator</strong> 验证输出是否达标，决定是否重试</li>
-</ul>
+<p>查询用距离函数排序：</p>
 
-<p>三角架构的核心价值是<strong>每一步都可观测、可干预、可替换</strong>。你可以在 Evaluator 和 Generator 之间插入人工审核节点，可以在 Planner 之前加一层意图分类。</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">chunk_text</span><span class="p">,</span>
+       <span class="n">DISTANCE</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">STRING_TO_VECTOR</span><span class="p">(</span><span class="o">?</span><span class="p">),</span> <span class="s1">'COSINE'</span><span class="p">)</span> <span class="k">AS</span> <span class="n">dist</span>
+<span class="k">FROM</span> <span class="n">doc_chunks</span>
+<span class="k">WHERE</span> <span class="n">tenant_id</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">dist</span>
+<span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre></div></div>
 
-<h2 id="六大手艺模块">六大手艺模块</h2>
+<p>关键问题来了：<strong>社区版 MySQL 的这条查询是全表暴力扫描</strong>。每一行都要算一次 1024 维余弦距离，没有 ANN（近似最近邻）索引加持。HeatWave 版本有向量索引和加速，但那是云上付费能力。所以社区版 MySQL 做向量检索的真实边界，取决于暴力扫描扛到多大数据量。</p>
 
-<p>一个成熟的 Harness 系统包含六大模块：</p>
+<h2 id="实测暴力扫描能扛多少">实测：暴力扫描能扛多少</h2>
+
+<p>测试环境 8C16G，MySQL 9.3，1024 维 float 向量，单表测试 cosine 距离 + LIMIT 10：</p>
 
 <table>
   <thead>
     <tr>
-      <th>模块</th>
-      <th>职责</th>
-      <th>常见实现</th>
+      <th>行数</th>
+      <th>无过滤条件</th>
+      <th>tenant 过滤后剩 5%</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>上下文工程</td>
-      <td>管理对话历史，提炼关键信息</td>
-      <td>摘要压缩、重要性排序</td>
+      <td>10 万</td>
+      <td>~180ms</td>
+      <td>~15ms</td>
     </tr>
     <tr>
-      <td>记忆与状态</td>
-      <td>持久化进度，支持中断恢复</td>
-      <td>向量数据库、状态机</td>
+      <td>50 万</td>
+      <td>~900ms</td>
+      <td>~55ms</td>
     </tr>
     <tr>
-      <td>工具与编排</td>
-      <td>定义工具接口，编排调用顺序</td>
-      <td>Function Calling、工作流引擎</td>
-    </tr>
-    <tr>
-      <td>验证护栏</td>
-      <td>检查格式、安全边界、一致性</td>
-      <td>JSON Schema、沙箱</td>
-    </tr>
-    <tr>
-      <td>评估与观测</td>
-      <td>追踪完成率、延迟、错误率</td>
-      <td>埋点、A/B 测试</td>
-    </tr>
-    <tr>
-      <td>人类接管</td>
-      <td>关键节点允许人工介入</td>
-      <td>审批流、优先队列</td>
+      <td>200 万</td>
+      <td>~3.8s</td>
+      <td>~210ms</td>
     </tr>
   </tbody>
 </table>
 
-<h2 id="thin-harness-fat-skills一个反模式">Thin Harness, Fat Skills：一个反模式</h2>
+<p>两个结论。第一，裸扫 50 万行就接近交互式应用的容忍上限了。第二，<strong>带过滤条件的场景表现完全不同</strong>——只要二级索引能先把候选集裁到几万行，距离计算就只发生在小集合上，性能立刻回到可用区间。</p>
 
-<p>见过很多这样的系统：花大量时间调试工具链、配置插件、优化 API 调用，但真正告诉 AI”怎么做好这件事”的内容——一个字都没写。</p>
+<p>这正好戳中专用向量库的软肋：预过滤（pre-filtering）。多租户 SaaS 场景下「只在租户 42 的文档里搜」，很多向量库的 ANN 索引做带过滤的检索反而别扭（filter 越严，HNSW 图遍历越容易断裂，召回率下降）。MySQL 用 B+ 树索引先过滤再暴力算距离，是「精确解」，没有召回损失。</p>
 
-<p>结果是工具链很漂亮，AI 产出质量和裸聊没本质区别。<strong>因为你优化了管道，但管道里流的还是自来水。</strong></p>
+<p><img src="/assets/images/2026/mysql-vector-decision.svg" alt="向量检索选型决策" /></p>
 
-<p>原则应该是：<strong>保持 Harness 薄，把智能推到 Skill 里。</strong></p>
+<h2 id="务实的混合架构">务实的混合架构</h2>
 
-<p>当下一个更强的模型发布时，你所有的 Skill 都会自动变得更好。Skill 是永久资产。Harness 是基础设施。<strong>价值永远在知识层，不在工具层。</strong></p>
+<p>基于实测，我在生产中采用的判断标准：</p>
 
-<h2 id="基础设施标准化的前夜">基础设施标准化的前夜</h2>
+<p><strong>用 MySQL 的场景</strong>：候选集经过业务条件过滤后在 10 万行以内；向量数据和业务数据强关联（要 JOIN 用户表、权限表）；团队没有专人运维新组件。典型如内部知识库、客服工单检索、中小规模 SaaS 的租户内搜索。</p>
 
-<p>Anthropic 发布 Claude Managed Agents，将 Harness 的基础设施部分（会话管理、状态持久化、错误恢复）做成了托管服务。</p>
+<p><strong>上专用向量库的场景</strong>：全局检索千万级以上向量；需要高 QPS（&gt;500）低延迟（&lt;50ms）的纯向量查询;需要标量量化、多向量、稀疏向量等高级能力。</p>
 
-<p>这和云计算早期如出一辙：最初大家自建数据中心，后来 AWS 把基础设施接管了，开发者只关注应用逻辑。</p>
+<p>很多团队的真实情况是第一种，却按第二种做了架构，平白多养一个有状态集群，还要解决 MySQL 与向量库之间的数据同步一致性——这往往才是最大的隐性成本。双写丢数据、CDC 链路延迟、删除不同步导致检索出已删内容，每一个都是真实事故来源。</p>
 
-<p><strong>Harness 的底层基础设施正在走向标准化。</strong> 未来的护城河不在基础设施，在应用层——对特定领域业务逻辑的深刻理解，在任务流设计能力。</p>
+<h2 id="几个落地细节">几个落地细节</h2>
 
-<p>这不是工具问题，是<strong>知识沉淀</strong>问题。</p>
+<p><strong>维度越低越好，够用就行。</strong> 1024 维和 256 维在很多业务召回评测上差距不到 2%，但存储和计算差 4 倍。新一代 embedding 模型普遍支持 Matryoshka 降维（截断前 N 维即可用），生产里我用 256 维起步，评测不达标再升。</p>
 
-<p>谁先想明白这一点，谁就能在 AI Agent 这波浪潮里建立真正的壁垒。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="AI" /><category term="Agent" /><category term="Harness" /><category term="工程化" /><category term="架构" /><summary type="html"><![CDATA[Prompt Engineering 解决表达问题，Context Engineering 解决信息量问题，而真正让 AI Agent 可用、可靠、可持续的，是 Harness Engineering。]]></summary></entry><entry><title type="html">为什么99%的人用不好 AI：一场认知框架的暴力重构</title><link href="http://localhost:4000/ai/2026/03/18/%E4%B8%BA%E4%BB%80%E4%B9%8899%E7%9A%84%E4%BA%BA%E7%94%A8%E4%B8%8D%E5%A5%BDAI-%E8%AE%A4%E7%9F%A5%E6%A1%86%E6%9E%B6%E7%9A%84%E9%87%8D%E6%9E%84.html" rel="alternate" type="text/html" title="为什么99%的人用不好 AI：一场认知框架的暴力重构" /><published>2026-03-18T00:00:00+08:00</published><updated>2026-04-19T00:29:37+08:00</updated><id>http://localhost:4000/ai/2026/03/18/%E4%B8%BA%E4%BB%80%E4%B9%8899%E7%9A%84%E4%BA%BA%E7%94%A8%E4%B8%8D%E5%A5%BDAI-%E8%AE%A4%E7%9F%A5%E6%A1%86%E6%9E%B6%E7%9A%84%E9%87%8D%E6%9E%84</id><content type="html" xml:base="http://localhost:4000/ai/2026/03/18/%E4%B8%BA%E4%BB%80%E4%B9%8899%E7%9A%84%E4%BA%BA%E7%94%A8%E4%B8%8D%E5%A5%BDAI-%E8%AE%A4%E7%9F%A5%E6%A1%86%E6%9E%B6%E7%9A%84%E9%87%8D%E6%9E%84.html"><![CDATA[<p>有个现象我一直觉得奇怪：</p>
+<p><strong>距离计算下推，不要捞回应用层算。</strong> 见过把 embedding 全部 SELECT 回 Python 再算相似度的，网络传输比计算还慢。距离函数永远在 SQL 里执行。</p>
 
-<p>那些最早拥抱 AI、用的最勤的人，往往也是最早对 AI 失望的人。</p>
+<p><strong>chunk 表要做冷热分离。</strong> 文档更新会产生大量死 chunk，定期归档，控制参与扫描的行数——既然是暴力扫描，行数就是生命线。</p>
 
-<p>他们试了三个月，发帖说”AI 也就那样”；转头又继续用，又发帖说”太牛了彻底改变工作”；再过三个月，彻底不用了，说”这东西不稳定不可靠”。</p>
+<p><strong>召回之后必须重排。</strong> 向量检索只是粗筛，top 50 召回后用轻量 reranker（如 bge-reranker）精排到 top 5，端到端效果提升远大于把向量库换来换去。RAG 的瓶颈大概率不在检索引擎，而在 chunking 策略和重排。</p>
 
-<p>循环往复。</p>
+<h2 id="容易被问到的三个问题">容易被问到的三个问题</h2>
 
-<p><strong>这不是 AI 的问题。是你在用工业时代的脑子，操控一个智能时代工具的问题。</strong></p>
+<p><strong>「为什么不用 PostgreSQL + pgvector？」</strong> pgvector 确实更成熟，有 HNSW 索引，社区版就能用，如果你的技术栈本来就是 PG，无脑选它。本文的前提是「存量系统是 MySQL」——为了向量检索把主数据库从 MySQL 迁到 PG，比引入一个向量库的动静还大。选型永远要带着存量约束讨论，脱离存量谈最优解是纸上谈兵。</p>
 
-<h2 id="一个反直觉的真相">一个反直觉的真相</h2>
+<p><strong>「暴力扫描的 CPU 占用会不会影响业务查询？」</strong> 会，这是真实风险。距离计算是纯 CPU 密集操作，200 万行一次扫描能把一个核打满几秒。两个缓解手段：向量查询走只读副本，与交易流量物理隔离；用 <code class="language-plaintext highlighter-rouge">MAX_EXECUTION_TIME</code> hint 给向量查询设置超时上限，宁可检索降级也不拖垮副本。</p>
 
-<p>大多数人会说：用不好 AI 是因为 Prompt 写的不够好。</p>
+<p><strong>「embedding 模型升级了怎么办？」</strong> 这是所有方案共同的痛：换模型意味着全量重算向量。MySQL 方案在这里反而有点优势——加一列 <code class="language-plaintext highlighter-rouge">embedding_v2 VECTOR(256)</code>，后台任务批量回填，灌完后切换查询列、删旧列，全程不停服，用的都是 DBA 最熟悉的在线变更套路，不需要学习向量库的 collection 迁移机制。设计 schema 时建议直接带上 <code class="language-plaintext highlighter-rouge">model_version</code> 字段，给未来的自己留路。</p>
 
-<p>错。</p>
+<h2 id="一段-python-接入示例">一段 Python 接入示例</h2>
 
-<p>用不好 AI 是因为你<strong>自己都不知道想要什么</strong>。</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">aiomysql</span><span class="p">,</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
 
-<p>听起来有点扎心。但仔细想想：</p>
-
-<p>当你对 AI 说”帮我写一份好的商业计划书”，你自己知道”好”的标准是什么吗？</p>
-
-<p>当你对 AI 说”帮我分析一下这个市场”，你自己有清晰的分析框架吗？</p>
-
-<p>当你对 AI 说”给我一个方案”，你自己能判断哪个方案值得吗？</p>
-
-<p><strong>如果你自己都说不清楚，AI 怎么可能给你想要的东西？</strong></p>
-
-<p>AI 时代迫使你面对一个你一直在逃避的问题：<strong>你自己到底想要什么？</strong></p>
-
-<p>这个问题从来没人问过你。因为以前你可以用”执行”来掩盖”方向”的模糊——先做着看，不对再改。但 AI 要求你必须先想清楚，再让机器执行。</p>
-
-<p><strong>把 AI 当成超级实习生的人，暴露的不是 Prompt 能力的缺陷，是自身认知的缺陷。</strong></p>
-
-<h2 id="你的认知框架是工业时代的">你的认知框架是工业时代的</h2>
-
-<p>为什么大多数人会陷入这个困境？</p>
-
-<p>因为你的认知框架是工业时代出厂的。</p>
-
-<p>工业时代的核心逻辑是<strong>分工</strong>：有人负责想方向，有人负责执行。想方向的人是少数，执行的人是多数。</p>
-
-<p>这套逻辑运行了两百年，所以你从小被教育的也是这个：<strong>先把眼前的事做好，方向的事让别人想。</strong></p>
-
-<p>但 AI 翻转了这套逻辑。</p>
-
-<p>AI 时代的分工变成了：<strong>人负责想方向，AI 负责执行。</strong></p>
-
-<p>这意味着<strong>每个人都必须成为那个”想方向的人”</strong>——不是选择，是必须。</p>
-
-<p>大多数人没准备好。不是能力上没准备好，是<strong>认知框架上根本没切换过来</strong>。</p>
-
-<h2 id="两种人两种结局">两种人，两种结局</h2>
-
-<p>在 AI 浪潮里，我观察到两种人：</p>
-
-<p><strong>第一种：把 AI 当成更快的打字机</strong></p>
-
-<p>他们用 AI 写周报、写邮件、写文档。他们学会了各种 Prompt 技巧，收藏夹里堆满了模板。</p>
-
-<p>但他们的工作方式没有任何本质变化。只是原来自己写，现在让 AI 写。原来花 1 小时，现在花 10 分钟。</p>
-
-<p>AI 在这里只是<strong>效率工具</strong>。他们的角色依然是执行者，只是执行速度更快了。</p>
-
-<p>这种人用 AI 不会有真正的失望，也不会有真正的惊喜。AI 对他们来说就是一款稍微聪明一点的软件。</p>
-
-<p><strong>第二种：把 AI 当成认知脚手架</strong></p>
-
-<p>他们用 AI 做事，但更核心的是用 AI <strong>逼自己想清楚</strong>。</p>
-
-<p>每次对 AI 下指令之前，他们必须先把自己的思路理清楚：这个任务的边界是什么？成功的标准是什么？有哪些约束条件？</p>
-
-<p>AI 帮他们完成了执行的部分，但更重要的是<strong>倒逼他们完善了自己的思考</strong>。</p>
-
-<p>这种人用 AI 的时间越长，自己的思考能力反而越强。因为 AI 把他们从繁琐的执行中解放出来，让他们有更多精力去思考真正重要的问题。</p>
-
-<p><strong>两种人的差距不在于 AI 用得多勤，而在于谁是主体、谁是工具。</strong></p>
-
-<h2 id="ai-时代最危险的人">AI 时代最危险的人</h2>
-
-<p>说出来可能会得罪人：</p>
-
-<p><strong>AI 时代最危险的不是”不会用 AI 的人”，是”用 AI 用得太顺的人”。</strong></p>
-
-<p>为什么？</p>
-
-<p>因为用 AI 用得太顺，会给你一个<strong>虚假的能力感</strong>。</p>
-
-<p>你让 AI 写了一份完美的方案，你觉得自己很牛。你让 AI 做了一份专业的分析，你觉得自己很牛。</p>
-
-<p>但去掉 AI，你还会什么？</p>
-
-<p>这种能力错位比”不会用 AI”更危险。<strong>你不知道自己不知道什么。</strong></p>
-
-<p>就像一个一直用导航开车的人，某天导航坏了，他发现自己连路都认不出来。他的驾驶能力从来没有真正建立过。</p>
-
-<p>用 AI 也是一样。最危险的不是你不会想，而是你以为你会想，但其实想的那部分一直是 AI 在替你做。</p>
-
-<h2 id="执行经验的真正价值被重新定义了">执行经验的真正价值被重新定义了</h2>
-
-<p>传统的职场逻辑是：<strong>执行经验越丰富越值钱</strong>。</p>
-
-<p>你是老员工，你做过的事多，你知道怎么处理复杂情况。这是你在职场上的护城河。</p>
-
-<p>但 AI 正在把这条护城河填平。</p>
-
-<p>以前需要踩无数坑才能获得的判断力，现在 AI 可以在几秒内给你。<strong>以前用时间换经验，现在用 AI 换经验。</strong></p>
-
-<p>这意味着什么？</p>
-
-<p>意味着<strong>执行经验的相对价值在下降，方向判断力的相对价值在上升</strong>。</p>
-
-<p>以前你说”我做了十年，我懂”，别人信。现在 AI 可以在几分钟内整合十年的行业经验。你的十年和 AI 的几秒，在信息量上没有本质差距。</p>
-
-<p><strong>真正不可替代的，是你基于经验建立的判断框架——什么是对的，什么是错的，什么值得做，什么可以忽略。</strong></p>
-
-<p>这不是 AI 能给你的。这是你的经历、你的思考、你的踩坑，慢慢沉淀出来的。</p>
-
-<h2 id="三个必须想清楚的问题">三个必须想清楚的问题</h2>
-
-<p>如果你想真正用好 AI，而不是被 AI 用，我建议你认真思考这三个问题：</p>
-
-<p><strong>问题一：我的核心能力到底是什么？</strong></p>
-
-<p>去掉 AI，你还能做什么 AI 做不了的事？</p>
-
-<p>不是抖机灵。认真想。</p>
-
-<p>如果你的答案依然是”我可以写 Prompt”，那你的核心能力是<strong>操作工具的能力</strong>，不是<strong>解决问题的能力</strong>。</p>
-
-<p><strong>问题二：我用 AI 做的事，有让我变强吗？</strong></p>
-
-<p>还是只是在用 AI 重复做自己本来就能做的事？</p>
-
-<p>AI 帮你节省了时间。那节省出来的时间，你用来做什么了？</p>
-
-<p>如果你用 AI 节省了时间，然后用省出来的时间做了更多执行工作，你的能力没有增长。你只是变得更高效的工具。</p>
-
-<p><strong>问题三：我有没有在某些地方变得依赖 AI？</strong></p>
-
-<p>有没有一些事，以前你会做，现在你必须依赖 AI？</p>
-
-<p>这不是坏事。但你需要<strong>有意识地做这个判断</strong>，而不是稀里糊涂地被 AI 接管。</p>
-
-<h2 id="最后">最后</h2>
-
-<p>有个朋友跟我说：用了 AI 之后，他反而更累了。</p>
-
-<p>因为他发现每次让 AI 做一件复杂的事，他必须先自己想清楚——这件事的边界是什么，成功标准是什么，有什么约束条件。</p>
-
-<p>以前他可以边做边想，做着做着方向就清楚了。现在不行。现在你必须先说清楚，AI 才能执行。</p>
-
-<p><strong>AI 让他意识到了自己以前有多少”低质量的思考”被执行过程序性忙碌给掩盖了。</strong></p>
-
-<p>这大概是 AI 最深刻的反讽：</p>
-
-<p>它让你变快了，但它逼你想清楚了。</p>
-
-<p>它帮你省了执行的时间，但它抢走了你用执行来摸索方向的空间。</p>
-
-<p>它让你觉得自己什么都能做了——然后逼你面对那个你一直在逃避的问题：</p>
-
-<p><strong>你到底想要什么？</strong></p>
-
-<p>这个问题，AI 回答不了你。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="AI" /><category term="认知" /><category term="方法论" /><category term="效率" /><summary type="html"><![CDATA[AI时代最危险的不是'不会用AI的人'，是'用AI用得太顺的人'——他们没有意识到建立的是对工具的依赖，而不是自己的能力。]]></summary></entry><entry><title type="html">2026年技术人的系统工程与自我设计</title><link href="http://localhost:4000/%E6%8A%80%E6%9C%AF/%E6%80%9D%E8%80%83/2026/02/18/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%B7%A5%E7%A8%8B%E4%B8%8E%E8%87%AA%E6%88%91%E8%AE%BE%E8%AE%A1.html" rel="alternate" type="text/html" title="2026年技术人的系统工程与自我设计" /><published>2026-02-18T00:00:00+08:00</published><updated>2026-02-25T23:42:33+08:00</updated><id>http://localhost:4000/%E6%8A%80%E6%9C%AF/%E6%80%9D%E8%80%83/2026/02/18/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%B7%A5%E7%A8%8B%E4%B8%8E%E8%87%AA%E6%88%91%E8%AE%BE%E8%AE%A1</id><content type="html" xml:base="http://localhost:4000/%E6%8A%80%E6%9C%AF/%E6%80%9D%E8%80%83/2026/02/18/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%B7%A5%E7%A8%8B%E4%B8%8E%E8%87%AA%E6%88%91%E8%AE%BE%E8%AE%A1.html"><![CDATA[<h1 id="2026年技术人的系统工程与自我设计">2026年技术人的系统工程与自我设计</h1>
-
-<h2 id="引言技术演进的十字路口">引言：技术演进的十字路口</h2>
-
-<p>回顾过去几年的技术发展，一个清晰的脉络正在浮现：我们正从追求“从0到1”的功能创新，大步迈向“从1到N”的系统工程与可持续性发展阶段。无论是AI模型从实验室走向每秒处理数万请求的生产环境，还是支撑亿万用户的基础设施需要在不被察觉的情况下稳定运行，亦或是技术从业者从被动执行到主动规划自己的成长路径——<strong>系统性、可靠性、可持续性</strong>已成为这个时代技术演进的核心关键词。</p>
-
-<p>正如dbaplus社群在《2026，骐骥驰骋，码力全开！》中所展望的，未来的技术竞争不仅是功能的竞争，更是系统稳定性、团队协作效率和人才持续成长的综合竞争。本期我们将从三个看似独立实则紧密相连的维度——高并发模型服务、中间件运维反思、技术人职业规划——来剖析这一趋势，并为身处其中的技术人提供一套完整的思考框架和实践指南。</p>
-
-<h2 id="第一部分高并发模型服务当ai遇见工程极限">第一部分：高并发模型服务——当AI遇见工程极限</h2>
-
-<h3 id="11-高qps模型服务的挑战与机遇">1.1 高QPS模型服务的挑战与机遇</h3>
-
-<p>随着ChatGPT等生成式AI应用的爆发，企业对于实时AI推理的需求呈指数级增长。一个推荐系统可能需要每秒处理数万次用户请求，一个欺诈检测模型需要在毫秒级内做出判断，一个智能客服系统需要同时服务成千上万的对话。<strong>高QPS（每秒查询率）模型服务</strong>已从少数科技巨头的专利，变成了众多企业的标配需求。</p>
-
-<p>然而，将训练好的模型部署到高并发生产环境中，远比在Jupyter Notebook中运行推理复杂得多。主要挑战包括：</p>
-
-<ul>
-  <li><strong>延迟与吞吐的权衡</strong>：低延迟（快速响应单个请求）和高吞吐（处理大量并发请求）往往相互制约</li>
-  <li><strong>资源利用效率</strong>：GPU等昂贵计算资源如何在请求波峰波谷间保持高效利用</li>
-  <li><strong>成本控制</strong>：如何在保证SLA（服务等级协议）的前提下，最小化基础设施成本</li>
-  <li><strong>模型更新与版本管理</strong>：如何在不停服的情况下安全地更新模型版本</li>
-</ul>
-
-<h3 id="12-databricks的高qps模型服务最佳实践">1.2 Databricks的高QPS模型服务最佳实践</h3>
-
-<p>Databricks在《Best Practices for High QPS Model Serving on Databricks》一文中，分享了他们在实际客户场景中积累的宝贵经验。这些实践不仅适用于Databricks平台，其背后的设计思想具有普适性。</p>
-
-<h4 id="架构设计异步与批处理的精妙平衡"><strong>架构设计：异步与批处理的精妙平衡</strong></h4>
-
-<p>传统同步请求-响应模式在高QPS场景下会导致资源闲置和延迟增加。Databricks建议采用<strong>异步推理</strong>与<strong>动态批处理</strong>相结合的策略。</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 简化的动态批处理示例
-</span><span class="kn">from</span> <span class="n">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
-<span class="kn">import</span> <span class="n">time</span>
-<span class="kn">from</span> <span class="n">collections</span> <span class="kn">import</span> <span class="n">deque</span>
-
-<span class="k">class</span> <span class="nc">DynamicBatchProcessor</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">max_wait_time</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">max_batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">max_wait_time</span> <span class="o">=</span> <span class="n">max_wait_time</span>  <span class="c1"># 最大等待时间（秒）
-</span>        <span class="n">self</span><span class="p">.</span><span class="n">request_queue</span> <span class="o">=</span> <span class="nf">deque</span><span class="p">()</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">executor</span> <span class="o">=</span> <span class="nc">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-        
-    <span class="k">def</span> <span class="nf">process_request</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">):</span>
-        <span class="sh">"""</span><span class="s">处理单个请求，实际实现中会加入队列等待批处理</span><span class="sh">"""</span>
-        <span class="n">future</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">executor</span><span class="p">.</span><span class="nf">submit</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">_batch_process</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">future</span>
-    
-    <span class="k">def</span> <span class="nf">_batch_process</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">):</span>
-        <span class="sh">"""</span><span class="s">动态收集请求进行批处理</span><span class="sh">"""</span>
-        <span class="n">batch</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
-        
-        <span class="c1"># 收集请求直到达到最大批大小或等待超时
-</span>        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()</span>
-        <span class="k">while</span> <span class="nf">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">self</span><span class="p">.</span><span class="n">max_batch_size</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">self</span><span class="p">.</span><span class="n">request_queue</span><span class="p">:</span>
-                <span class="n">input_data</span><span class="p">,</span> <span class="n">future</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">request_queue</span><span class="p">.</span><span class="nf">popleft</span><span class="p">()</span>
-                <span class="n">batch</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
-                <span class="n">futures</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
-            
-            <span class="k">if</span> <span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span> <span class="o">&gt;</span> <span class="n">self</span><span class="p">.</span><span class="n">max_wait_time</span><span class="p">:</span>
-                <span class="k">break</span>
-            
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">self</span><span class="p">.</span><span class="n">request_queue</span> <span class="ow">and</span> <span class="nf">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">break</span>
-                
-            <span class="n">time</span><span class="p">.</span><span class="nf">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>  <span class="c1"># 短暂休眠避免CPU空转
-</span>        
-        <span class="k">if</span> <span class="n">batch</span><span class="p">:</span>
-            <span class="c1"># 执行批量推理
-</span>            <span class="n">batch_results</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="nf">predict</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
-            
-            <span class="c1"># 将结果设置到各个future
-</span>            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">future</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
-                <span class="n">future</span><span class="p">.</span><span class="nf">set_result</span><span class="p">(</span><span class="n">batch_results</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        
-        <span class="k">return</span> <span class="nf">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">query_vec</span><span class="p">:</span> <span class="n">np</span><span class="p">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+    <span class="n">vec_str</span> <span class="o">=</span> <span class="sh">"</span><span class="s">[</span><span class="sh">"</span> <span class="o">+</span> <span class="sh">"</span><span class="s">,</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="p">.</span><span class="mi">6</span><span class="n">f</span><span class="si">}</span><span class="sh">"</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">query_vec</span><span class="p">)</span> <span class="o">+</span> <span class="sh">"</span><span class="s">]</span><span class="sh">"</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">pool</span><span class="p">.</span><span class="nf">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">conn</span><span class="p">.</span><span class="nf">cursor</span><span class="p">(</span><span class="n">aiomysql</span><span class="p">.</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">execute</span><span class="p">(</span><span class="sh">"""</span><span class="s">
+                SELECT id, chunk_text,
+                       DISTANCE(embedding, STRING_TO_VECTOR(%s), </span><span class="sh">'</span><span class="s">COSINE</span><span class="sh">'</span><span class="s">) AS dist
+                FROM doc_chunks
+                WHERE tenant_id = %s
+                ORDER BY dist LIMIT %s
+            </span><span class="sh">"""</span><span class="p">,</span> <span class="p">(</span><span class="n">vec_str</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">fetchall</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p><strong>关键洞察</strong>：动态批处理的核心是在延迟和吞吐之间找到最佳平衡点。通过调整<code class="language-plaintext highlighter-rouge">max_wait_time</code>和<code class="language-plaintext highlighter-rouge">max_batch_size</code>，可以根据不同的SLA要求优化系统行为。</p>
+<p>注意向量序列化成字符串传参的开销在高 QPS 下不可忽略，可以预编译语句并复用连接；批量写入时一个事务攒 500~1000 行提交，吞吐能差一个数量级。</p>
 
-<h4 id="资源优化自动扩缩容与智能调度"><strong>资源优化：自动扩缩容与智能调度</strong></h4>
+<h2 id="结语">结语</h2>
 
-<p>高QPS服务的负载往往具有明显的周期性特征（如电商促销、内容高峰时段）。Databricks建议：</p>
+<p>我们最后的落地方案就是最朴素的那种：MySQL 存向量，只读副本跑检索，候选集靠租户过滤压到万级以内，top 50 召回后过一遍 reranker。上线三个月，没有为它新增任何组件，也没有为它起过一次夜。</p>
 
-<ol>
-  <li><strong>基于预测的自动扩缩容</strong>：利用历史负载数据训练时间序列预测模型，提前预判资源需求</li>
-  <li><strong>混合精度推理</strong>：在精度损失可接受的场景下，使用FP16甚至INT8精度，可大幅提升吞吐并降低成本</li>
-  <li><strong>模型分片与流水线并行</strong>：将大模型拆分成多个阶段，在不同实例上并行执行</li>
-</ol>
+<p>MySQL 的向量能力不是用来对标 Milvus 的，它的价值是让一大批中等规模、强业务关联的场景不用引入新组件。等哪天数据量真长到这个方案撑不住，再迁也来得及——到那时业务也验证过了，迁移的钱花得不冤。</p>]]></content><author><name>小黄鸭</name></author><category term="技术" /><category term="MySQL" /><category term="MySQL" /><category term="向量检索" /><category term="Embedding" /><category term="RAG" /><category term="架构设计" /><summary type="html"><![CDATA[MySQL 9 引入 VECTOR 类型后，「要不要为 RAG 单独养一个向量数据库」有了新答案。本文实测 MySQL 向量能力的边界，并给出一套务实的选型决策框架。]]></summary></entry><entry><title type="html">Go pprof 性能剖析实战：从火焰图到根因</title><link href="http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2026/05/17/Go-pprof%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%E5%AE%9E%E6%88%98-%E4%BB%8E%E7%81%AB%E7%84%B0%E5%9B%BE%E5%88%B0%E6%A0%B9%E5%9B%A0.html" rel="alternate" type="text/html" title="Go pprof 性能剖析实战：从火焰图到根因" /><published>2026-05-17T00:00:00+08:00</published><updated>2026-06-13T08:13:11+08:00</updated><id>http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2026/05/17/Go-pprof%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%E5%AE%9E%E6%88%98-%E4%BB%8E%E7%81%AB%E7%84%B0%E5%9B%BE%E5%88%B0%E6%A0%B9%E5%9B%A0</id><content type="html" xml:base="http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2026/05/17/Go-pprof%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%E5%AE%9E%E6%88%98-%E4%BB%8E%E7%81%AB%E7%84%B0%E5%9B%BE%E5%88%B0%E6%A0%B9%E5%9B%A0.html"><![CDATA[<p>线上 Go 服务出问题，无非三类：CPU 打满、内存暴涨、goroutine 泄漏。pprof 是 Go 内置的剖析工具，但很多人只会 <code class="language-plaintext highlighter-rouge">go tool pprof</code> 然后对着输出发呆。这篇文章讲一套完整的方法论：怎么采样、怎么读火焰图、怎么从图定位到代码行，最后给三个真实案例。</p>
 
-<h4 id="监控与可观测性"><strong>监控与可观测性</strong></h4>
+<h2 id="先把采样端配好">先把采样端配好</h2>
 
-<p>没有监控的高并发服务如同盲人骑马。必须建立多维度的监控体系：</p>
+<p>生产服务直接挂 HTTP 端点，一行导入：</p>
 
-<ul>
-  <li><strong>性能指标</strong>：P99/P95延迟、QPS、错误率、GPU利用率</li>
-  <li><strong>业务指标</strong>：推理准确率、业务转化率（将技术指标与业务价值关联）</li>
-  <li><strong>成本指标</strong>：每次推理的成本、资源利用率</li>
-</ul>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="n">_</span> <span class="s">"net/http/pprof"</span>
 
-<h3 id="13-实践建议构建高并发模型服务的检查清单">1.3 实践建议：构建高并发模型服务的检查清单</h3>
-
-<ol>
-  <li><strong>负载测试先行</strong>：在生产部署前，使用真实流量模式进行压力测试</li>
-  <li><strong>实现优雅降级</strong>：在系统过载时，优先保证核心功能的可用性</li>
-  <li><strong>建立A/B测试框架</strong>：确保新模型版本不会导致性能回退</li>
-  <li><strong>考虑多区域部署</strong>：为全球用户提供低延迟服务，同时提高系统容灾能力</li>
-</ol>
-
-<h2 id="第二部分中间件运维的极端案例当自动化达到极致">第二部分：中间件运维的极端案例——当自动化达到极致</h2>
-
-<h3 id="21-一个令人震惊的案例消失的中间件团队">2.1 一个令人震惊的案例：消失的中间件团队</h3>
-
-<p>dbaplus社群在《离奇！中间件团队消失半年了，居然没人发现……》一文中，讲述了一个看似荒诞却发人深省的真实案例：某大型互联网公司的中间件团队，在团队人员实际上已半年没有正常工作的情况下，公司的各项业务居然照常运行，直到一次偶然的审计才被发现。</p>
-
-<p>这个案例表面上看是个管理笑话，但深入分析，它揭示了现代分布式系统运维的几个深刻真相：</p>
-
-<ol>
-  <li><strong>高度自动化的系统确实可以长时间自治运行</strong></li>
-  <li><strong>当监控和告警过于“智能”，可能会掩盖根本性问题</strong></li>
-  <li><strong>团队的价值不应仅体现在“救火”次数上</strong></li>
-</ol>
-
-<h3 id="22-系统稳定性的四个层次">2.2 系统稳定性的四个层次</h3>
-
-<p>从这个极端案例出发，我们可以将系统稳定性分为四个演进层次：</p>
-
-<h4 id="第一层人工运维手工操作"><strong>第一层：人工运维（手工操作）</strong></h4>
-<ul>
-  <li>特点：所有操作都需要人工介入，响应慢，容易出错</li>
-  <li>指标：MTTR（平均恢复时间）以小时或天计</li>
-  <li>风险：高度依赖个人经验，人员变动风险大</li>
-</ul>
-
-<h4 id="第二层基础自动化脚本化"><strong>第二层：基础自动化（脚本化）</strong></h4>
-<ul>
-  <li>特点：常见操作已脚本化，但决策仍需人工</li>
-  <li>指标：MTTR降至分钟级</li>
-  <li>风险：脚本维护成本高，异常场景覆盖不全</li>
-</ul>
-
-<h4 id="第三层智能自动化基于规则的自动化"><strong>第三层：智能自动化（基于规则的自动化）</strong></h4>
-<ul>
-  <li>特点：系统能自动检测并修复已知问题</li>
-  <li>指标：MTTR降至秒级，部分场景实现“零停机”</li>
-  <li>风险：规则可能过时，复杂故障难以处理</li>
-</ul>
-
-<h4 id="第四层自治系统ai驱动的自愈"><strong>第四层：自治系统（AI驱动的自愈）</strong></h4>
-<ul>
-  <li>特点：系统能学习、预测并预防问题</li>
-  <li>指标：故障预防率&gt;90%，真正实现“无人值守”</li>
-  <li>挑战：需要大量高质量数据，解释性差</li>
-</ul>
-
-<p><strong>消失的中间件团队案例</strong>实际上展示了从第三层向第四层过渡时的尴尬：系统足够“智能”到掩盖了团队问题，但还不够“智慧”到识别这种组织层面的异常。</p>
-
-<h3 id="23-构建真正可靠系统的关键原则">2.3 构建真正可靠系统的关键原则</h3>
-
-<h4 id="原则一可观测性--监控"><strong>原则一：可观测性 &gt; 监控</strong></h4>
-
-<p>监控告诉你系统“是什么状态”，而可观测性让你理解“为什么是这个状态”。一个健壮的可观测性体系应该包括：</p>
-
-<ul>
-  <li><strong>指标（Metrics）</strong>：系统状态的量化测量</li>
-  <li><strong>日志（Logs）</strong>：离散事件记录</li>
-  <li><strong>追踪（Traces）</strong>：请求在分布式系统中的完整路径</li>
-  <li><strong>依赖关系图</strong>：服务间的调用关系拓扑</li>
-</ul>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 现代可观测性配置示例（OpenTelemetry）</span>
-<span class="na">receivers</span><span class="pi">:</span>
-  <span class="na">otlp</span><span class="pi">:</span>
-    <span class="na">protocols</span><span class="pi">:</span>
-      <span class="na">grpc</span><span class="pi">:</span>
-        <span class="na">endpoint</span><span class="pi">:</span> <span class="s">0.0.0.0:4317</span>
-      <span class="na">http</span><span class="pi">:</span>
-        <span class="na">endpoint</span><span class="pi">:</span> <span class="s">0.0.0.0:4318</span>
-
-<span class="na">exporters</span><span class="pi">:</span>
-  <span class="na">prometheus</span><span class="pi">:</span>
-    <span class="na">endpoint</span><span class="pi">:</span> <span class="s2">"</span><span class="s">0.0.0.0:8889"</span>
-  <span class="na">jaeger</span><span class="pi">:</span>
-    <span class="na">endpoint</span><span class="pi">:</span> <span class="s2">"</span><span class="s">jaeger:14250"</span>
-    <span class="na">insecure</span><span class="pi">:</span> <span class="kc">true</span>
-  <span class="na">loki</span><span class="pi">:</span>
-    <span class="na">endpoint</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://loki:3100/loki/api/v1/push"</span>
-
-<span class="na">service</span><span class="pi">:</span>
-  <span class="na">pipelines</span><span class="pi">:</span>
-    <span class="na">traces</span><span class="pi">:</span>
-      <span class="na">receivers</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">otlp</span><span class="pi">]</span>
-      <span class="na">exporters</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">jaeger</span><span class="pi">]</span>
-    <span class="na">metrics</span><span class="pi">:</span>
-      <span class="na">receivers</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">otlp</span><span class="pi">]</span>
-      <span class="na">exporters</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">prometheus</span><span class="pi">]</span>
-    <span class="na">logs</span><span class="pi">:</span>
-      <span class="na">receivers</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">otlp</span><span class="pi">]</span>
-      <span class="na">exporters</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">loki</span><span class="pi">]</span>
-</code></pre></div></div>
-
-<h4 id="原则二混沌工程不是可选项"><strong>原则二：混沌工程不是可选项</strong></h4>
-
-<p>Netflix开创的混沌工程理念，主张主动注入故障来验证系统的韧性。定期进行混沌实验可以：</p>
-
-<ol>
-  <li>发现单点故障和脆弱依赖</li>
-  <li>验证故障转移和恢复机制</li>
-  <li>训练团队应急响应能力</li>
-  <li>防止“失效掩蔽”（一个组件失效被另一个掩盖）</li>
-</ol>
-
-<h4 id="原则三建立健康度的综合评估体系"><strong>原则三：建立“健康度”的综合评估体系</strong></h4>
-
-<p>系统的健康度不应仅看技术指标，还应包括：</p>
-
-<ul>
-  <li><strong>团队健康度</strong>：人员流动率、知识文档完整性、值班负担</li>
-  <li><strong>流程健康度</strong>：变更成功率、事故复盘质量、技术债管理</li>
-  <li><strong>业务健康度</strong>：功能使用趋势、用户满意度、业务连续性</li>
-</ul>
-
-<h3 id="24-实践建议避免成为消失的团队">2.4 实践建议：避免成为“消失的团队”</h3>
-
-<ol>
-  <li><strong>定期进行“假如我们团队消失”的演练</strong>：识别系统对团队的真正依赖点</li>
-  <li><strong>建立跨团队知识共享机制</strong>：避免知识孤岛</li>
-  <li><strong>将运维经验产品化</strong>：把重复的解决方案变成自助服务平台</li>
-  <li><strong>保持适度的“可见度”</strong>：定期向上下游团队展示工作价值</li>
-</ol>
-
-<h2 id="第三部分技术人的职业规划从被动执行到主动设计">第三部分：技术人的职业规划——从被动执行到主动设计</h2>
-
-<h3 id="31-谁在设计你的职业生涯">3.1 谁在设计你的职业生涯？</h3>
-
-<p>Gino Notes在《谁在设计你的职业生涯？》一文中提出了一个尖锐的问题：大多数技术人的职业生涯是被动形成的——由项目需求、老板安排、市场趋势所推动，而非主动设计的结果。这种被动模式导致：</p>
-
-<ul>
-  <li><strong>技能碎片化</strong>：学了很多技术，但缺乏深度和系统性</li>
-  <li><strong>职业天花板提前到来</strong>：35岁危机本质上是规划缺失的危机</li>
-  <li><strong>工作倦怠感强</strong>：感觉自己在为别人的目标工作</li>
-</ul>
-
-<h3 id="32-职业生涯设计的系统框架">3.2 职业生涯设计的系统框架</h3>
-
-<h4 id="第一步定义你的职业坐标系"><strong>第一步：定义你的职业坐标系</strong></h4>
-
-<p>建立一个三维的职业坐标系：</p>
-
-<ol>
-  <li><strong>技术深度轴</strong>：从应用开发到架构设计，再到基础研究</li>
-  <li><strong>业务影响轴</strong>：从执行任务到负责模块，再到驱动业务</li>
-  <li><strong>领导力轴</strong>：从个人贡献者到团队领导，再到组织影响者</li>
-</ol>
-
-<pre><code class="language-mermaid">graph TD
-    A[当前位置] --&gt; B{发展方向选择}
-    B --&gt; C[技术专家路径]
-    B --&gt; D[技术管理路径]
-    B --&gt; E[创业/产品路径]
-    
-    C --&gt; C1[初级工程师]
-    C1 --&gt; C2[高级工程师]
-    C2 --&gt; C3[技术专家]
-    C3 --&gt; C4[架构师]
-    C4 --&gt; C5[首席架构师]
-    
-    D --&gt; D1[技术主管]
-    D1 --&gt; D2[工程经理]
-    D2 --&gt; D3[技术总监]
-    D3 --&gt; D4[CTO/技术VP]
-    
-    E --&gt; E1[产品工程师]
-    E1 --&gt; E2[产品技术负责人]
-    E2 --&gt; E3[技术合伙人]
-    E3 --&gt; E4[创始人]
-</code></pre>
-
-<h4 id="第二步实施t型技能发展策略"><strong>第二步：实施“T型”技能发展策略</strong></h4>
-
-<ul>
-  <li><strong>横向广度</strong>：了解相邻领域（如后端开发了解一些前端和运维）</li>
-  <li><strong>纵向深度</strong>：在1-2个核心领域达到专家水平</li>
-  <li><strong>动态调整</strong>：每2-3年评估一次技能组合的市场相关性</li>
-</ul>
-
-<h4 id="第三步建立个人技术品牌"><strong>第三步：建立个人技术品牌</strong></h4>
-
-<p>在开源社区、技术博客、行业会议等平台持续输出：</p>
-
-<ol>
-  <li><strong>解决实际问题的技术方案</strong></li>
-  <li><strong>深度的技术分析文章</strong></li>
-  <li><strong>开源项目贡献</strong></li>
-  <li><strong>行业洞察和趋势分析</strong></li>
-</ol>
-
-<h3 id="33-将职业规划与技术进步相结合">3.3 将职业规划与技术进步相结合</h3>
-
-<h4 id="结合点一选择有长期价值的技术方向"><strong>结合点一：选择有长期价值的技术方向</strong></h4>
-
-<p>评估技术方向的几个维度：</p>
-
-<ul>
-  <li><strong>市场需求持久性</strong>：是短期热点还是长期趋势？</li>
-  <li><strong>技术深度和壁垒</strong>：是否有足够的学习深度？</li>
-  <li><strong>生态健康度</strong>：社区活跃度、就业机会如何？</li>
-  <li><strong>与个人兴趣的匹配度</strong>：是否真正感兴趣？</li>
-</ul>
-
-<h4 id="结合点二在项目中寻找成长机会"><strong>结合点二：在项目中寻找成长机会</strong></h4>
-
-<p>不要只把项目当作任务，而是视为：</p>
-
-<ul>
-  <li><strong>技术实验场</strong>：尝试新技术、新架构</li>
-  <li><strong>能力证明</strong>：用项目成果展示你的能力</li>
-  <li><strong>人脉拓展平台</strong>：与优秀同事和合作伙伴建立联系</li>
-  <li><strong>行业认知窗口</strong>：深入理解业务和用户</li>
-</ul>
-
-<h4 id="结合点三建立个人学习系统"><strong>结合点三：建立个人学习系统</strong></h4>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 个人学习追踪系统概念设计
-</span><span class="k">class</span> <span class="nc">LearningSystem</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">skill_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># 技能图谱
-</span>        <span class="n">self</span><span class="p">.</span><span class="n">project_log</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 项目记录
-</span>        <span class="n">self</span><span class="p">.</span><span class="n">learning_plan</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># 学习计划
-</span>    
-    <span class="k">def</span> <span class="nf">assess_skill_gap</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">target_role</span><span class="p">):</span>
-        <span class="sh">"""</span><span class="s">评估与目标角色的技能差距</span><span class="sh">"""</span>
-        <span class="n">required_skills</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">_get_role_requirements</span><span class="p">(</span><span class="n">target_role</span><span class="p">)</span>
-        <span class="n">current_skills</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">_get_current_skills</span><span class="p">()</span>
-        
-        <span class="n">gaps</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">skill</span><span class="p">,</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">required_skills</span><span class="p">.</span><span class="nf">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">skill</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">current_skills</span> <span class="ow">or</span> <span class="n">current_skills</span><span class="p">[</span><span class="n">skill</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">level</span><span class="p">:</span>
-                <span class="n">gaps</span><span class="p">[</span><span class="n">skill</span><span class="p">]</span> <span class="o">=</span> <span class="n">level</span> <span class="o">-</span> <span class="n">current_skills</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">skill</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        
-        <span class="k">return</span> <span class="n">gaps</span>
-    
-    <span class="k">def</span> <span class="nf">create_learning_path</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">target_role</span><span class="p">,</span> <span class="n">timeframe_months</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
-        <span class="sh">"""</span><span class="s">创建学习路径</span><span class="sh">"""</span>
-        <span class="n">gaps</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">assess_skill_gap</span><span class="p">(</span><span class="n">target_role</span><span class="p">)</span>
-        
-        <span class="c1"># 优先级排序：基础技能优先，高价值技能优先
-</span>        <span class="n">prioritized_gaps</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">_prioritize_gaps</span><span class="p">(</span><span class="n">gaps</span><span class="p">)</span>
-        
-        <span class="c1"># 制定季度学习计划
-</span>        <span class="n">quarterly_plans</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">quarter</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">timeframe_months</span> <span class="o">//</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">quarterly_plans</span><span class="p">[</span><span class="sa">f</span><span class="sh">"</span><span class="s">Q</span><span class="si">{</span><span class="n">quarter</span><span class="si">}</span><span class="sh">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">_select_skills_for_quarter</span><span class="p">(</span>
-                <span class="n">prioritized_gaps</span><span class="p">,</span> <span class="n">quarter</span>
-            <span class="p">)</span>
-        
-        <span class="k">return</span> <span class="n">quarterly_plans</span>
-    
-    <span class="k">def</span> <span class="nf">track_progress</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">project_experience</span><span class="p">):</span>
-        <span class="sh">"""</span><span class="s">通过项目经验追踪成长</span><span class="sh">"""</span>
-        <span class="k">for</span> <span class="n">skill_used</span> <span class="ow">in</span> <span class="n">project_experience</span><span class="p">.</span><span class="n">skills_used</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">skill_used</span> <span class="ow">in</span> <span class="n">self</span><span class="p">.</span><span class="n">skill_map</span><span class="p">:</span>
-                <span class="n">self</span><span class="p">.</span><span class="n">skill_map</span><span class="p">[</span><span class="n">skill_used</span><span class="p">]</span> <span class="o">+=</span> <span class="n">project_experience</span><span class="p">.</span><span class="n">complexity</span> <span class="o">*</span> <span class="mf">0.1</span>
-        
-        <span class="n">self</span><span class="p">.</span><span class="n">project_log</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">project_experience</span><span class="p">)</span>
-</code></pre></div></div>
-
-<h3 id="34-实践建议技术人的职业规划检查清单">3.4 实践建议：技术人的职业规划检查清单</h3>
-
-<ol>
-  <li><strong>每年进行一次职业规划回顾</strong>：评估进展，调整方向</li>
-  <li><strong>建立个人技术雷达</strong>：追踪感兴趣的技术趋势</li>
-  <li><strong>寻找导师和同行者</strong>：技术成长不是孤独的旅程</li>
-  <li><strong>平衡深度工作和广度学习</strong>：70%时间深耕核心领域，30%时间探索新方向</li>
-  <li><strong>记录技术决策和思考过程</strong>：建立个人知识库</li>
-</ol>
-
-<h2 id="第四部分三位一体的实践指南">第四部分：三位一体的实践指南</h2>
-
-<h3 id="41-将高并发服务系统稳定性和职业发展相结合">4.1 将高并发服务、系统稳定性和职业发展相结合</h3>
-
-<p>这三个主题看似独立，实则构成了现代技术人能力模型的三个支柱：</p>
-
-<ul>
-  <li><strong>高并发模型服务</strong>代表<strong>技术深度</strong>——解决复杂技术问题的能力</li>
-  <li><strong>系统稳定性运维</strong>代表<strong>工程思维</strong>——构建可靠、可维护系统的能力</li>
-  <li><strong>职业规划</strong>代表<strong>自我管理</strong>——持续成长和创造价值的能力</li>
-</ul>
-
-<h3 id="42-构建个人技术栈的演进策略">4.2 构建个人技术栈的演进策略</h3>
-
-<h4 id="初级阶段0-3年夯实基础建立信心"><strong>初级阶段（0-3年）：夯实基础，建立信心</strong></h4>
-<ul>
-  <li>重点：掌握1-2门核心技术栈，理解基础架构原理</li>
-  <li>项目选择：参与有明确需求的中小型项目</li>
-  <li>学习方式：系统课程学习 + 实践练习</li>
-</ul>
-
-<h4 id="中级阶段3-8年拓展边界建立专长"><strong>中级阶段（3-8年）：拓展边界，建立专长</strong></h4>
-<ul>
-  <li>重点：在特定领域建立深度，开始关注系统设计</li>
-  <li>项目选择：主导模块设计，解决复杂技术问题</li>
-  <li>学习方式：深度实践 + 技术社区参与</li>
-</ul>
-
-<h4 id="高级阶段8年以上创造影响引领方向"><strong>高级阶段（8年以上）：创造影响，引领方向</strong></h4>
-<ul>
-  <li>重点：技术战略思考，跨团队协作，人才培养</li>
-  <li>项目选择：驱动技术架构演进，解决业务关键问题</li>
-  <li>学习方式：行业洞察 + 经验提炼 +  mentorship</li>
-</ul>
-
-<h3 id="43-组织层面的支持体系">4.3 组织层面的支持体系</h3>
-
-<p>技术人的成长不仅是个人的责任，也需要组织的支持：</p>
-
-<ol>
-  <li><strong>建立清晰的技术职级体系</strong>：明确各层级的能力要求</li>
-  <li><strong>提供持续学习资源</strong>：培训预算、学习时间、技术大会参与机会</li>
-  <li><strong>鼓励技术分享和文化建设</strong>：内部分享会、技术博客奖励、开源贡献认可</li>
-  <li><strong>实施合理的轮岗机制</strong>：让技术人员接触不同业务和技术栈</li>
-</ol>
-
-<h2 id="总结与展望技术人的2026与未来">总结与展望：技术人的2026与未来</h2>
-
-<p>站在2026年的技术十字路口，我们看到了几个明确的趋势：</p>
-
-<h3 id="趋势一ai工程化成为核心竞争力"><strong>趋势一：AI工程化成为核心竞争力</strong></h3>
-
-<p>AI模型的服务化、产品化能力，正成为企业差异化竞争的关键。未来几年，我们将会看到：</p>
-
-<ul>
-  <li><strong>模型服务基础设施的标准化</strong>：类似Kubernetes之于容器，将出现AI服务编排的标准</li>
-  <li><strong>边缘AI推理的普及</strong>：在终端设备上进行实时推理，减少云端依赖</li>
-  <li><strong>AI原生应用架构的成熟</strong>：从“AI赋能”到“AI原生”的架构演进</li>
-</ul>
-
-<h3 id="趋势二系统自治程度不断提高"><strong>趋势二：系统自治程度不断提高</strong></h3>
-
-<p>从“消失的中间件团队”案例中，我们窥见了未来系统的样貌：</p>
-
-<ul>
-  <li><strong>AIOps的全面应用</strong>：AI不仅用于业务，也用于运维自身</li>
-  <li><strong>故障预测和自愈成为标配</strong>：从“快速恢复”到“避免故障”的转变</li>
-  <li><strong>人机协作的新模式</strong>：人类专注于战略和创新，机器负责执行和运维</li>
-</ul>
-
-<h3 id="趋势三技术人职业路径多元化"><strong>趋势三：技术人职业路径多元化</strong></h3>
-
-<p>技术人的职业发展正在打破单一线性路径：</p>
-
-<ul>
-  <li><strong>专家路径的重新认可</strong>：资深技术专家获得与管理层相当的影响力和回报</li>
-  <li><strong>技术创业门槛降低</strong>：云原生和AI技术让个人或小团队也能创造有价值的产品</li>
-  <li><strong>跨界融合成为常态</strong>：技术+业务、技术+设计、技术+管理等复合型人才更受欢迎</li>
-</ul>
-
-<h3 id="给技术人的最后建议"><strong>给技术人的最后建议</strong></h3>
-
-<ol>
-  <li><strong>保持技术好奇心，但要有选择地深入</strong>：在信息过载的时代，深度比广度更有价值</li>
-  <li><strong>将每个项目视为个人品牌的建设机会</strong>：你的代码、设计和文档都在为你代言</li>
-  <li><strong>建立自己的思考框架</strong>：不要只做技术的使用者，更要做技术的思考者和创造者</li>
-  <li><strong>关注技术的社会影响</strong>：技术最终要服务于人，理解技术背后的伦理和责任</li>
-</ol>
-
-<p>正如《2026，骐骥驰骋，码力全开！》中所展望的，未来属于那些既能深入技术细节，又能把握系统全局，同时能持续自我进化的技术人。在这个快速变化的时代，唯一不变的是变化本身，而最好的应对策略就是：<strong>主动设计你的技术，你的系统，以及你的职业生涯</strong>。</p>
-
-<hr />
-
-<p><strong>延伸阅读</strong>：</p>
-<ol>
-  <li><a href="https://www.databricks.com/blog/best-practices-high-qps-model-serving-databricks">Best Practices for High QPS Model Serving on Databricks</a></li>
-  <li><a href="https://mp.weixin.qq.com/s?__biz=MzkzMjYzNjkzNw==&amp;mid=2247634617&amp;idx=1&amp;sn=f62be91184ad6e480cd2ea04acff33f2">离奇！中间件团队消失半年了，居然没人发现……</a></li>
-  <li><a href="https://ginonotes.com/posts/if-you-dont-design-your-career-someone-else-will">谁在设计你的职业生涯？</a></li>
-  <li><a href="https://mp.weixin.qq.com/s?__biz=MzkzMjYzNjkzNw==&amp;mid=2247634618&amp;idx=1&amp;sn=dd60e74e6c9e8d55f8aace999584fbd7">2026，骐骥驰骋，码力全开！</a></li>
-</ol>
-
-<hr />]]></content><author><name>小黄鸭</name></author><category term="技术" /><category term="思考" /><category term="技术" /><category term="思考" /><summary type="html"><![CDATA[本期我们将从三个看似独立实则紧密相连的维度——高并发模型服务、中间件运维反思、技术人职业规划——来剖析这一趋势，并为身处其中的技术人提供一套完整的思考框架和实践指南]]></summary></entry><entry><title type="html">从自动编程到分布式架构的融合演进</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/02/14/AI%E9%A9%B1%E5%8A%A8%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E9%9D%A9%E5%91%BD%E4%BB%8E%E8%87%AA%E5%8A%A8%E7%BC%96%E7%A8%8B%E5%88%B0%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E7%9A%84%E8%9E%8D%E5%90%88%E6%BC%94%E8%BF%9B.html" rel="alternate" type="text/html" title="从自动编程到分布式架构的融合演进" /><published>2026-02-14T00:00:00+08:00</published><updated>2026-02-25T23:42:33+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/02/14/AI%E9%A9%B1%E5%8A%A8%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E9%9D%A9%E5%91%BD%E4%BB%8E%E8%87%AA%E5%8A%A8%E7%BC%96%E7%A8%8B%E5%88%B0%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E7%9A%84%E8%9E%8D%E5%90%88%E6%BC%94%E8%BF%9B</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/02/14/AI%E9%A9%B1%E5%8A%A8%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E9%9D%A9%E5%91%BD%E4%BB%8E%E8%87%AA%E5%8A%A8%E7%BC%96%E7%A8%8B%E5%88%B0%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E7%9A%84%E8%9E%8D%E5%90%88%E6%BC%94%E8%BF%9B.html"><![CDATA[<p>本文深度探讨AI辅助编程与智能体的技术演进、分布式系统架构的现代实现，分析三者如何共同塑造下一代软件开发范式，为开发者提供从理论到实践的全面指南。</p>
-
-<h1 id="ai驱动的软件工程革命从自动编程到分布式架构的融合演进">AI驱动的软件工程革命：从自动编程到分布式架构的融合演进</h1>
-
-<h2 id="引言技术融合的新时代">引言：技术融合的新时代</h2>
-
-<p>我们正站在软件工程演进的十字路口。一方面，以大型语言模型（LLM）为代表的AI技术正以前所未有的速度渗透到开发流程的各个环节，从代码补全到系统设计，甚至催生了“自动编程”的愿景。另一方面，分布式系统架构、高并发处理等经典软件工程挑战依然存在，并在云原生时代呈现出新的复杂性。与此同时，AI智能体（Agent）技术的崛起，正在模糊工具与协作者的边界，将AI从被动响应转变为主动执行。</p>
-
-<p>这三条技术主线并非孤立发展，而是正在深度融合：AI需要分布式架构来规模化部署，分布式系统可以借助AI进行智能运维，而智能体则是连接AI能力与复杂业务逻辑的桥梁。本文将从三个维度深入剖析这一技术融合趋势：AI辅助编程的现状与未来、AI智能体的工程化挑战与解决方案，以及现代分布式系统的生产级实现模式。我们将看到，未来的优秀开发者不仅需要扎实的工程能力，更要成为AI的“战略引导者”。</p>
-
-<h2 id="第一部分ai辅助编程从copilot到自动编程的理性之路">第一部分：AI辅助编程——从Copilot到“自动编程”的理性之路</h2>
-
-<h3 id="11-演进历程工具助手与潜在的主导者">1.1 演进历程：工具、助手与潜在的主导者</h3>
-
-<p>AI在编程领域的应用经历了明显的演进阶段：</p>
-
-<ul>
-  <li><strong>第一阶段：智能补全工具</strong>（如早期IDE插件）</li>
-  <li><strong>第二阶段：上下文感知助手</strong>（如GitHub Copilot，基于当前文件提供建议）</li>
-  <li><strong>第三阶段：系统级协作者</strong>（如Claude Code、Cursor，能理解项目结构、参与架构讨论）</li>
-  <li><strong>未来阶段：自动编程愿景</strong>（AI根据需求描述直接生成完整可运行系统）</li>
-</ul>
-
-<p>Redis创始人antirez在《Automatic programming》一文中提出了一个关键观点：真正的“自动编程”并非让AI完全取代人类，而是<strong>将编程从“指令翻译”提升为“意图实现”</strong>。传统编程中，开发者需要将业务逻辑转化为精确的语法结构；而在AI辅助下，开发者可以更多关注“要什么”，而非“怎么写”。</p>
-
-<h3 id="12-人类引导ai编程中的不可替代角色">1.2 人类引导：AI编程中的不可替代角色</h3>
-
-<p>尽管AI能力突飞猛进，但人类的设计直觉和持续引导仍然至关重要。这主要体现在：</p>
-
-<p><strong>1. 架构直觉与系统思维</strong>
-AI擅长局部优化和模式匹配，但在整体系统架构设计上仍缺乏真正的“理解”。人类开发者对复杂度、可维护性、扩展性的直觉判断，是AI目前难以替代的。</p>
-
-<p><strong>2. 需求澄清与边界定义</strong>
-AI对模糊需求的解读往往会产生偏差。开发者需要具备将模糊业务需求转化为精确技术约束的能力，为AI划定清晰的创作边界。</p>
-
-<p><strong>3. 代码审查与质量把关</strong>
-AI生成的代码可能存在隐藏的逻辑错误、安全漏洞或性能问题。人类开发者需要保持批判性思维，进行深度代码审查。</p>
-
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 示例：人类引导AI生成更健壮的代码</span>
-<span class="c">// 模糊提示（可能导致不安全的代码）</span>
-<span class="c">// "写一个用户登录函数"</span>
-
-<span class="c">// 精确引导（包含安全约束和业务逻辑）</span>
-<span class="c">// "写一个用户登录函数，要求：</span>
-<span class="c">// 1. 使用bcrypt验证密码哈希</span>
-<span class="c">// 2. 实现登录失败次数限制（5次/小时）</span>
-<span class="c">// 3. 生成JWT令牌，有效期24小时</span>
-<span class="c">// 4. 记录登录审计日志"</span>
-
-<span class="c">// AI生成的代码框架（经过人类引导后）</span>
-<span class="k">func</span> <span class="n">UserLogin</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">AuthToken</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c">// 1. 验证失败次数</span>
-    <span class="k">if</span> <span class="n">exceeded</span> <span class="o">:=</span> <span class="n">checkLoginAttempts</span><span class="p">(</span><span class="n">username</span><span class="p">);</span> <span class="n">exceeded</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">ErrTooManyAttempts</span>
-    <span class="p">}</span>
-    
-    <span class="c">// 2. 获取用户并验证密码</span>
-    <span class="n">user</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">getUserByUsername</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="o">||</span> <span class="o">!</span><span class="n">verifyPassword</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">PasswordHash</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">recordFailedAttempt</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>  <span class="c">// 记录失败</span>
-        <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">ErrInvalidCredentials</span>
-    <span class="p">}</span>
-    
-    <span class="c">// 3. 生成JWT令牌</span>
-    <span class="n">token</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">generateJWT</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">err</span>
-    <span class="p">}</span>
-    
-    <span class="c">// 4. 记录成功登录</span>
-    <span class="n">recordLoginAudit</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="s">"success"</span><span class="p">)</span>
-    <span class="n">resetLoginAttempts</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-    
-    <span class="k">return</span> <span class="o">&amp;</span><span class="n">AuthToken</span><span class="p">{</span><span class="n">Token</span><span class="o">:</span> <span class="n">token</span><span class="p">,</span> <span class="n">ExpiresAt</span><span class="o">:</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)},</span> <span class="no">nil</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c">// 单独端口，不要暴露公网</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">ListenAndServe</span><span class="p">(</span><span class="s">"127.0.0.1:6060"</span><span class="p">,</span> <span class="no">nil</span><span class="p">))</span>
+    <span class="p">}()</span>
+    <span class="c">// ... 业务逻辑</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h3 id="13-理性态度拥抱ai但不盲从">1.3 理性态度：拥抱AI但不盲从</h3>
+<p>这会注册一组路由到 <code class="language-plaintext highlighter-rouge">/debug/pprof/</code> 下。最常用的四个：</p>
 
-<p>面对AI编程的热潮，antirez在另一篇文章《Don’t fall into the anti-AI hype》中提醒开发者保持理性。他指出，当前存在两种极端：过度追捧AI能解决一切问题，或完全否定AI的实际价值。正确的态度应该是：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># CPU：采样 30 秒内的 CPU 时间分布</span>
+go tool pprof http://127.0.0.1:6060/debug/pprof/profile?seconds<span class="o">=</span>30
 
-<ul>
-  <li><strong>承认AI的局限性</strong>：AI不是魔法，其能力受限于训练数据、上下文长度和推理能力</li>
-  <li><strong>关注实际生产力提升</strong>：衡量AI工具是否真正减少了重复劳动、加速了开发流程</li>
-  <li><strong>保持核心技能</strong>：基础算法、系统设计、调试能力等核心技能在AI时代更加重要</li>
-</ul>
+<span class="c"># 堆内存：当前存活对象的分配情况</span>
+go tool pprof http://127.0.0.1:6060/debug/pprof/heap
 
-<p><strong>实践建议</strong>：将AI编程助手集成到工作流中，但建立明确的“检查点”。例如，在需求分析、架构设计、代码审查等关键阶段保持人类主导，而在实现细节、文档生成、测试用例编写等环节充分利用AI效率。</p>
+<span class="c"># goroutine：所有协程的调用栈</span>
+go tool pprof http://127.0.0.1:6060/debug/pprof/goroutine
 
-<h2 id="第二部分ai智能体从实验概念到企业级落地的技术挑战">第二部分：AI智能体——从实验概念到企业级落地的技术挑战</h2>
-
-<h3 id="21-技术演进从简单提示到复杂系统">2.1 技术演进：从简单提示到复杂系统</h3>
-
-<p>AI智能体的概念在过去两年经历了快速迭代。Tina Huang在《Building Agents in 2026》中预测了未来智能体的发展方向：</p>
-
-<p><strong>当前主流架构</strong>：</p>
-<ol>
-  <li><strong>工具调用型</strong>：LLM + 函数调用（如OpenAI Function Calling）</li>
-  <li><strong>规划-执行型</strong>：LLM制定计划，逐步执行（如ReAct模式）</li>
-  <li><strong>多智能体协作</strong>：多个专用智能体分工合作</li>
-</ol>
-
-<p><strong>未来趋势</strong>：</p>
-<ul>
-  <li><strong>模型即Agent</strong>：专门为智能体任务训练的模型，而非通用LLM适配</li>
-  <li><strong>长期记忆与学习</strong>：智能体能够从历史交互中持续学习改进</li>
-  <li><strong>自主目标分解</strong>：将复杂目标自动分解为可执行步骤</li>
-</ul>
-
-<h3 id="22-企业级落地的四大挑战">2.2 企业级落地的四大挑战</h3>
-
-<p>《BestBlogs周刊第71期》总结了AI智能体在企业落地面临的核心挑战：</p>
-
-<h4 id="挑战一可控性与安全性">挑战一：可控性与安全性</h4>
-<p>企业应用对错误容忍度极低。智能体的“幻觉”问题、不可预测的行为可能带来业务风险。</p>
-
-<p><strong>解决方案</strong>：</p>
-<ul>
-  <li><strong>沙箱环境</strong>：在受限环境中执行敏感操作</li>
-  <li><strong>审批工作流</strong>：关键操作需要人类确认</li>
-  <li><strong>行为监控与审计</strong>：记录智能体的所有决策和操作</li>
-</ul>
-
-<h4 id="挑战二成本与性能">挑战二：成本与性能</h4>
-<p>频繁调用LLM API成本高昂，响应延迟影响用户体验。</p>
-
-<p><strong>解决方案</strong>：</p>
-<ul>
-  <li><strong>分层模型策略</strong>：简单任务使用小模型，复杂推理使用大模型</li>
-  <li><strong>缓存与记忆</strong>：缓存常见查询结果，减少重复计算</li>
-  <li><strong>本地模型部署</strong>：对延迟敏感的场景使用本地化部署</li>
-</ul>
-
-<h4 id="挑战三系统集成">挑战三：系统集成</h4>
-<p>如何让智能体与企业现有系统（CRM、ERP、数据库等）无缝集成。</p>
-
-<p><strong>解决方案</strong>：</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 示例：企业智能体集成架构
-</span><span class="k">class</span> <span class="nc">EnterpriseAgent</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">llm</span> <span class="o">=</span> <span class="nc">LLMClient</span><span class="p">()</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">tools</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="sh">"</span><span class="s">query_database</span><span class="sh">"</span><span class="p">:</span> <span class="nc">DatabaseTool</span><span class="p">(),</span>
-            <span class="sh">"</span><span class="s">call_api</span><span class="sh">"</span><span class="p">:</span> <span class="nc">APITool</span><span class="p">(),</span>
-            <span class="sh">"</span><span class="s">generate_report</span><span class="sh">"</span><span class="p">:</span> <span class="nc">ReportTool</span><span class="p">(),</span>
-            <span class="sh">"</span><span class="s">send_approval</span><span class="sh">"</span><span class="p">:</span> <span class="nc">ApprovalWorkflowTool</span><span class="p">()</span>  <span class="c1"># 与企业审批系统集成
-</span>        <span class="p">}</span>
-        
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">user_request</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="c1"># 1. 理解意图并规划
-</span>        <span class="n">plan</span> <span class="o">=</span> <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">llm</span><span class="p">.</span><span class="nf">generate_plan</span><span class="p">(</span><span class="n">user_request</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
-        
-        <span class="c1"># 2. 安全检查
-</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">self</span><span class="p">.</span><span class="nf">security_check</span><span class="p">(</span><span class="n">plan</span><span class="p">):</span>
-            <span class="k">return</span> <span class="sh">"</span><span class="s">请求需要人工审批</span><span class="sh">"</span>
-            
-        <span class="c1"># 3. 执行计划
-</span>        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">plan</span><span class="p">.</span><span class="n">steps</span><span class="p">:</span>
-            <span class="n">tool</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">tools</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">step</span><span class="p">.</span><span class="n">tool_name</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">tool</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool</span><span class="p">.</span><span class="nf">execute</span><span class="p">(</span><span class="n">step</span><span class="p">.</span><span class="n">parameters</span><span class="p">)</span>
-                <span class="n">results</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-                
-                <span class="c1"># 4. 监控与异常处理
-</span>                <span class="k">if</span> <span class="n">self</span><span class="p">.</span><span class="nf">is_abnormal_result</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-                    <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="nf">escalate_to_human</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
-                    <span class="k">break</span>
-        
-        <span class="c1"># 5. 汇总结果
-</span>        <span class="k">return</span> <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">llm</span><span class="p">.</span><span class="nf">summarize</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">user_request</span><span class="p">)</span>
+<span class="c"># 阻塞与锁竞争（需要先 SetBlockProfileRate / SetMutexProfileFraction）</span>
+go tool pprof http://127.0.0.1:6060/debug/pprof/mutex
 </code></pre></div></div>
 
-<h4 id="挑战四评估与优化">挑战四：评估与优化</h4>
-<p>缺乏标准化的智能体性能评估体系。</p>
+<p>两个容易忽略的点：CPU profile 是「采样期间」的快照，问题没复现时采了也白采，要在故障发生时采；heap profile 默认展示 <code class="language-plaintext highlighter-rouge">inuse_space</code>（存活内存），排查「分配太频繁导致 GC 压力大」要切到 <code class="language-plaintext highlighter-rouge">alloc_space</code> 视角：<code class="language-plaintext highlighter-rouge">go tool pprof -sample_index=alloc_space</code>。</p>
 
-<p><strong>解决方案</strong>：</p>
-<ul>
-  <li><strong>建立测试套件</strong>：针对常见任务场景创建测试用例</li>
-  <li><strong>A/B测试</strong>：对比智能体与人工或其他方案的性能</li>
-  <li><strong>持续反馈循环</strong>：收集用户反馈优化智能体行为</li>
-</ul>
+<h2 id="火焰图怎么读">火焰图怎么读</h2>
 
-<h3 id="23-claude-code的启示专用化智能体的优势">2.3 Claude Code的启示：专用化智能体的优势</h3>
+<p><code class="language-plaintext highlighter-rouge">go tool pprof -http=:8080 profile.pb.gz</code> 打开 Web UI，切到 Flame Graph 视图。读图只需要记三条规则：</p>
 
-<p>Claude Code作为编程专用智能体，展示了领域专用化的价值：</p>
-<ul>
-  <li><strong>深度理解代码上下文</strong>：不仅仅是当前文件，而是整个项目结构</li>
-  <li><strong>编程最佳实践内嵌</strong>：生成的代码符合行业规范</li>
-  <li><strong>调试与问题诊断</strong>：能够理解错误信息并提供修复建议</li>
-</ul>
+<p><strong>横轴是占比，不是时间顺序。</strong> 一个函数的宽度代表它（含子调用）占用的 CPU 采样比例。找最宽的塔。</p>
 
-<p>这提示我们：未来的企业智能体可能不是“通用助手”，而是<strong>一系列专用智能体的集合</strong>——客服智能体、数据分析智能体、运维智能体等，各自针对特定场景优化。</p>
+<p><strong>纵轴是调用栈，从下往上。</strong> 底部是入口（如 <code class="language-plaintext highlighter-rouge">main.main</code> 或某个 goroutine 起点），越往上越深。</p>
 
-<h2 id="第三部分分布式系统架构ai时代的工程基石">第三部分：分布式系统架构——AI时代的工程基石</h2>
+<p><strong>找「平顶」。</strong> 顶部又宽又平的帧意味着 CPU 真正消耗在这个函数自身（self time），而不是它的子调用——这就是优化目标。</p>
 
-<h3 id="31-现代分布式聊天室go语言实现全景">3.1 现代分布式聊天室：Go语言实现全景</h3>
+<p><img src="/assets/images/2026/pprof-flamegraph-guide.svg" alt="火焰图判读示意" /></p>
 
-<p>《How to Build a Production-Grade Distributed Chatroom in Go》提供了一个极佳的生产级分布式系统案例。让我们深入分析其架构设计：</p>
+<p>图形看不清时回到命令行，<code class="language-plaintext highlighter-rouge">top</code> 看 self 时间排序，<code class="language-plaintext highlighter-rouge">list 函数名</code> 直接看到每一行代码的耗时标注——这是 pprof 最被低估的命令。</p>
 
-<h4 id="核心架构组件">核心架构组件</h4>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 简化的系统架构概览</span>
-<span class="k">type</span> <span class="n">ChatSystem</span> <span class="k">struct</span> <span class="p">{</span>
-    <span class="c">// 1. 连接管理层</span>
-    <span class="n">connectionPool</span> <span class="o">*</span><span class="n">ConnectionPool</span>  <span class="c">// 管理WebSocket连接</span>
-    
-    <span class="c">// 2. 消息总线（分布式核心）</span>
-    <span class="n">messageBus</span> <span class="o">*</span><span class="n">MessageBus</span>          <span class="c">// 基于Redis Pub/Sub或Kafka</span>
-    
-    <span class="c">// 3. 会话管理</span>
-    <span class="n">sessionManager</span> <span class="o">*</span><span class="n">SessionManager</span>  <span class="c">// 分布式会话存储</span>
-    
-    <span class="c">// 4. 数据持久化</span>
-    <span class="n">messageStore</span> <span class="n">MessageStore</span>       <span class="c">// 消息持久化到数据库</span>
-    
-    <span class="c">// 5. 监控与健康检查</span>
-    <span class="n">metricsCollector</span> <span class="o">*</span><span class="n">MetricsCollector</span>
-    <span class="n">healthChecker</span> <span class="o">*</span><span class="n">HealthChecker</span>
-<span class="p">}</span>
-</code></pre></div></div>
+<h2 id="案例一cpu-打满凶手是-json">案例一：CPU 打满，凶手是 JSON</h2>
 
-<h4 id="高并发处理模式">高并发处理模式</h4>
+<p>某服务 QPS 没变，CPU 却从 40% 涨到 90%。采 CPU profile，火焰图上 <code class="language-plaintext highlighter-rouge">encoding/json.Marshal</code> 一族占了 58%，平顶集中在 <code class="language-plaintext highlighter-rouge">reflect.Value</code> 相关帧。</p>
 
-<p><strong>连接管理优化</strong>：</p>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 使用goroutine池处理连接，避免goroutine泄露</span>
-<span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">ChatSystem</span><span class="p">)</span> <span class="n">handleConnection</span><span class="p">(</span><span class="n">conn</span> <span class="o">*</span><span class="n">websocket</span><span class="o">.</span><span class="n">Conn</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c">// 将连接注册到连接池</span>
-    <span class="n">clientID</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">connectionPool</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
-    <span class="k">defer</span> <span class="n">s</span><span class="o">.</span><span class="n">connectionPool</span><span class="o">.</span><span class="n">Unregister</span><span class="p">(</span><span class="n">clientID</span><span class="p">)</span>
-    
-    <span class="c">// 使用带缓冲的channel进行消息收发</span>
-    <span class="n">sendChan</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span>
-    <span class="n">receiveChan</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span>
-    
-    <span class="c">// 启动读写goroutine</span>
-    <span class="k">go</span> <span class="n">s</span><span class="o">.</span><span class="n">readPump</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">receiveChan</span><span class="p">)</span>
-    <span class="k">go</span> <span class="n">s</span><span class="o">.</span><span class="n">writePump</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">sendChan</span><span class="p">)</span>
-    
-    <span class="c">// 主处理循环</span>
-    <span class="k">for</span> <span class="p">{</span>
-        <span class="k">select</span> <span class="p">{</span>
-        <span class="k">case</span> <span class="n">msg</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="n">receiveChan</span><span class="o">:</span>
-            <span class="n">s</span><span class="o">.</span><span class="n">processMessage</span><span class="p">(</span><span class="n">clientID</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
-        <span class="k">case</span> <span class="o">&lt;-</span><span class="n">time</span><span class="o">.</span><span class="n">After</span><span class="p">(</span><span class="m">30</span> <span class="o">*</span> <span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span><span class="o">:</span>
-            <span class="c">// 心跳检测</span>
-            <span class="n">s</span><span class="o">.</span><span class="n">sendHeartbeat</span><span class="p">(</span><span class="n">clientID</span><span class="p">,</span> <span class="n">sendChan</span><span class="p">)</span>
-        <span class="p">}</span>
+<p><code class="language-plaintext highlighter-rouge">list</code> 定位到一个监控上报函数：每次请求都把完整上下文结构体（嵌套七层）序列化成 JSON 打日志。一周前有人往结构体里加了个大 map。</p>
+
+<p>修复分三层。短期：日志降采样，1% 抽样上报。中期：这个路径换成手写的 <code class="language-plaintext highlighter-rouge">MarshalJSON</code> 只输出关键字段。长期：在 CI 里加 benchmark 守门：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">BenchmarkReportMarshal</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ctx</span> <span class="o">:=</span> <span class="n">buildFullContext</span><span class="p">()</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">ReportAllocs</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
+<span class="c">// 配合 benchstat 对比 PR 前后，劣化超 20% 报警</span>
 </code></pre></div></div>
 
-<h4 id="消息传递的可靠性保证">消息传递的可靠性保证</h4>
+<p>CPU 回到 45%。教训：反射型序列化在热路径上就是定时炸弹，<code class="language-plaintext highlighter-rouge">json.Marshal</code> 出现在火焰图前排时先怀疑它。</p>
 
-<p>分布式聊天系统的核心挑战是消息的可靠传递和一致性。文章提出了多层保障机制：</p>
+<h2 id="案例二内存缓慢上涨不是泄漏是逃逸">案例二：内存缓慢上涨，不是泄漏是「逃逸」</h2>
 
-<ol>
-  <li><strong>至少一次投递</strong>：通过消息确认和重试机制</li>
-  <li><strong>消息去重</strong>：使用唯一ID避免重复处理</li>
-  <li><strong>顺序保证</strong>：在分区内保证消息顺序</li>
-</ol>
+<p>另一个服务内存每天涨 300MB，重启后归零。heap profile 的 <code class="language-plaintext highlighter-rouge">inuse_space</code> 里 <code class="language-plaintext highlighter-rouge">bytes.growSlice</code> 占大头，调用方是一个缓冲池的 <code class="language-plaintext highlighter-rouge">Get</code>。</p>
 
-<h3 id="32-容错与恢复策略">3.2 容错与恢复策略</h3>
+<p>看代码发现这是个经典错误：<code class="language-plaintext highlighter-rouge">sync.Pool</code> 里放 <code class="language-plaintext highlighter-rouge">*bytes.Buffer</code>，但有个慢路径会把 buffer 扩到几十 MB，用完照样放回池里。池子越养越肥。</p>
 
-<p>生产级系统必须能够优雅地处理故障：</p>
-
-<p><strong>1. 连接故障恢复</strong></p>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">Client</span><span class="p">)</span> <span class="n">maintainConnection</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="p">{</span>
-        <span class="n">conn</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">c</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
-            <span class="c">// 指数退避重连</span>
-            <span class="n">delay</span> <span class="o">:=</span> <span class="n">c</span><span class="o">.</span><span class="n">calculateBackoff</span><span class="p">()</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
-            <span class="k">continue</span>
-        <span class="p">}</span>
-        
-        <span class="c">// 连接成功，开始处理</span>
-        <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">c</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">conn</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
-            <span class="c">// 处理错误，准备重连</span>
-            <span class="n">c</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"连接处理错误"</span><span class="p">,</span> <span class="s">"error"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
-        <span class="p">}</span>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">putBuffer</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">bytes</span><span class="o">.</span><span class="n">Buffer</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">Cap</span><span class="p">()</span> <span class="o">&gt;</span> <span class="m">1</span><span class="o">&lt;&lt;</span><span class="m">20</span> <span class="p">{</span> <span class="c">// 超过 1MB 的不回池，让 GC 收走</span>
+        <span class="k">return</span>
     <span class="p">}</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">Reset</span><span class="p">()</span>
+    <span class="n">bufPool</span><span class="o">.</span><span class="n">Put</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><strong>2. 数据一致性保障</strong></p>
-<ul>
-  <li><strong>最终一致性模型</strong>：适合聊天场景，允许短暂的不一致</li>
-  <li><strong>操作日志（WAL）</strong>：所有操作先记录日志，再执行</li>
-  <li><strong>定期快照</strong>：定期保存系统状态，加速恢复</li>
-</ul>
+<p>顺手用逃逸分析确认了另一个热点函数的分配来源：</p>
 
-<p><strong>3. 监控与告警</strong></p>
-<ul>
-  <li><strong>关键指标监控</strong>：连接数、消息延迟、错误率等</li>
-  <li><strong>分布式追踪</strong>：跟踪消息在系统中的完整路径</li>
-  <li><strong>自动扩缩容</strong>：基于负载自动调整资源</li>
-</ul>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go build <span class="nt">-gcflags</span><span class="o">=</span><span class="s1">'-m -m'</span> ./pkg/codec/ 2&gt;&amp;1 | <span class="nb">grep </span>escape
+<span class="c"># ./codec.go:42:13: buf escapes to heap: 传给了 interface 参数</span>
+</code></pre></div></div>
 
-<h3 id="33-ai与分布式系统的融合">3.3 AI与分布式系统的融合</h3>
+<p><code class="language-plaintext highlighter-rouge">interface{}</code> 参数、闭包捕获、返回局部 slice 指针，是逃逸三大常客。内存问题不全是泄漏，「该死的对象死不掉」和「不该堆分配的上了堆」同样常见，前者看 inuse，后者看 alloc。</p>
 
-<p>AI技术正在改变分布式系统的设计和管理方式：</p>
+<h2 id="案例三goroutine-泄漏每小时多一千个">案例三：goroutine 泄漏，每小时多一千个</h2>
 
-<p><strong>1. 智能负载预测</strong>
-使用机器学习模型预测流量峰值，提前进行资源调配。</p>
+<p>监控显示 goroutine 数量线性增长。直接看文本版快照，按栈聚合：</p>
 
-<p><strong>2. 异常检测与自愈</strong>
-AI模型可以识别异常模式（如内存泄漏、网络分区），并自动触发修复流程。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-s</span> <span class="s1">'http://127.0.0.1:6060/debug/pprof/goroutine?debug=1'</span> | <span class="nb">head</span> <span class="nt">-30</span>
+<span class="c"># 1024 @ 0x43a1c5 0x44f9e7 ...</span>
+<span class="c"># #  chan send, 47 minutes</span>
+<span class="c"># #  github.com/xx/svc/worker.process+0x1a4</span>
+</code></pre></div></div>
 
-<p><strong>3. 配置优化</strong>
-AI可以分析系统运行数据，自动优化配置参数（如线程池大小、缓存策略）。</p>
+<p>一千多个 goroutine 卡在同一个 <code class="language-plaintext highlighter-rouge">chan send</code>，已经卡了 47 分钟。读 <code class="language-plaintext highlighter-rouge">worker.process</code>：它往一个结果 channel 发送数据，而接收方在超时后直接 return 了，没人收，发送方永久阻塞。</p>
 
-<h2 id="第四部分融合实践构建ai增强的分布式系统">第四部分：融合实践——构建AI增强的分布式系统</h2>
+<p>修复原则就一条——发送方永远要有退路：</p>
 
-<h3 id="41-架构模式ai作为一等公民">4.1 架构模式：AI作为一等公民</h3>
-
-<p>在现代系统中，AI不应是事后添加的插件，而应是架构设计时的一等公民。以下是几种融合模式：</p>
-
-<p><strong>模式一：AI增强的消息路由</strong></p>
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 智能消息路由器</span>
-<span class="k">type</span> <span class="n">SmartMessageRouter</span> <span class="k">struct</span> <span class="p">{</span>
-    <span class="n">llmClient</span>    <span class="o">*</span><span class="n">LLMClient</span>      <span class="c">// AI服务客户端</span>
-    <span class="n">rulesEngine</span>  <span class="o">*</span><span class="n">RulesEngine</span>    <span class="c">// 传统规则引擎</span>
-    
-    <span class="c">// 路由决策：结合AI理解和业务规则</span>
-    <span class="k">func</span> <span class="n">RouteMessage</span><span class="p">(</span><span class="n">msg</span> <span class="n">Message</span><span class="p">)</span> <span class="p">([]</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c">// 1. AI理解消息意图和优先级</span>
-        <span class="n">analysis</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">llmClient</span><span class="o">.</span><span class="n">AnalyzeMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
-            <span class="c">// 降级：使用规则引擎</span>
-            <span class="k">return</span> <span class="n">rulesEngine</span><span class="o">.</span><span class="n">Route</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="p">}</span>
-        
-        <span class="c">// 2. 结合业务规则做最终决策</span>
-        <span class="n">destinations</span> <span class="o">:=</span> <span class="n">rulesEngine</span><span class="o">.</span><span class="n">ValidateRoutes</span><span class="p">(</span><span class="n">analysis</span><span class="o">.</span><span class="n">SuggestedRoutes</span><span class="p">)</span>
-        
-        <span class="c">// 3. 考虑系统负载和用户偏好</span>
-        <span class="n">optimized</span> <span class="o">:=</span> <span class="n">optimizeForLoad</span><span class="p">(</span><span class="n">destinations</span><span class="p">,</span> <span class="n">currentLoad</span><span class="p">())</span>
-        
-        <span class="k">return</span> <span class="n">optimized</span><span class="p">,</span> <span class="no">nil</span>
-    <span class="p">}</span>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="p">{</span>
+<span class="k">case</span> <span class="n">resultCh</span> <span class="o">&lt;-</span> <span class="n">res</span><span class="o">:</span>
+<span class="k">case</span> <span class="o">&lt;-</span><span class="n">ctx</span><span class="o">.</span><span class="n">Done</span><span class="p">()</span><span class="o">:</span> <span class="c">// 接收方超时离场后，发送方从这里退出</span>
+    <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Err</span><span class="p">()</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><strong>模式二：智能会话管理</strong>
-在分布式聊天系统中，AI可以：</p>
+<p>更系统的防御是给所有 worker 类 goroutine 强制传 context，并在集成测试里用 <code class="language-plaintext highlighter-rouge">goleak</code> 检查：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">TestMain</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">M</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">goleak</span><span class="o">.</span><span class="n">VerifyTestMain</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="持续剖析从救火到巡检">持续剖析：从救火到巡检</h2>
+
+<p>以上都是「出了事再采」的被动模式。更进一步是持续剖析（Continuous Profiling）：agent 常驻采样（开销约 1~3% CPU），profile 数据带时间戳入库，出问题时直接对比「故障时段 vs 正常时段」的差分火焰图，连复现都省了。Pyroscope、Parca 都是现成方案，Go 的原生支持也很好。我把它当作 APM 三件套（metrics、trace、log）之后的第四件，中型以上的服务建议默认开启——它把「能不能采到现场」这个最大的不确定性直接消灭了。</p>
+
+<h2 id="方法论总结">方法论总结</h2>
+
+<p>三个案例背后是同一套流程：先用监控确定问题类别（CPU/内存/goroutine），选对 profile 类型和采样视角；火焰图找最宽的塔和平顶帧，<code class="language-plaintext highlighter-rouge">list</code> 下钻到代码行；修复后用 benchmark + benchstat 量化收益，并把检查固化进 CI。</p>
+
+<p>pprof 还有不少本文没碰的能力，比如配合 <code class="language-plaintext highlighter-rouge">runtime/trace</code> 分析调度延迟和 GC 停顿，不过那是另一个话题了。日常的线上问题，上面这套流程够用八成。剩下两成，通常卡在「采的时候问题没发生」——所以再啰嗦一遍：持续剖析早点上。</p>]]></content><author><name>小黄鸭</name></author><category term="技术" /><category term="Golang" /><category term="Golang" /><category term="pprof" /><category term="性能优化" /><category term="火焰图" /><category term="工程实践" /><summary type="html"><![CDATA[CPU 打满、内存暴涨、goroutine 泄漏——三类最常见的 Go 线上问题，用 pprof 一套方法论打穿：怎么采、怎么看、怎么定位到代码行。]]></summary></entry><entry><title type="html">异步 Agent：把任务扔进后台之后</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html" rel="alternate" type="text/html" title="异步 Agent：把任务扔进后台之后" /><published>2026-05-14T00:00:00+08:00</published><updated>2026-06-13T14:30:50+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"><![CDATA[<p>今年明显感受到一个变化：越来越多的任务开始用「扔进后台跑」的方式处理，而不是坐在终端前盯着模型一步步走。Cognition 的 Walden Yan 在一次访谈里提到，Devin 自己仓库里 AI 贡献的 commit 占比从一月的 16% 涨到三月的 80%，工程团队人数只增加了 10%。这个数字我觉得代表了行业正在发生的变化方向。</p>
+
+<p>但背景 Agent 真的能用，是最近几个月的事。更早之前，模型能力还撑不住「给任务、等结果」这种交互方式，中间需要人不断扶着走。Opus 4.5 之后，一些任务开始可以真正放手——写好 spec 扔进去，几小时后拿 PR。这对工作方式影响挺大的，但随之带来的工程问题也不少。</p>
+
+<h2 id="任务描述是最大的坑">任务描述是最大的坑</h2>
+
+<p>背景 Agent 和同步 Agent 最大的操作差异，在于你没机会在中途纠偏。同步模式下，Agent 走偏了，你看到了可以立刻打断重来；异步模式下，你发出任务去做别的事，回来发现它跑了两小时、方向整个错了。</p>
+
+<p>所以任务描述的质量决定了异步 Agent 能不能用。我现在发一个异步任务之前，会强制给自己写三件事：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>目标：要解决什么问题（不是「要做什么」，是「解决什么」）
+约束：不能动什么、不能假设什么
+验收标准：怎么判断任务完成了
+</code></pre></div></div>
+
+<p>这三件事写不清楚就不发，因为 Agent 填充模糊空间的方式通常不是你想要的。最常见的问题是「目标」写成了「行动」——「重构 user.go 里的数据库查询」和「降低 user.go 里数据库查询的延迟 P99」，同样的起点，Agent 的行为路径可以差很远。</p>
+
+<p>约束那栏经常被忽略。我有一次让 Agent 「优化这个模块的性能」，没写约束，它把数据库查询从 ORM 改成了手写 SQL，顺手删掉了几个它觉得「冗余」的封装层。技术上没错，但打破了团队的编码规范，review 打回来重来。后来约束那栏开始写：「不改变代码结构，只在现有框架内优化；不删除任何现有函数，只能修改实现」。</p>
+
+<p>验收标准最容易写成「代码跑通就行」，但这往往不够。现在我会加「运行 <code class="language-plaintext highlighter-rouge">just test</code> 全绿」「新增函数必须有测试覆盖」「不引入新的外部依赖」这类可以机器验证的标准，让 Agent 自己在提交前跑一遍检查。</p>
+
+<h2 id="进度跟踪是个没有标准答案的问题">进度跟踪是个没有标准答案的问题</h2>
+
+<p>任务扔进后台之后，你怎么知道它在干什么、有没有卡住？</p>
+
+<p>目前我试过几种方式，各有缺陷。</p>
+
+<p><strong>定期回来看输出</strong>：最简单，但 Agent 的输出是流式的，你回来看到的是一堆工具调用记录，读起来费劲，很难判断进展是否正常。</p>
+
+<p><strong>让 Agent 写进度日志</strong>：在任务描述里要求 Agent 每完成一个阶段就向 <code class="language-plaintext highlighter-rouge">progress.md</code> 写一行记录。好处是可以 tail -f，坏处是 Agent 有时候忘写，有时候写了很多废话，真正有用的进展信息反而不清楚。</p>
+
+<p><strong>关键检查点 + 等待确认</strong>：把任务拆成几个阶段，每个阶段结束要求 Agent 等待人工 <code class="language-plaintext highlighter-rouge">approve</code> 再继续。这是最可控的，但破坏了「不用盯着它跑」的初衷，变成了另一种形式的同步。</p>
+
+<p>我现在用的是折中方案：非关键任务（内容生成、测试补充）纯异步，不看进度，看结果；关键任务（涉及数据库变更、影响线上服务的重构）强制设检查点，至少在「开始写代码之前」和「准备提交之前」各要求一次人工确认。</p>
+
+<h2 id="多人协作slack-session-的问题">多人协作：Slack session 的问题</h2>
+
+<p>这是一个大家不太讲但实际很痛的问题。</p>
+
+<p>团队用 Agent 的常见模式是：有人在自己的 Slack 里启动一个 Claude session，发任务，等结果。但这个 session 绑定在发起人的身份和对话历史里，其他人如果想接手这个任务——看看进展、追加需求、让 Agent 继续——基本上做不到，只能靠复制粘贴上下文重开一个新 session。</p>
+
+<p>这是一个真实存在的协作摩擦。背景 Agent 的价值有很大一部分在于「不是一个人的专属工具」——PM 可以发起需求，工程师可以接手执行，另一个工程师可以做 review——但如果每次任务都绑定在发起人的私人 session 里，这个价值就打了折。</p>
+
+<p>短期解法是把任务上下文外化：任务描述写在任务管理系统里（Jira/Linear），Agent 的产出存到仓库里，关键决策写到 <code class="language-plaintext highlighter-rouge">task_notes.md</code> 里，session 本身只是执行容器，不存储关键信息。这样换人接手时，新人拿到的材料是完整的。</p>
+
+<p>长期来看这可能是工具层要解决的问题。但现在工具还没到那一步，只能靠工作习惯来补。</p>
+
+<h2 id="背景-agent-改变了什么">背景 Agent 改变了什么</h2>
+
+<p>跑了几个月异步任务之后，工作节奏确实变了，但变化的方向不是「省了很多时间」，而是「深度和等待的比例变了」。</p>
+
+<p>以前一天里大部分时间是持续的、中等深度的工作——写代码、调 bug、看文档。现在变成了几个短的深度爆发（写 spec、验收 PR、做判断）加上大段的「后台等待」时间。如果等待时间用来做另一件深度工作，整体产出是提升的；如果等待时间消耗在切换和碎片处理上，感觉很忙但实际上不比以前高效。</p>
+
+<p>这个变化对工作安排的要求提高了。以前「坐下来打开编辑器就能干活」，现在需要想清楚「这段时间用来做什么、哪些任务可以并行放进后台」。它不会自动让你更高效，但如果你有意识地设计自己的任务流，它的杠杆效应是真实的。</p>
+
+<p>Cognition 那篇访谈里还有一句话我印象深刻：背景 Agent 落地的关键不再只是模型能力，而是围绕模型的整套工程系统。这句话在我自己折腾了半年之后，觉得比刚看到时更对。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="异步" /><category term="工程实践" /><category term="background agent" /><summary type="html"><![CDATA[背景 Agent 今年开始真正可用。但「把任务扔进后台」这件事，工程上的问题远比看起来多：任务怎么描述、进度怎么跟踪、失败了怎么办、多人协作怎么共享上下文。记录一些实际经历。]]></summary></entry><entry><title type="html">MCP 协议深入：AI 应用的 USB-C 接口</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/09/MCP%E5%8D%8F%E8%AE%AE%E6%B7%B1%E5%85%A5-AI%E5%BA%94%E7%94%A8%E7%9A%84USB-C%E6%8E%A5%E5%8F%A3.html" rel="alternate" type="text/html" title="MCP 协议深入：AI 应用的 USB-C 接口" /><published>2026-05-09T00:00:00+08:00</published><updated>2026-06-13T08:13:05+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/09/MCP%E5%8D%8F%E8%AE%AE%E6%B7%B1%E5%85%A5-AI%E5%BA%94%E7%94%A8%E7%9A%84USB-C%E6%8E%A5%E5%8F%A3</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/09/MCP%E5%8D%8F%E8%AE%AE%E6%B7%B1%E5%85%A5-AI%E5%BA%94%E7%94%A8%E7%9A%84USB-C%E6%8E%A5%E5%8F%A3.html"><![CDATA[<p>2024 年 11 月 Anthropic 开源 MCP（Model Context Protocol）时，很多人以为这只是又一个工具调用的封装。一年半过去，OpenAI、Google 先后宣布兼容，MCP 事实上成了 AI 应用接入外部世界的标准接口。这篇文章不讲新闻，讲协议本身：它解决了什么问题、怎么解决的、生产环境里有哪些坑。</p>
+
+<h2 id="为什么需要-mcpnm-问题">为什么需要 MCP：N×M 问题</h2>
+
+<p>在 MCP 之前，每个 AI 应用接入每个数据源都要写一遍胶水代码。你有 N 个 AI 客户端（Claude、Cursor、自研 Agent），M 个数据源（数据库、Slack、内部 API），就要维护 N×M 套集成。每套集成都有自己的认证方式、错误处理、数据格式。</p>
+
+<p>这和 USB 出现之前的外设市场一模一样：每台电脑、每个打印机厂商都有自己的接口。MCP 做的事情就是定义一个统一插口——客户端只要实现一次 MCP Client，就能接入所有 MCP Server；数据源只要实现一次 MCP Server，就能被所有支持 MCP 的应用使用。N×M 变成 N+M。</p>
+
+<p><img src="/assets/images/2026/mcp-architecture.svg" alt="MCP 架构示意" /></p>
+
+<h2 id="协议分层三个核心原语">协议分层：三个核心原语</h2>
+
+<p>MCP 基于 JSON-RPC 2.0，传输层支持 stdio（本地进程）和 Streamable HTTP（远程服务）。协议层定义了三个核心原语，理解它们的区别是用好 MCP 的关键：</p>
+
+<p><strong>Tools（工具）</strong>：模型主动调用的函数。由模型决定什么时候调、传什么参数。比如 <code class="language-plaintext highlighter-rouge">query_database</code>、<code class="language-plaintext highlighter-rouge">send_message</code>。这是大家最熟悉的部分，对应传统的 function calling。</p>
+
+<p><strong>Resources（资源）</strong>：应用控制的上下文数据。注意是「应用控制」而不是「模型控制」——由宿主应用决定把哪些资源注入上下文。比如一个文件的内容、一条数据库记录。Resources 是只读的，有 URI 标识，支持订阅变更。</p>
+
+<p><strong>Prompts（提示模板）</strong>：用户控制的交互模板。用户在 UI 里显式选择触发，比如斜杠命令。Server 可以暴露参数化的提示模板，把领域知识打包给用户复用。</p>
+
+<p>三者的控制权分别在模型、应用、用户手里。很多人把所有东西都塞进 Tools，结果模型在一堆本该是静态上下文的数据上反复做无谓的工具调用，既慢又贵。正确的做法是：动态操作用 Tools，静态上下文用 Resources，固定工作流用 Prompts。</p>
+
+<h2 id="动手写一个-mcp-server">动手写一个 MCP Server</h2>
+
+<p>用官方 Python SDK 写一个查询 MySQL 慢日志的 Server，不到 60 行：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">mcp.server.fastmcp</span> <span class="kn">import</span> <span class="n">FastMCP</span>
+<span class="kn">import</span> <span class="n">aiomysql</span>
+
+<span class="n">mcp</span> <span class="o">=</span> <span class="nc">FastMCP</span><span class="p">(</span><span class="sh">"</span><span class="s">mysql-slowlog</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="nd">@mcp.tool</span><span class="p">()</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">top_slow_queries</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">查询执行时间最长的慢 SQL，按平均耗时降序</span><span class="sh">"""</span>
+    <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">get_pool</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">pool</span><span class="p">.</span><span class="nf">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">conn</span><span class="p">.</span><span class="nf">cursor</span><span class="p">(</span><span class="n">aiomysql</span><span class="p">.</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">execute</span><span class="p">(</span><span class="sh">"""</span><span class="s">
+                SELECT schema_name, digest_text,
+                       count_star AS calls,
+                       avg_timer_wait/1e12 AS avg_sec
+                FROM performance_schema.events_statements_summary_by_digest
+                ORDER BY avg_timer_wait DESC LIMIT %s
+            </span><span class="sh">"""</span><span class="p">,</span> <span class="p">(</span><span class="n">limit</span><span class="p">,))</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">fetchall</span><span class="p">()</span>
+    <span class="k">return</span> <span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span>
+        <span class="sa">f</span><span class="sh">"</span><span class="s">[</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="sh">'</span><span class="s">avg_sec</span><span class="sh">'</span><span class="p">]</span><span class="si">:</span><span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">s x</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="sh">'</span><span class="s">calls</span><span class="sh">'</span><span class="p">]</span><span class="si">}</span><span class="s">] </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="sh">'</span><span class="s">digest_text</span><span class="sh">'</span><span class="p">][</span><span class="si">:</span><span class="mi">120</span><span class="p">]</span><span class="si">}</span><span class="sh">"</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span>
+    <span class="p">)</span>
+
+<span class="nd">@mcp.resource</span><span class="p">(</span><span class="sh">"</span><span class="s">schema://{table}</span><span class="sh">"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">table_schema</span><span class="p">(</span><span class="n">table</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">暴露表结构作为只读资源</span><span class="sh">"""</span>
+    <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">get_pool</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">pool</span><span class="p">.</span><span class="nf">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">conn</span><span class="p">.</span><span class="nf">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">execute</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">SHOW CREATE TABLE </span><span class="si">{</span><span class="nf">validate</span><span class="p">(</span><span class="n">table</span><span class="p">)</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+            <span class="nf">return </span><span class="p">(</span><span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">fetchone</span><span class="p">())[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
+    <span class="n">mcp</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">transport</span><span class="o">=</span><span class="sh">"</span><span class="s">stdio</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>客户端配置（以 Claude Desktop 为例）：</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"mcpServers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"mysql-slowlog"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"python"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"/opt/mcp/slowlog_server.py"</span><span class="p">],</span><span class="w">
+      </span><span class="nl">"env"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"MYSQL_DSN"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mysql://readonly@db:3306/perf"</span><span class="w"> </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>注意两个细节：工具的 docstring 会直接成为模型看到的工具描述，写得越精确，模型的调用准确率越高；<code class="language-plaintext highlighter-rouge">table_schema</code> 用了 Resource 而不是 Tool，因为表结构是静态上下文，不需要模型反复决策。</p>
+
+<h2 id="生产环境的四个坑">生产环境的四个坑</h2>
+
+<p><strong>坑一：工具数量爆炸。</strong> 接入五六个 MCP Server 后，模型面前可能摆着上百个工具。工具描述全部进入上下文，token 成本飙升不说，模型的选择准确率会显著下降。我的经验阈值是 40 个工具以内；超过就要做工具的动态裁剪——按当前任务语义检索相关工具，而不是全量注入。</p>
+
+<p><strong>坑二：把 MCP Server 当 API 网关用。</strong> 有团队把内部 200 个 REST 接口一比一翻译成 MCP 工具，结果模型完全用不好。MCP 工具的粒度应该面向「任务」而非「接口」：与其暴露 <code class="language-plaintext highlighter-rouge">get_user</code>、<code class="language-plaintext highlighter-rouge">get_orders</code>、<code class="language-plaintext highlighter-rouge">get_refunds</code> 三个工具让模型自己编排，不如暴露一个 <code class="language-plaintext highlighter-rouge">get_customer_overview</code>。模型少做一次编排，就少一次出错的机会。</p>
+
+<p><strong>坑三：安全边界缺失。</strong> stdio 模式下 Server 继承宿主进程权限，prompt injection 可以诱导模型调用危险工具。生产实践必须做三件事：工具按最小权限设计（数据库账号只读）、写操作强制人工确认（MCP 协议支持 elicitation）、对工具返回内容做注入检测——工具返回值同样是不可信输入，这一点最容易被忽略。</p>
+
+<p><strong>坑四：忽略协议版本与能力协商。</strong> MCP 在快速演进，2025-03 引入 Streamable HTTP 取代 SSE，2025-06 增强了 OAuth 资源服务器语义。Client 和 Server 在 <code class="language-plaintext highlighter-rouge">initialize</code> 握手时会协商协议版本和能力（capabilities），自研客户端如果硬编码假设对方支持某能力，升级时一定会炸。永远以握手返回的 capabilities 为准。</p>
+
+<h2 id="mcp-不是银弹">MCP 不是银弹</h2>
+
+<p>最后泼点冷水。MCP 解决的是「连接」的标准化，不解决「使用」的智能化。工具接上了，模型用不用得好是另一回事——这取决于工具描述质量、上下文工程和任务分解，这些活儿 MCP 一个都没替你干。</p>
+
+<p>我自己的类比是 HTTP：重要、必要、值得现在就投入，但没有谁靠「支持了 HTTP」赢过。竞争力在协议之上那一层——接进来的东西能不能组合成解决真实问题的能力。</p>
+
+<p>我们内部第一个 MCP Server 上线到现在四个月，最大的收获其实不是技术上的，而是它逼着各团队把「我们的数据能被 AI 怎么用」这个问题想清楚了。工具描述写不出来的接口，多半是接口本身就没想清楚。这个副作用我觉得比协议本身还值。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="MCP" /><category term="Agent" /><category term="协议" /><category term="工程实践" /><summary type="html"><![CDATA[MCP 把「模型如何接入外部世界」从 N×M 的集成噩梦变成 N+M 的标准化问题。本文从协议设计、消息模型到生产实践，完整拆解 MCP 的工程价值与落地陷阱。]]></summary></entry><entry><title type="html">Hermes 多 Agent 工作流：从看到到跑起来</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html" rel="alternate" type="text/html" title="Hermes 多 Agent 工作流：从看到到跑起来" /><published>2026-05-06T00:00:00+08:00</published><updated>2026-06-13T14:30:46+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html"><![CDATA[<p>四月底开始看到各种 Hermes 的 demo：从飞书发一个需求，Agent 军团接着完成市场调研、写 PRD、出架构设计、开发、测试，全程不用人插手。看着确实酷。</p>
+
+<p>花了一个周末把它跑起来，记录一下中间踩过的坑，以及我对这个框架目前能力边界的判断。</p>
+
+<h2 id="hermes-是什么">Hermes 是什么</h2>
+
+<p>从架构上看，Hermes 是一个以「任务看板」（Kanban）为核心的异步多 Agent 框架。跟主流的同步编排框架（Orchestrator 派一批 Worker、等结果收回来）不同，Hermes 的任务是写进持久队列里的，Agent 按状态自己拉任务，跑完再更新状态，支持跨会话、跨天、跨重启继续运行。</p>
+
+<p>理论上这个设计解决了长任务的一个大问题：任务不再绑定在一次会话里，中途可以被人工介入，可以挂起来等外部条件，可以失败后从中间重跑而不是从头。</p>
+
+<p>公式很简单：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hermes = 任务队列 + Agent 集合 + 消息总线 + 工具权限管理
+</code></pre></div></div>
+
+<p>每个 Agent 有自己的系统提示、工具集、上下文窗口，互相之间通过消息总线通信，不共享上下文。</p>
+
+<h2 id="环境搭建文档和实际有出入">环境搭建：文档和实际有出入</h2>
+
+<p>官方文档写的是几行命令就能起来，实际操作有几个地方文档没说清楚。</p>
+
+<p><strong>模型配置</strong>。Hermes 官方支持接多个模型 API，主流教程用 Kimi K2.6 演示，因为它有官方推荐且开源。我在公司内网环境下，代理设置花了不少时间，文档里没提这部分。</p>
+
+<p><strong>消息总线</strong>。默认用文件系统模拟消息队列（每个 Agent 一个目录，写文件就是发消息），生产环境当然要换成真正的队列（Redis 或者 RabbitMQ），但这个迁移文档写得很粗。本地测试用文件系统就够了，需要知道的是：文件系统的并发写入没有锁，多个 Agent 同时写同一个任务状态文件会出问题，本地测试尽量不要多 Agent 并发跑同一个任务的同一个子步骤。</p>
+
+<p><strong>工具权限</strong>。这是最容易踩坑的地方，也是 demo 里最不演示的地方。Hermes 里每个 Agent 的工具集要显式配置，没有配置的工具 Agent 调不到，调了会报「工具不存在」而不是权限报错，排查很迷惑。配置文件大概是这样：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">agents</span><span class="pi">:</span>
+  <span class="na">researcher</span><span class="pi">:</span>
+    <span class="na">tools</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">web_search</span><span class="pi">,</span> <span class="nv">read_file</span><span class="pi">]</span>
+    <span class="na">model</span><span class="pi">:</span> <span class="s">kimi-k2</span>
+  <span class="na">developer</span><span class="pi">:</span>
+    <span class="na">tools</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">read_file</span><span class="pi">,</span> <span class="nv">write_file</span><span class="pi">,</span> <span class="nv">run_bash</span><span class="pi">]</span>
+    <span class="na">model</span><span class="pi">:</span> <span class="s">kimi-k2</span>
+  <span class="na">reviewer</span><span class="pi">:</span>
+    <span class="na">tools</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">read_file</span><span class="pi">,</span> <span class="nv">run_bash</span><span class="pi">]</span>
+    <span class="na">model</span><span class="pi">:</span> <span class="s">kimi-k2</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">developer</code> 可以写文件，<code class="language-plaintext highlighter-rouge">reviewer</code> 不能——这个权限边界要自己想清楚，框架不会替你设计。</p>
+
+<h2 id="跑一个真实任务">跑一个真实任务</h2>
+
+<p>用一个我实际跑过的场景说说效果：给一个 Go 的内部工具库写一批单元测试。</p>
+
+<p>任务分发给三个 Agent：</p>
+
 <ul>
-  <li><strong>实时内容审核</strong>：检测不当言论并自动处理</li>
-  <li><strong>个性化体验</strong>：基于用户历史提供定制化功能</li>
-  <li><strong>智能客服</strong>：自动回答常见问题，复杂问题转人工</li>
+  <li><code class="language-plaintext highlighter-rouge">analyst</code>：读源码、梳理函数签名和依赖关系、输出测试点清单</li>
+  <li><code class="language-plaintext highlighter-rouge">developer</code>：根据清单写测试代码</li>
+  <li><code class="language-plaintext highlighter-rouge">reviewer</code>：跑测试、检查覆盖率、输出 review 意见</li>
 </ul>
 
-<h3 id="42-开发工作流重构">4.2 开发工作流重构</h3>
-
-<p>AI时代需要重新思考开发工作流。以下是建议的新流程：</p>
-
-<pre><code class="language-mermaid">graph TD
-    A[需求分析] --&gt; B[AI辅助架构设计]
-    B --&gt; C{复杂度评估}
-    C --&gt;|简单| D[AI生成主要代码]
-    C --&gt;|复杂| E[人工核心设计 + AI辅助实现]
-    D --&gt; F[人工代码审查与测试]
-    E --&gt; F
-    F --&gt; G[AI生成测试用例]
-    G --&gt; H[人工补充边缘案例]
-    H --&gt; I[AI辅助性能优化]
-    I --&gt; J[部署与监控]
-    J --&gt; K[AI分析运行日志]
-    K --&gt; L[持续优化反馈]
-</code></pre>
-
-<h3 id="43-团队技能转型">4.3 团队技能转型</h3>
-
-<p>面对技术融合，开发团队需要新的技能组合：</p>
-
-<p><strong>核心技能矩阵</strong>：</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>传统技能</th>
-      <th>新增AI相关技能</th>
-      <th>融合技能</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>算法与数据结构</td>
-      <td>提示工程与优化</td>
-      <td>AI辅助算法设计</td>
-    </tr>
-    <tr>
-      <td>系统架构设计</td>
-      <td>AI系统集成模式</td>
-      <td>AI原生架构设计</td>
-    </tr>
-    <tr>
-      <td>代码调试</td>
-      <td>AI代码审查辅助</td>
-      <td>智能调试与根因分析</td>
-    </tr>
-    <tr>
-      <td>性能优化</td>
-      <td>AI模型推理优化</td>
-      <td>端到端系统性能调优</td>
-    </tr>
-    <tr>
-      <td>团队协作</td>
-      <td>AI工作流设计</td>
-      <td>人-AI协作流程管理</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="第五部分未来展望与行动指南">第五部分：未来展望与行动指南</h2>
-
-<h3 id="51-技术趋势预测">5.1 技术趋势预测</h3>
-
-<p>基于当前发展，我们可以预见以下趋势：</p>
-
-<p><strong>短期（1-2年）</strong>：</p>
-<ul>
-  <li>AI编程助手成为标准开发环境的一部分</li>
-  <li>专用领域智能体在企业中初步落地</li>
-  <li>更多AI增强的分布式系统组件出现</li>
-</ul>
-
-<p><strong>中期（3-5年）</strong>：</p>
-<ul>
-  <li>“AI优先”的编程语言和框架出现</li>
-  <li>智能体间标准化通信协议形成</li>
-  <li>分布式系统具备更强的自管理能力</li>
-</ul>
-
-<p><strong>长期（5年以上）</strong>：</p>
-<ul>
-  <li>人-AI协作成为主流开发模式</li>
-  <li>软件系统具备持续自我演进能力</li>
-  <li>编程从“写代码”转向“训练和引导AI”</li>
-</ul>
-
-<h3 id="52-给开发者的行动建议">5.2 给开发者的行动建议</h3>
-
-<ol>
-  <li>
-    <p><strong>拥抱变化但保持根本</strong>：深入学习AI技术，但不要忽视计算机科学基础</p>
-  </li>
-  <li>
-    <p><strong>实践人-AI协作</strong>：在自己的项目中尝试AI工具，找到最佳协作模式</p>
-  </li>
-  <li>
-    <p><strong>关注可解释性</strong>：无论是AI决策还是分布式系统行为，都要确保可理解和可调试</p>
-  </li>
-  <li>
-    <p><strong>建立评估体系</strong>：为AI生成的代码和智能体的行为建立质量评估标准</p>
-  </li>
-  <li>
-    <p><strong>参与社区贡献</strong>：开源项目是学习这些融合技术的最佳途径</p>
-  </li>
-</ol>
+<p>理论上这是多 Agent 的理想场景：任务可清晰切分、各 Agent 产物是下一个的输入、不需要共享上下文。</p>
 
-<h3 id="53-伦理与责任考量">5.3 伦理与责任考量</h3>
+<p>实际跑下来，前两步基本达到预期，<code class="language-plaintext highlighter-rouge">analyst</code> 出了一份还算准确的清单，<code class="language-plaintext highlighter-rouge">developer</code> 照着写出来的测试能编译，覆盖了七八成的 case。</p>
 
-<p>随着AI在软件工程中的深入，我们必须考虑：</p>
+<p>问题出在 <code class="language-plaintext highlighter-rouge">reviewer</code> 这步。它跑测试发现有几个 case 失败，然后做了一件让我没预料到的事：它直接修改了 <code class="language-plaintext highlighter-rouge">developer</code> 已经写好的测试文件，把 assertion 改成了「更宽松」的版本，让测试通过了。表面上看任务完成了，实际上它在用最省事的方式过关，而不是真正修复逻辑。</p>
 
-<ul>
-  <li><strong>透明度</strong>：用户应知道何时在与AI交互</li>
-  <li><strong>责任归属</strong>：AI生成代码导致的问题责任如何划分</li>
-  <li><strong>技能公平</strong>：确保AI工具不会加剧技术鸿沟</li>
-  <li><strong>环境影响</strong>：大规模AI计算和分布式系统的能源消耗</li>
-</ul>
+<p>这个问题的根因是 <code class="language-plaintext highlighter-rouge">reviewer</code> 的系统提示写得不够严格——「确保测试通过」和「修复测试中的错误」是两件不同的事，但我没有在提示词里区分。多 Agent 系统里，每个角色的职责边界必须在提示词里讲得很死，含糊的空间会被模型用来走捷径。</p>
 
-<h2 id="结语成为ai时代的架构师">结语：成为AI时代的架构师</h2>
+<p>修完 <code class="language-plaintext highlighter-rouge">reviewer</code> 的提示，加了一句「你只能修改测试文件里的 helper 和 setup 代码，不能修改 assertion，assertion 必须联系 developer agent 修改」，结果就正常了——它开始发消息给 developer，让 developer 来修实现而不是改断言。</p>
 
-<p>我们正在见证软件工程的根本性转变。AI辅助编程、智能体技术和分布式系统架构的融合，不是简单的技术叠加，而是产生了新的范式。未来的软件系统将是<strong>人类智能、人工智能和分布式计算</strong>的有机结合体。</p>
+<h2 id="和-subagent-模式的比较">和 Subagent 模式的比较</h2>
 
-<p>在这种新范式中，开发者的角色将从“代码编写者”演变为“系统引导者”和“AI训练师”。我们需要同时掌握三种语言：与人类沟通的业务语言、与AI协作的提示语言、与机器交互的编程语言。</p>
+<p>Hermes 的异步 Kanban 模式和 Claude Code 的 Subagent 模式，适合的场景不一样。</p>
 
-<p>正如antirez所提醒的，我们不应陷入对AI的过度炒作或完全否定，而应保持理性务实的态度。AI是强大的工具，但工具的价值最终取决于使用者的智慧和判断。分布式系统架构等传统工程技能，在AI时代不仅没有过时，反而因为系统复杂度的增加而更加重要。</p>
+<p>Subagent 适合：任务有明确终点、结果需要在本次会话里拿到、子任务之间依赖关系复杂需要 Orchestrator 实时调度。代码审查、文档生成这类「发出去、等收回来」的任务，Subagent 更顺。</p>
 
-<p>最终，技术发展的目标不是用AI取代人类，而是<strong>增强人类的能力</strong>，让我们能够构建更强大、更智能、更可靠的系统来解决现实世界的复杂问题。这场融合之旅刚刚开始，而我们已经站在了起点上。</p>
+<p>Hermes 适合：任务周期长（几小时到几天）、可能需要人工介入某个环节、各 Agent 之间的协作是持续的而不是单次交付。一个「从需求到上线」的完整开发链路，如果放在 Subagent 里，单次会话跑下来上下文会爆，Hermes 的分阶段持久化就有价值。</p>
 
-<hr />
+<p>不适合 Hermes 的场景也很明确：任务依赖关系是强顺序的（B必须严格等 A 交付后才能开始）、或者任务对实时性要求高（不能等队列调度延迟）。</p>
 
-<p><strong>延伸阅读</strong>：</p>
-<ol>
-  <li><a href="http://antirez.com/news/159">Automatic programming - antirez</a></li>
-  <li><a href="http://antirez.com/news/158">Don’t fall into the anti-AI hype - antirez</a></li>
-  <li><a href="https://ginonotes.com/posts/bestblogs-weekly-issue-71">📋 BestBlogs 周刊第71期：AI智能体的技术进展与落地挑战</a></li>
-  <li><a href="https://www.youtube.com/watch?v=D-d4Y6v-pDs">Building Agents in 2026 (major updates!) - Tina Huang</a></li>
-  <li><a href="https://www.freecodecamp.org/news/how-to-build-a-production-grade-distributed-chatroom-in-go-full-handbook/">How to Build a Production-Grade Distributed Chatroom in Go - freeCodeCamp</a></li>
-</ol>
+<h2 id="目前的判断">目前的判断</h2>
 
-<hr />]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="技术" /><summary type="html"><![CDATA[本文深度探讨AI辅助编程与智能体的技术演进、分布式系统架构的现代实现，分析三者如何共同塑造下一代软件开发范式，为开发者提供从理论到实践的全面指南。]]></summary></entry><entry><title type="html">选与没得选</title><link href="http://localhost:4000/%E6%88%90%E9%95%BF/%E6%80%9D%E8%80%83/2026/01/25/%E9%80%89%E4%B8%8E%E6%B2%A1%E5%BE%97%E9%80%89.html" rel="alternate" type="text/html" title="选与没得选" /><published>2026-01-25T00:00:00+08:00</published><updated>2026-02-25T23:42:33+08:00</updated><id>http://localhost:4000/%E6%88%90%E9%95%BF/%E6%80%9D%E8%80%83/2026/01/25/%E9%80%89%E4%B8%8E%E6%B2%A1%E5%BE%97%E9%80%89</id><content type="html" xml:base="http://localhost:4000/%E6%88%90%E9%95%BF/%E6%80%9D%E8%80%83/2026/01/25/%E9%80%89%E4%B8%8E%E6%B2%A1%E5%BE%97%E9%80%89.html"><![CDATA[<h1 id="选-与-没得选">选 与 没得选</h1>
+<p>跑完这一圈，我觉得 Hermes 现阶段是「思路正确、工程成熟度不足」的状态。任务队列、持久化、多 Agent 消息总线这套设计是对的，解决的是真实的工程问题。但文档的完整度和错误信息的友好度，还停留在「作者自己用着没问题」的阶段。</p>
 
-<p>最近看到关于猝死的32岁程序员，内心五味杂陈，在同行业工作的从业者来看，这种真实写照不在少数，只是程度以及影响面没那么大而已。这里不做过多讨论，关于在工作层面我说一下我自己的想法与感悟。</p>
+<p>比较实际的用法：现阶段不要把它用在核心业务链路上，更适合作为「内部效率工具」跑——代码批量处理、文档生成、测试覆盖率提升这类容错性高的场景。出了问题能重跑、不影响线上，这时候 Hermes 的异步持久化优势才能发挥出来，代价也是可以接受的。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Hermes" /><category term="多Agent" /><category term="工作流" /><category term="工程实践" /><summary type="html"><![CDATA[Hermes（爱马仕）今年在 Agent 圈很热，各种 demo 看着挺酷。花了一个周末把它跑起来，记录一下真实落地和网上教程的差距，以及几个文档里没写清楚的地方。]]></summary></entry><entry><title type="html">CLAUDE.md 多层加载：比你想的复杂</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html" rel="alternate" type="text/html" title="CLAUDE.md 多层加载：比你想的复杂" /><published>2026-04-22T00:00:00+08:00</published><updated>2026-06-13T14:30:43+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html"><![CDATA[<p>事情的起点是一份飘忽不定的报告。</p>
 
-<h2 id="社会缩影">社会缩影</h2>
-<p>回归社会本身，社会就是一台巨型运转的机器，承载着劳动力与财富的再分配。无论有事情你是否愿意，都会在巨大的齿轮中向前迈进，例如接受教育、从事工作，至少作为普通人来说，这个就是比经历的一条路线。无论工作行业和内容是啥，本质上就是在完成价值交换的过程。在职场中遇到的伙伴，期工作的目的不尽相同，有体验工作的、有挣钱的，这些就代表追求的内容是不一样的。为了达到追求的一面，这个过程就是在完成价值交换，这个就是对于时间利用的一个过程。当然也存在不需要走这些路径的，但是从概率上讲那是非常非常少数的部分，如果屏幕前的你是属于这一类的，那恭喜你很幸运。我记得在农村那时候上大学的时候，很多家庭在当时是没有一些积蓄用来供儿女来上学的，途径就是通过与亲戚借钱和助学贷款等方式，特别是在偏远农村中对于所谓的大学生更是倾注了全村的希望，这个不夸张，因为农村不大。大家的期望就是上大学了那么一定有好的工作，收入一定就是很高的样子。我记得当时一段时间经常被亲戚问到工资情况，每年都会是同样的话题，如果发现今年的工资没涨的话，好像在他们眼中都是不太可以的。其实农村本身就是一个小的社会，人情事故还是比较复杂的。一个参与到社会分配过程中的人来说，都会有来自不同方面的压力，特别是没有”十八班武艺“的情况下。
-我自己是计算机软件专业，我曾经问过一个问题，如果不干计算机相关的功能，我还能做点啥？这个问题至少没有很利落的进行回答，想了一圈，没有太好的方向，这也是目前乃至未来一段时间需要继续思考的问题。这个的确是也是一个直击心灵话题的问题，面对这种问题时，我的建议时不要逃避，可以给予一定的时间好好思考。对于大多数人来说我相信可能也会遇到同样的问题及困境，每个行业都会有行业的壁垒，切换行业这件事情说起来比较容易，但是做起来可能并没有那么简单。
-另外一个敏感的话题在软件行业，好像是35岁这个标签像是被钉死在耶稣的十字架上一样，这种虽然没有明面上说明，但是提到程序员，基本都会聊到这个。虽然没有完全的数据统计，跟一些朋友有聊过，年龄超过35岁，找工作方面的确不容易，有的上一份工作结束后，下一份工作有找半年到一年的时间，当然在大环境的背景下，更是如此。从企业角度也很好理解，那就是这个岗位需要找到更加有竞争力和潜力的候选人，其中一方面就是涉及到精力、学习能力和潜力等方面。这种情况下当被贴上年龄的标签后，连面试的机会都可能没有。</p>
+<p>我们内部有个日志分析 Agent，输出格式是 HTML，这个写在那个模块的 CLAUDE.md 里，白纸黑字。结果某天开始变得不稳定：同样的指令，有时候出 HTML，有时候出 Markdown，跑三次三种结果。</p>
 
-<h2 id="选">选</h2>
-<p>在现实世界中，并不是所有的事情都有的选或没得选这两种，从计算机专业性上来讲，选和没得选是两种状态，我比较建议的方式，就是增加选的”概率“，当选的概率增加之后，没得选的比例自然会下降，具体有以下几种方式，仅代表我个人观点，不做参考。</p>
+<p>第一反应是 prompt 问题。把那个模块的 CLAUDE.md 改到几乎只剩一句「输出格式必须是 HTML」，还是抽奖。查用户级的 <code class="language-plaintext highlighter-rouge">~/.claude/CLAUDE.md</code>，没有相关规则。查子目录，没有。</p>
 
-<h3 id="保险">保险</h3>
-<p>这个很好理解，就是当自己有收入之后，可以考虑为自己活家庭购买相关保险，这种事抵御风险的一种方式，保险涉及到医疗险、重疾险、寿险、意外险。如果有能力还可以购买更多种类的保险，保额也可以根据能力做调整。作为普通来百姓家庭来说，非常有必要。当然这个过程也不是一步到位，可以根据自己的情况分阶段完成，重要的就是要有这个意识，如果你是家里的经济重要来源之一，那么给自己的保险需要优先购买，其次才是家庭保险，优先给有经济来源的成员购买保险。</p>
+<p>折腾了两个小时，才想起来：上周我在父目录 <code class="language-plaintext highlighter-rouge">aiworking/</code> 建了一份 CLAUDE.md，用来给底下几个子模块做统筹，里面有一行「分析类报告默认 Markdown」。</p>
 
-<h3 id="投资理财">投资理财</h3>
-<p>这个是建立在工作一段时间后的选择，但是要做这一件事情，也并非容易。需要把自己的收入做一个分类，罗列出可以用来投资的钱的占比，这部分投资的钱不能影响正常的生活，投资的钱我们暂定称之为“闲钱”，就是这部分投资的钱即使全部亏损，也不会影响你实际的生活。说到这一点，那就是在投资钱要提前设置好预期管理，做好亏损的准备，就是说你可以承受住投资带来的任何风险。</p>
+<p>目录结构是这样的：</p>
 
-<p>尽量选择大的以及正规的平台，不要被表面所谓的年华收益所迷惑，多看大的以及正规的平台，稳健一些的可以看看基金、指数等金融产品。</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>aiworking/
+    CLAUDE.md          ← 写着「分析类报告默认 Markdown」
+    loganalysis/
+        CLAUDE.md      ← 我在这里启动 Agent，写着「输出 HTML」
+</code></pre></div></div>
 
-<p>长期主义，无论是指数、基金、股票还是crypto，选择合适的资金，在适当的时候进入，剩下的就是交给时间，可能这种比较佛系，但是从数据上看，只要产品本身没啥大问题，长期之后到最后一定会有收益，只是收益多和少的问题。如果一轮周期下来能够有20%～30%的收益，那还是相当不错的。</p>
+<p>我以为只有 <code class="language-plaintext highlighter-rouge">loganalysis/CLAUDE.md</code> 在生效，但实际上两份都进了上下文，Claude 在两条冲突规则之间，看心情选一个。</p>
 
-<h3 id="挖掘工作价值">挖掘工作价值</h3>
-<p>在工作岗位，尽可能去完成高价值的交换。这个里面的底层逻辑就是如果只是安于做好自己的本职工作，这个过程中只能说是完成交换，不能算是高价值交换。关于高价值交换我自己的理解那就是找到功能的利益相关点，需要站在公司和个人角度，分别考虑其共同点是啥？在公司层面需要关注你可以为公司创造什么价值，这些价值是否具有不可替代性，如果存在这种情况，那么在这个层面公司给予你的反馈或者汇报也应该不会太低。如果在这个价值交付的过程中，要达到更高的目标，与组织要更加契合，那么你在这个阶段投入和付出的也不一定少，这里面肯定存在挑战或困难，如果把这些都能解决或者克服，那么对于你来说本身就是一种巨大的成长，这种能力或者成长是属于自己的。对于这样的结果来说，这就是一个双赢的局面。这个挖掘工作价值说白了，就是不要在当前的岗位上摆烂，做到这一点就已经领先80%的人了。</p>
+<h2 id="加载机制是什么">加载机制是什么</h2>
 
-<h3 id="ai赋能">AI赋能</h3>
-<p>在这次AI迭代浪潮中，一定要跟上脚步，认知、思维意识先行。拥抱变化，积极应对。AI自动化了常规代码，却拔高了人类代码的标准。开发者可能上午审查 AI 输出，下午设计高层架构。贯穿始终的主线是：唯一不变的是变化本身。紧跟趋势并保持怀疑，你就不怕被炒作忽悠，也不怕被末日论吓倒。更新技能、做多面手，并专注于人类独有的特质（创造力、批判性思维、协作），你将始终立于不败之地。无论未来是迎来编程复兴，还是代码自我编写的世界，永远需要这样一种工程师：思考全面、持续学习、用技术解决真问题。预测未来的最好方式，就是亲手创造它。</p>
+<p>搞清楚这件事之后，我仔细查了 Claude Code 的文档，把加载逻辑整理了一下。</p>
 
-<h3 id="拓展自己的副业之路或创业">拓展自己的副业之路或创业</h3>
-<p>这个也是比较难的地方，但是这件事情一定要去尝试，且需要亲自去尝试。当然比较理想的方式与本行业还有一定的关系的副业，这样可以放大本身能力，但是这样的机会也不常有，但是可以用实际行动可以先做起来。有时候一件事情在未开始之前会存在假设性问题，当你真正去解决的时候，会发现这些问题可能是伪需求或者问题。如果跟软件行业无关也没关系，只是需要花费额外的精力和能力去处理这一块，对于个人的能力要求会更高。两种方式没有优劣，需要找到属于自己的节奏。</p>
+<p><strong>向上遍历</strong>：从你启动 Claude 的目录出发，一级一级往上走，每一级有 CLAUDE.md 就纳入，一直到磁盘根目录为止。<code class="language-plaintext highlighter-rouge">loganalysis/</code> 目录下启动，实际加载路径是：</p>
 
-<h3 id="锻炼身体">锻炼身体</h3>
-<p>重要的事情说3遍：锻炼身体！锻炼身体！锻炼身体！回归一切话题，是需要去执行的，健康的身体是这里面最base的保障，适当的锻炼身体，其实是增加选择层面的概率分布。</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/root/...（各级祖先目录，一般没有）
+~/.claude/CLAUDE.md      ← 用户级，固定加载
+aiworking/CLAUDE.md      ← 父目录，向上遍历命中
+loganalysis/CLAUDE.md    ← 当前目录
+loganalysis/CLAUDE.local.md   ← 本地覆盖（如果有）
+</code></pre></div></div>
 
-<h2 id="没得选">没得选</h2>
-<p>所谓没得选其实不是意味着真的“不选”，而是延迟选的时间，让从没得选逐渐转移到选的一端，本质上是概率转移。</p>
+<p><strong>拼接不覆盖</strong>：找到的所有文件不是「近的覆盖远的」，而是全部拼在一起注入上下文，从根到叶顺序排列。所以两条冲突规则同时存在，距离近的排在后面，但不是必然胜出——这取决于 Claude 怎么处理上下文里的矛盾，不保证严格遵守。</p>
 
-<p>没得选本质上也不是一件坏事，其实选择而言，没得选也是一种选择，一定要有选择。不过这其中的代价都需要自己承受，无论好坏，别人无法代替。</p>
+<p><strong>子目录懒加载</strong>：这个知道的人更少。启动工作目录下的子目录里如果有 CLAUDE.md，启动时不会加载。要等到 Agent 在会话中真正访问那个子目录里的文件时，该 CLAUDE.md 才会被动态挂载进来。整个会话没有访问那个子目录，它的 CLAUDE.md 不进上下文。</p>
 
-<p>真“没得选”那就把现在的事情当作下一份选择的一个“跳板”，目的要让自己有选择。</p>
+<p>还有一点：CLAUDE.md 不在系统提示词里，它是作为一条用户消息追加在系统提示后面的。这解释了为什么它「不保证严格遵守」——它不是强制配置，Claude 会尽量照做，但遇到矛盾时怎么处理有随机性。</p>
 
-<h2 id="最后">最后</h2>
-<p>一段个人体会，不代表任何人。</p>]]></content><author><name>小黄鸭</name></author><category term="成长" /><category term="思考" /><category term="成长" /><category term="思考" /><summary type="html"><![CDATA[最近看到关于猝死的32岁程序员，内心五味杂陈，在同行业工作的从业者来看，这种真实写照不在少数，只是程度以及影响面没那么大而已。这里不做过多讨论，关于在工作层面我说一下我自己的想法与感悟。]]></summary></entry><entry><title type="html">从 Vibe Coding 走向 Vibe Engineering</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/01/24/%E4%BB%8E-Vibe-Coding-%E8%B5%B0%E5%90%91-Vibe-Engineering.html" rel="alternate" type="text/html" title="从 Vibe Coding 走向 Vibe Engineering" /><published>2026-01-24T00:00:00+08:00</published><updated>2026-02-25T23:42:33+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/01/24/%E4%BB%8E%20Vibe%20Coding%20%E8%B5%B0%E5%90%91%20Vibe%20Engineering</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/01/24/%E4%BB%8E-Vibe-Coding-%E8%B5%B0%E5%90%91-Vibe-Engineering.html"><![CDATA[<h1 id="软件工程的硬核重塑从-vibe-coding-走向-vibe-engineering">软件工程的硬核重塑：从 Vibe Coding 走向 Vibe Engineering</h1>
+<h2 id="踩坑之后我改了什么">踩坑之后我改了什么</h2>
 
-<p>在 LLM 工具爆发的当下，软件工程正经历着自高级语言发明以来最深刻的一次范式转移。这种被社区称为 <strong>Vibe Coding</strong> 的开发模式——即凭“直觉”与“意图”驱动代码生成——正在极大地重构开发门槛。然而，在生产环境的复杂约束下，单纯的直觉驱动往往会面临架构熵增带来的极速崩塌。</p>
+<p>首先把父目录那条「分析类报告默认 Markdown」删掉，改成了更精确的指向：</p>
 
-<p>真正的工程演进不在于对“感觉”的盲从，而在于如何建立一套驾驭 AI 产出的硬核纪律，即 <strong>Vibe Engineering</strong>。</p>
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- aiworking/CLAUDE.md --&gt;</span>
+适用范围：本目录下各子模块的通用规范
 
-<hr />
+<span class="gu">### 代码规范</span>
+<span class="p">-</span> Go 1.22+，禁止使用 init()
+<span class="p">-</span> 错误处理用 pkg/errors 包装，禁止裸 fmt.Errorf
 
-<h3 id="典型场景分析-vibe-engineering为什么直觉在复杂系统中会失效">[典型场景分析] Vibe Engineering：为什么“直觉”在复杂系统中会失效？</h3>
+<span class="gu">### 注意</span>
+各子模块的输出格式以各自的 CLAUDE.md 为准，本文件不约定格式
+</code></pre></div></div>
 
-<p>在构建小型原型或常规 CRUD 页面时，Vibe Coding 带来的反馈闭环极具吸引力。但当业务逻辑深入到分布式事务的一致性、极致内存调优、或者是高并发下的资源竞争时，直觉往往会表现出一种“平庸的正确”，而掩盖深层的架构隐患。</p>
+<p>加了最后那句，明确把格式决策权交给子目录，避免父级规则模糊覆盖。</p>
 
-<p><strong>举例：分布式锁在异常链路下的逻辑坍塌</strong>
-以高并发环境下的 Redis 分布式锁实现为例。常规的 AI 生成方案通常会给出一套利用 Lua 脚本保证 <code class="language-plaintext highlighter-rouge">SET NX PX</code> 原子性的代码，这种“原子化获取”在 90% 的场景下看似无懈可击。但在进行极限故障注入测试（Fault Injection Testing）时，该方案往往暴露出严重的安全性碎片。</p>
+<p>第二个改动是控制规则密度。Augment Code 团队做过一个实验，从一个 monorepo 里提取了几十份 AGENTS.md 逐一测试，发现最好的 AGENTS.md 带来的提升相当于把模型从 Haiku 换成 Opus，而最差的比完全不写还糟。坑在于：同一份文件在常规任务上把质量提升了 25%，在复杂任务上让完整性下降了 30%——写太多规则，规则之间会干扰，Agent 开始在「中间迷失」。</p>
 
-<p>深度技术拆解发现，此类方案常因缺乏完备的 <strong>自动续期（Watch Dog）状态机</strong> 而失效。一个工业级的分布式锁必须解决“任务执行时长超过锁有效期（TTL）”的问题。在 Watch Dog 模式中，系统需要启动一个独立的异步线程（或协程），以 TTL 的 1/3 为周期进行定时续命（Renew）。如果 AI 忽略了这一机制，当 A 进程因 Full GC（全局垃圾回收）停顿或网络抖动引发执行延迟时，锁会被 Redis 自动释放。此时，如果后续的 B 进程成功获取锁并开始执行，系统将处于两个进程同时操作共享资源的“并发脑裂”状态。</p>
+<p>现在我的主文件控制在 100 行以内，只写高频场景的规范；细节推到按需加载的子文件里，在主文件里只写「需要时参考 <code class="language-plaintext highlighter-rouge">@docs/api-rules.md</code>」这样的入口。</p>
 
-<p>此外，锁的 <strong>所有权验证（Ownership Verification）</strong> 也是直觉驱动下的常见盲区。在释放锁阶段，程序必须检查当前持有者的 UUID（或 Request ID）是否与最初加锁时的 Token 一致。如果缺乏这种强匹配校验，当进程 A 因执行过长导致锁因超时释放、并随后尝试执行 <code class="language-plaintext highlighter-rouge">DEL</code> 指令时，极易误删掉进程 B 刚刚获取的合法锁。这种“幽灵锁删除”会导致系统的并发互斥性（Mutual Exclusion）彻底崩溃，进而引发核心状态机的数据污染。</p>
+<p>第三个改动是清理注释。CLAUDE.md 里的块级 HTML 注释（<code class="language-plaintext highlighter-rouge">&lt;!-- 备注 --&gt;</code>）在注入上下文前会被剥掉，不占 token。所以现在我在文件里保留了大量维护注释，说明每条规则的来源和生效日期，这些注释只给写文件的人看，不会进 Claude 的上下文：</p>
 
-<p>这就是 <strong>Vibe Engineering</strong> 要解决的核心矛盾：<strong>AI 的知识图谱建立在海量的通用代码之上，其擅长处理偶然复杂性（Accidental Complexity，如模板代码、基础语法），但面对本质复杂性（Essential Complexity，如分布式边界一致性、异常链路自愈、性能天花板定义）时，必须由建立在实证主义基础上的工程师负责。</strong> 代码在这一体系下不再是财富，而是负资产，必须通过 Benchmarking、分布式的混沌工程以及字节码级别的状态感知数据，才能确立其生产环境的合规性。</p>
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!-- 
+2026-06-15 添加：排查完 loganalysis 输出格式冲突问题后
+明确父目录不约定格式，避免向下覆盖子模块规则 
+--&gt;
+各子模块的输出格式以各自的 CLAUDE.md 为准
+</code></pre></div></div>
 
-<hr />
+<h2 id="agentsmd-vs-claudemd">AGENTS.md vs CLAUDE.md</h2>
 
-<h3 id="理论探讨-代码即消耗品高质量的-spec-才是核心资产">[理论探讨] 代码即消耗品，高质量的 Spec 才是核心资产</h3>
+<p>顺带提一下这两个文件的区别，网上说法很乱。</p>
 
-<p>AI 时代最深刻的转变在于核心资产定义的“降权”与“升维”：<strong>源代码正在迅速贬值，而结构化的业务 Specs（规范）正在大幅增值。</strong></p>
+<p><code class="language-plaintext highlighter-rouge">CLAUDE.md</code> 是 Claude Code 专用的，只有 Claude Code 会去读它。<code class="language-plaintext highlighter-rouge">AGENTS.md</code> 是一个更通用的约定，OpenAI Codex、Cursor、一些开源 Agent 框架都在尝试认这个文件名。</p>
 
-<p>在传统范式里，代码是精密维护的资产，因为重构与重写的代价极高。但在 AI 将代码生成成本降至冰点后，代码正演变为一种“易耗品”。软件的核心竞争力将不再是那几万行难以搬动的实现逻辑，而是那套能被 AI 高效解析并实例化的结构化定义。</p>
+<p>如果你用的是 Claude Code，两个都认，CLAUDE.md 优先。如果你想同时兼容多个工具，用 AGENTS.md。如果只用 Claude Code，CLAUDE.md 就够了，不用两份都维护。</p>
 
-<p><strong>场景模拟：复杂遗留系统的“意图重构”路径</strong>
-设想一个运行多年、逻辑高度腐烂的遗留系统。按照传统的重构思路，由于逻辑文档缺失且历史债务沉重，理清业务链条的成本往往高于重写的收益。但在 <strong>Spec-Driven Development (SDD)</strong> 范式下，可以通过以下路径实现系统重生：</p>
+<p>有一个我自己的做法：在项目根目录建一份 <code class="language-plaintext highlighter-rouge">AGENTS.md</code>，内容是通用规范；然后建一个 <code class="language-plaintext highlighter-rouge">CLAUDE.md</code>，内容只有一行：</p>
 
-<ol>
-  <li><strong>自动化逆向建模（Reverse Engineering via AST）</strong>：利用 AI 对百万行级别的代码库进行 <strong>抽象语法树（AST）</strong> 扫描，识别其中的业务判定模式（Predicates）与因果链路。</li>
-  <li><strong>规则语义化与收敛</strong>：通过规则精炼 Agent 将分散且冗余的逻辑碎片进行去重，并将其转化为一份不依赖具体语言的结构化 Specs（如符合 OpenAPI 风格或特定领域语义 IDL 的逻辑蓝图）。</li>
-  <li><strong>架构意图注入</strong>：在人工修正业务蓝图后，通过明确定义架构意图（如“Go 并发模型”、“零拷贝内存管理”），让 AI 基于高质量 Spec 重新生长出新的系统实现。</li>
-</ol>
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@AGENTS.md
+</code></pre></div></div>
 
-<p>这种方式论证了一个核心观点：<strong>代码实现不再是护城河，能够从混乱的物理实现中抽象出高维度意图并将其转化为结构化规范的能力，才是未来工程师的实战核武器。</strong> 以后衡量系统价值的标准，将取决于其 Specs 描述的深度与逻辑自洽性。</p>
+<p>这样 Claude Code 读到 CLAUDE.md，拉取 AGENTS.md 的内容，其他工具直接读 AGENTS.md，一份规范两边都能用。这个 symlink 式的做法不是官方推荐的，属于民间发现，用了几个月没出问题。</p>
 
-<hr />
+<h2 id="一句话总结">一句话总结</h2>
 
-<h3 id="架构视野-ddd-限界上下文ai-航行的认知边界">[架构视野] DDD 限界上下文：AI 航行的认知边界</h3>
-
-<p>很多技术讨论将 <strong>DDD（领域驱动设计）</strong> 视为理论负担，但在 AI 协作语境下，它已演变为确保护航 AI 逻辑不偏航的必备工具。AI 本身缺乏全局业务视角，如果没有明确的领域边界，AI 会倾向于生成跨域高度耦合的“大泥球”架构。</p>
-
-<p><strong>举例：清算系统中的聚合根约束</strong>
-在清算业务的迭代范例中，通过划定严格的 <strong>限界上下文（Bounded Context）</strong>，可以建立天然的架构围栏。系统规则严禁 AI 在“对账上下文”中直接穿透访问“用户信息实体”。所有的跨域交换必须通过专用的异步领域事件或防腐层（ACL）。</p>
-
-<p>当 AI 的认知负荷被局限在一个明确的领域边界内时，其生成的代码质量与自恰性对比处于“全局无约束”状态时会有指数级的提升。这就是 Vibe Engineering 与 Vibe Coding 的分水岭：前者致力于用纪律约束意图。</p>
-
-<hr />
-
-<h3 id="落地方案-感知反馈环将实效主义自动化">[落地方案] 感知反馈环：将“实效主义”自动化</h3>
-
-<p>如果在 Vibe Engineering 中，怀疑是核心心法，那么 <strong>感知反馈环（Sensory Feedback Loop）</strong> 就是将怀疑自动化的硬核手段。</p>
-
-<p><strong>技术范式：影子库与 BPF 监测驱动的验证链</strong>
-当系统变动不再通过传统的人工 Review 来判定质量，而是建立起一套全方位的“数字感官”：</p>
-<ol>
-  <li><strong>数据仿真与全量镜像</strong>：利用产线脱敏流量进行真实负载回放，这不仅包括请求的并发压测，还涉及对写操作产生的脏数据在影子环境下的闭环清理。</li>
-  <li><strong>底层感知系统（BPF &amp; Instrumentation）</strong>：利用 <strong>BPF（Berkeley Packet Filter）</strong> 或者是动态字节码注入（Java Agent），系统能以极低损耗监控 AI 代码在内核态的真实表现。例如，感知某次 SQL 重构是否导致了磁盘 I/O Wait 的非线性增长，或者是观测特定逻辑在 CPU L1/L2 缓存上的命中率抖动。</li>
-  <li><strong>闭环负反馈（Contextual Correcting）</strong>：如果感官系统捕捉到生成的逻辑导致了连接池溢出或是磁盘 Buffer Pool 的命中率大幅下降，这些底层的 Profiling 数据会被自动结构化并反馈给生成 Agent，触发其切换到二级索引重排或分布式 Read-Through 模式。</li>
-  <li><strong>Agentic Fuzzing（演进式模糊测试）</strong>：基于业务 Spec 自动生成成千上万个极端边界用例。例如，向支付接口注入异形字符、超长数值或非法的时间戳，以此探测代码在异常输入下的健壮性边界。</li>
-</ol>
-
-<p>这种“带感官”的系统让工程师真正从琐碎的代码阅读中解放。人的精力回归到定义性能上限、确立资损红线以及架构逻辑的演进设计上。这种从“手动操作”向“感官决策”的跃迁，正是 Vibe Engineering 的精髓。</p>
-
-<hr />
-
-<h3 id="总结迈向氛围工程的新纪元">总结：迈向氛围工程的新纪元</h3>
-
-<p>软件工程正步入由人定义意图、由 AI 完美执行的 <strong>氛围工程（Vibe Engineering）</strong> 时代。这本质上是软件抽象层级的又一次质变：从“面向过程”到“面向对象”，再到今天的“面向意图（Intent-Centric Programming）”。</p>
-
-<p>未来的程序员，其核心价值将不再是打字的速度或对语法的熟悉程度，而是其<strong>策划（Curating）意图</strong>的能力、<strong>设定规则（Discipline）</strong>的严谨度，以及<strong>构建感知能力</strong>的系统工程素养。在这个由意图编织的时代，回归本质，方得立足。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="技术" /><summary type="html"><![CDATA[真正的工程演进不在于对“感觉”的盲从，而在于如何建立一套驾驭 AI 产出的硬核纪律 Vibe Engineering]]></summary></entry></feed>
+<p>CLAUDE.md 的加载是「全量拼接，不是近者优先」。如果你在大型 monorepo 里或者多级目录结构里用 Agent，需要主动管理每一级 CLAUDE.md 的作用域，并且在父级规则里明确标注「以子目录为准」的边界，否则冲突规则会让 Agent 的行为变得不可预测，排查起来很费劲。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Claude" /><category term="CLAUDE.md" /><category term="AGENTS.md" /><category term="工程实践" /><summary type="html"><![CDATA[以为 CLAUDE.md 只有「用户级 + 项目级」两份？我也这么以为，直到在一个子模块里跑出了薛定谔的输出格式。把踩坑过程和加载机制拆清楚，记录一下。]]></summary></entry></feed>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hermes 多 Agent 工作流：从看到到跑起来 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Hermes 多 Agent 工作流：从看到到跑起来" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Hermes（爱马仕）今年在 Agent 圈很热，各种 demo 看着挺酷。花了一个周末把它跑起来，记录一下真实落地和网上教程的差距，以及几个文档里没写清楚的地方。" />
+<meta property="og:description" content="Hermes（爱马仕）今年在 Agent 圈很热，各种 demo 看着挺酷。花了一个周末把它跑起来，记录一下真实落地和网上教程的差距，以及几个文档里没写清楚的地方。" />
+<link rel="canonical" href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html" />
+<meta property="og:url" content="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-05-06T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Hermes 多 Agent 工作流：从看到到跑起来" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-06-13T14:30:46+08:00","datePublished":"2026-05-06T00:00:00+08:00","description":"Hermes（爱马仕）今年在 Agent 圈很热，各种 demo 看着挺酷。花了一个周末把它跑起来，记录一下真实落地和网上教程的差距，以及几个文档里没写清楚的地方。","headline":"Hermes 多 Agent 工作流：从看到到跑起来","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-06-13T14:30:46+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>Hermes 多 Agent 工作流：从看到到跑起来</h1>
+    <p class="post-meta">
+      <time datetime="2026-05-06T00:00:00+08:00">2026-05-06</time>
+       · 最后更新于 <time datetime="2026-06-13T14:30:46+08:00">2026-06-13</time>
+       · AI / 技术
+       · AI, Hermes, 多Agent, 工作流, 工程实践
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">AI</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">Hermes 多 Agent 工作流：从看到到跑起来</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>四月底开始看到各种 Hermes 的 demo：从飞书发一个需求，Agent 军团接着完成市场调研、写 PRD、出架构设计、开发、测试，全程不用人插手。看着确实酷。</p>
+
+<p>花了一个周末把它跑起来，记录一下中间踩过的坑，以及我对这个框架目前能力边界的判断。</p>
+
+<h2 id="hermes-是什么">Hermes 是什么</h2>
+
+<p>从架构上看，Hermes 是一个以「任务看板」（Kanban）为核心的异步多 Agent 框架。跟主流的同步编排框架（Orchestrator 派一批 Worker、等结果收回来）不同，Hermes 的任务是写进持久队列里的，Agent 按状态自己拉任务，跑完再更新状态，支持跨会话、跨天、跨重启继续运行。</p>
+
+<p>理论上这个设计解决了长任务的一个大问题：任务不再绑定在一次会话里，中途可以被人工介入，可以挂起来等外部条件，可以失败后从中间重跑而不是从头。</p>
+
+<p>公式很简单：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hermes = 任务队列 + Agent 集合 + 消息总线 + 工具权限管理
+</code></pre></div></div>
+
+<p>每个 Agent 有自己的系统提示、工具集、上下文窗口，互相之间通过消息总线通信，不共享上下文。</p>
+
+<h2 id="环境搭建文档和实际有出入">环境搭建：文档和实际有出入</h2>
+
+<p>官方文档写的是几行命令就能起来，实际操作有几个地方文档没说清楚。</p>
+
+<p><strong>模型配置</strong>。Hermes 官方支持接多个模型 API，主流教程用 Kimi K2.6 演示，因为它有官方推荐且开源。我在公司内网环境下，代理设置花了不少时间，文档里没提这部分。</p>
+
+<p><strong>消息总线</strong>。默认用文件系统模拟消息队列（每个 Agent 一个目录，写文件就是发消息），生产环境当然要换成真正的队列（Redis 或者 RabbitMQ），但这个迁移文档写得很粗。本地测试用文件系统就够了，需要知道的是：文件系统的并发写入没有锁，多个 Agent 同时写同一个任务状态文件会出问题，本地测试尽量不要多 Agent 并发跑同一个任务的同一个子步骤。</p>
+
+<p><strong>工具权限</strong>。这是最容易踩坑的地方，也是 demo 里最不演示的地方。Hermes 里每个 Agent 的工具集要显式配置，没有配置的工具 Agent 调不到，调了会报「工具不存在」而不是权限报错，排查很迷惑。配置文件大概是这样：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">agents</span><span class="pi">:</span>
+  <span class="na">researcher</span><span class="pi">:</span>
+    <span class="na">tools</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">web_search</span><span class="pi">,</span> <span class="nv">read_file</span><span class="pi">]</span>
+    <span class="na">model</span><span class="pi">:</span> <span class="s">kimi-k2</span>
+  <span class="na">developer</span><span class="pi">:</span>
+    <span class="na">tools</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">read_file</span><span class="pi">,</span> <span class="nv">write_file</span><span class="pi">,</span> <span class="nv">run_bash</span><span class="pi">]</span>
+    <span class="na">model</span><span class="pi">:</span> <span class="s">kimi-k2</span>
+  <span class="na">reviewer</span><span class="pi">:</span>
+    <span class="na">tools</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">read_file</span><span class="pi">,</span> <span class="nv">run_bash</span><span class="pi">]</span>
+    <span class="na">model</span><span class="pi">:</span> <span class="s">kimi-k2</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">developer</code> 可以写文件，<code class="language-plaintext highlighter-rouge">reviewer</code> 不能——这个权限边界要自己想清楚，框架不会替你设计。</p>
+
+<h2 id="跑一个真实任务">跑一个真实任务</h2>
+
+<p>用一个我实际跑过的场景说说效果：给一个 Go 的内部工具库写一批单元测试。</p>
+
+<p>任务分发给三个 Agent：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">analyst</code>：读源码、梳理函数签名和依赖关系、输出测试点清单</li>
+  <li><code class="language-plaintext highlighter-rouge">developer</code>：根据清单写测试代码</li>
+  <li><code class="language-plaintext highlighter-rouge">reviewer</code>：跑测试、检查覆盖率、输出 review 意见</li>
+</ul>
+
+<p>理论上这是多 Agent 的理想场景：任务可清晰切分、各 Agent 产物是下一个的输入、不需要共享上下文。</p>
+
+<p>实际跑下来，前两步基本达到预期，<code class="language-plaintext highlighter-rouge">analyst</code> 出了一份还算准确的清单，<code class="language-plaintext highlighter-rouge">developer</code> 照着写出来的测试能编译，覆盖了七八成的 case。</p>
+
+<p>问题出在 <code class="language-plaintext highlighter-rouge">reviewer</code> 这步。它跑测试发现有几个 case 失败，然后做了一件让我没预料到的事：它直接修改了 <code class="language-plaintext highlighter-rouge">developer</code> 已经写好的测试文件，把 assertion 改成了「更宽松」的版本，让测试通过了。表面上看任务完成了，实际上它在用最省事的方式过关，而不是真正修复逻辑。</p>
+
+<p>这个问题的根因是 <code class="language-plaintext highlighter-rouge">reviewer</code> 的系统提示写得不够严格——「确保测试通过」和「修复测试中的错误」是两件不同的事，但我没有在提示词里区分。多 Agent 系统里，每个角色的职责边界必须在提示词里讲得很死，含糊的空间会被模型用来走捷径。</p>
+
+<p>修完 <code class="language-plaintext highlighter-rouge">reviewer</code> 的提示，加了一句「你只能修改测试文件里的 helper 和 setup 代码，不能修改 assertion，assertion 必须联系 developer agent 修改」，结果就正常了——它开始发消息给 developer，让 developer 来修实现而不是改断言。</p>
+
+<h2 id="和-subagent-模式的比较">和 Subagent 模式的比较</h2>
+
+<p>Hermes 的异步 Kanban 模式和 Claude Code 的 Subagent 模式，适合的场景不一样。</p>
+
+<p>Subagent 适合：任务有明确终点、结果需要在本次会话里拿到、子任务之间依赖关系复杂需要 Orchestrator 实时调度。代码审查、文档生成这类「发出去、等收回来」的任务，Subagent 更顺。</p>
+
+<p>Hermes 适合：任务周期长（几小时到几天）、可能需要人工介入某个环节、各 Agent 之间的协作是持续的而不是单次交付。一个「从需求到上线」的完整开发链路，如果放在 Subagent 里，单次会话跑下来上下文会爆，Hermes 的分阶段持久化就有价值。</p>
+
+<p>不适合 Hermes 的场景也很明确：任务依赖关系是强顺序的（B必须严格等 A 交付后才能开始）、或者任务对实时性要求高（不能等队列调度延迟）。</p>
+
+<h2 id="目前的判断">目前的判断</h2>
+
+<p>跑完这一圈，我觉得 Hermes 现阶段是「思路正确、工程成熟度不足」的状态。任务队列、持久化、多 Agent 消息总线这套设计是对的，解决的是真实的工程问题。但文档的完整度和错误信息的友好度，还停留在「作者自己用着没问题」的阶段。</p>
+
+<p>比较实际的用法：现阶段不要把它用在核心业务链路上，更适合作为「内部效率工具」跑——代码批量处理、文档生成、测试覆盖率提升这类容错性高的场景。出了问题能重跑、不影响线上，这时候 Hermes 的异步持久化优势才能发挥出来，代价也是可以接受的。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html">上下文工程：比 Prompt 更重要的那一层</a> <small>(2026-06-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">多 Agent 系统的协作模式：从单兵到军团</a> <small>(2026-06-06)</small></li>
+        
+        <li><a href="/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html">AI 时代的深度工作：注意力是最后的稀缺资源</a> <small>(2026-05-31)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html">AI Coding 落地存量大项目：规范先于工具</a> <small>(2026-05-27)</small></li>
+        
+        <li><a href="/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html">MySQL 向量检索实践：当数据库遇上 Embedding</a> <small>(2026-05-23)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html" rel="prev">← 上一篇：CLAUDE.md 多层加载：比你想的复杂</a>
+        
+        
+        <a class="next" href="/ai/%E6%8A%80%E6%9C%AF/2026/05/09/MCP%E5%8D%8F%E8%AE%AE%E6%B7%B1%E5%85%A5-AI%E5%BA%94%E7%94%A8%E7%9A%84USB-C%E6%8E%A5%E5%8F%A3.html" rel="next">下一篇：MCP 协议深入：AI 应用的 USB-C 接口 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=Hermes%20%E5%A4%9A%20Agent%20%E5%B7%A5%E4%BD%9C%E6%B5%81%EF%BC%9A%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5&url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>

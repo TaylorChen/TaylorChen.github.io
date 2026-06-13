@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>AI 时代的深度工作：注意力是最后的稀缺资源 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="AI 时代的深度工作：注意力是最后的稀缺资源" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="当 AI 把执行成本压到接近于零，产出的瓶颈从「做得多快」变成「想得多清」。这篇文章讨论一个反直觉的结论：AI 越强，深度工作越值钱。" />
+<meta property="og:description" content="当 AI 把执行成本压到接近于零，产出的瓶颈从「做得多快」变成「想得多清」。这篇文章讨论一个反直觉的结论：AI 越强，深度工作越值钱。" />
+<link rel="canonical" href="http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html" />
+<meta property="og:url" content="http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-05-31T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="AI 时代的深度工作：注意力是最后的稀缺资源" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-06-13T08:13:31+08:00","datePublished":"2026-05-31T00:00:00+08:00","description":"当 AI 把执行成本压到接近于零，产出的瓶颈从「做得多快」变成「想得多清」。这篇文章讨论一个反直觉的结论：AI 越强，深度工作越值钱。","headline":"AI 时代的深度工作：注意力是最后的稀缺资源","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-06-13T08:13:31+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>AI 时代的深度工作：注意力是最后的稀缺资源</h1>
+    <p class="post-meta">
+      <time datetime="2026-05-31T00:00:00+08:00">2026-05-31</time>
+       · 最后更新于 <time datetime="2026-06-13T08:13:31+08:00">2026-06-13</time>
+       · 思考
+       · 思考, 深度工作, 注意力, AI, 效率
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">思考</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">AI 时代的深度工作：注意力是最后的稀缺资源</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>卡尔·纽波特写《深度工作》是 2016 年，那时的敌人是 Slack 和推送通知。十年后的今天，敌人换了——是那个随叫随到、永远在线、回答一切的 AI 助手。这听起来很怪：AI 不是来帮我们的吗？是，但它同时制造了一种新型的注意力碎片化，而且比通知更隐蔽。</p>
+
+<h2 id="新的碎片化等待与切换的缝隙">新的碎片化：等待与切换的缝隙</h2>
+
+<p>观察一下自己用 AI 编程的真实节奏：下达任务，Agent 跑两分钟，这两分钟干什么？大多数人会切去看消息、刷一眼群、开第二个任务。等 Agent 跑完，你已经离开了刚才的思维现场，要花几十秒甚至几分钟「重新加载」上下文。</p>
+
+<p>这种模式有个特点：每个间隙都「短得不值得深入，长得无法忽略」。它不像写代码被打断那样有明显的痛感，反而带着一种「我在并行处理、效率很高」的错觉。但认知科学的结论很无情：人类不存在真正的并行深度思考，只有快速切换，而每次切换都有损耗——残留注意力（attention residue）会让你在新任务上的表现下降，哪怕你自我感觉良好。</p>
+
+<p>更隐蔽的是依赖性碎片化：遇到一点点不确定就问 AI，得到答案再继续。每一次「问一下」都是一次思维中断。以前我们查文档前会先想十秒，现在连这十秒都省了。省掉的不是十秒，是形成自己判断的那个过程。</p>
+
+<h2 id="瓶颈的转移">瓶颈的转移</h2>
+
+<p>为什么这件事在 2026 年特别值得谈？因为瓶颈转移了。</p>
+
+<p>AI 之前，工程师的产出公式约等于「思考质量 × 执行速度」，执行占大头——一个想法要变成上线的代码，中间隔着几天的体力活。所以行业奖励手快的人。</p>
+
+<p>AI 把执行成本压到接近于零之后，公式变成了「思考质量 × 判断次数」。Agent 一晚上能产出几千行代码，方向错了就是几千行的垃圾。你的杠杆不再是写得快，而是想得清：问题定义对不对、方案的约束找全没有、AI 产出的东西该不该收。</p>
+
+<p>而「想得清」恰恰是深度工作的产物。它需要不被打断的、连续的、有些枯燥的专注时段。也就是说：<strong>AI 越强，执行越廉价，深度思考的相对价值就越高</strong>——这是被很多「效率内容」完全说反的一点。他们教你怎么同时开五个 Agent，却不教你怎么保住那个决定五个 Agent 是否在做正确事情的脑子。</p>
+
+<h2 id="我调整后的工作结构">我调整后的工作结构</h2>
+
+<p>过去半年我重构了自己的工作模式，核心是把「与 AI 协作」也纳入深度/浅度的二分法管理。</p>
+
+<p><strong>深度时段不开 Agent。</strong> 每天上午保留两小时，只做问题定义、方案设计、架构权衡这类「上游思考」，纸笔或白板优先。这个时段的产出物是清晰的任务描述和判断标准——它们随后会成为 Agent 的输入。讽刺的是，这个不用 AI 的时段，恰恰是 AI 产出质量的决定因素：你给 Agent 的 spec 有多清楚，它的产出就有多能用。</p>
+
+<p><strong>批处理 Agent 任务。</strong> 把可以委托的任务攒成批，集中在固定时段发出去，让多个 Agent 并行跑长任务（一小时以上的那种），而不是发一个等一个。等待期不再是「缝隙」，因为我此时整块地切去做另一件深度事务，回来后集中验收。关键区别：切换是计划内的、以小时为单位的，而不是被动的、以分钟为单位的。</p>
+
+<p><strong>给「问 AI」设置十秒规则。</strong> 遇到问题，先强迫自己用十秒形成一个预期答案，再去问。这十秒保住了两样东西：自己的判断肌肉，以及对 AI 答案的校验能力——你有了预期，才能在 AI 胡说时立刻闻出味儿来。没有预期的提问，得到的答案你只能全盘接受。</p>
+
+<p><strong>验收是深度工作，不是浅度工作。</strong> 这是最容易出错的地方。Review AI 产出的代码看起来像浅活儿，划划屏幕点点头。但 AI 产出的错误往往是「局部完美、全局错位」型的——每个函数都对，组合起来方向不对。这种错误只有带着完整上下文深读才能发现。我现在把大块验收安排在精力好的时段，和写设计文档同等对待。</p>
+
+<h2 id="一周的自我观测实验">一周的自我观测实验</h2>
+
+<p>道理讲完了，给一组自己的数据。今年三月我做了两周对照实验：第一周按旧习惯工作（Agent 随用随发、消息随到随看），第二周按上面的结构执行。每天记录三个指标：深度时段总时长（连续 25 分钟以上无切换才计入）、任务返工次数（AI 产出验收不通过需要重派的次数）、主观精力评分。</p>
+
+<p>结果比我预期的更明显。旧习惯那一周，日均深度时长只有 1.2 小时——我自以为「整天都在工作」，但符合深度标准的时间少得可怜，绝大多数时间花在了切换、等待和碎片化的对话里。返工率是另一个刺眼的数字：随手发出去的 Agent 任务，41% 需要返工；而第二周经过上午深度时段打磨过 spec 的任务，返工率降到 12%。换句话说，<strong>在任务定义上多花的二十分钟，平均省下了一个多小时的返工与扯皮</strong>。</p>
+
+<p>第二周的日程骨架大概是这样：9:00–11:00 深度时段（关机状态，只许纸笔和编辑器）；11:00–11:30 批量派发 Agent 任务，通常 3~5 个；11:30–12:30 处理消息与会议；下午两个 90 分钟块，一个用于验收与深读 AI 产出，一个用于第二优先级的深度事务；Agent 在后台跑它们的，我不看进度条。这个结构最大的反直觉之处是：<strong>AI 的使用时长下降了，AI 的有效产出反而上升了</strong>。</p>
+
+<p>当然，两周的自我实验谈不上严谨，样本是一个人，任务也不完全可比。但趋势与认知科学的既有结论一致，我愿意按这个方向继续押注。</p>
+
+<h2 id="常见的两个反驳">常见的两个反驳</h2>
+
+<p><strong>「多 Agent 并行不就是为了榨干等待时间吗？你这是开倒车。」</strong> 不矛盾。并行本身没问题，问题在并行的粒度。以分钟为单位、被 Agent 进度驱动的被动切换是碎片化；以小时为单位、按自己节奏计划的主动切换是批处理。前者你是 Agent 的随从，后者你是调度者。区别不在并行数量，在谁掌握切换的主导权。</p>
+
+<p><strong>「初级工程师没有那么多上游思考可做，这套结构是不是只适合资深的人？」</strong> 恰恰相反，越早建立越好。初级阶段的深度时段可以用来做另一件事：深读 AI 产出，搞懂每一行为什么这么写。AI 时代初级工程师最大的危险不是被替代，而是从未真正写过、读懂过足够多的代码，导致判断力永远没机会长出来。深度时段就是判断力的健身房，资历越浅越需要。</p>
+
+<h2 id="防住认知外包的滑坡">防住「认知外包」的滑坡</h2>
+
+<p>最后说一个更长期的担忧：认知外包的滑坡效应。</p>
+
+<p>用进废退在认知能力上同样成立。如果所有难题第一反应都是丢给 AI，三年后你会发现自己丧失了「在没有答案提示的情况下硬想」的能力。而这个能力恰恰是处理全新问题——AI 训练数据里没有的问题——的唯一依靠。</p>
+
+<p>我的对策不是少用 AI，而是刻意保留「徒手区」：每周留一些问题强制自己独立解决，像健身一样维持认知肌肉。读完 AI 的方案后强迫自己说出「它为什么这么做、我原本会怎么做、差异在哪」，把每次委托变成一次对照学习而不是一次卸载。</p>
+
+<h2 id="结语">结语</h2>
+
+<p>注意力是 AI 时代最后的稀缺资源——算力在变便宜，模型在变强，执行在变快，唯独人类清醒、连续、高质量的注意力，一天还是只有那么几个小时，而且正在被更多东西争夺。</p>
+
+<p>深度工作在前 AI 时代是效率优势，在 AI 时代更像生存前提：留给人的工作，剩下的基本都是必须深度才做得好的部分——定义问题、设定约束、做判断。浅的部分 AI 都拿走了。</p>
+
+<p>如果想试试，给个最小起步：明天上午挑两小时，关掉所有 AI 对话窗口，只带一个明确的问题进去，比如「下季度这个系统最大的技术风险是什么」，结束时写成一页纸。拿这一页纸去派 Agent 任务，对比一下平时随手发任务的产出质量，自己感受。我赌你回不去了。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html">上下文工程：比 Prompt 更重要的那一层</a> <small>(2026-06-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">多 Agent 系统的协作模式：从单兵到军团</a> <small>(2026-06-06)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html">AI Coding 落地存量大项目：规范先于工具</a> <small>(2026-05-27)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html">异步 Agent：把任务扔进后台之后</a> <small>(2026-05-14)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/09/MCP%E5%8D%8F%E8%AE%AE%E6%B7%B1%E5%85%A5-AI%E5%BA%94%E7%94%A8%E7%9A%84USB-C%E6%8E%A5%E5%8F%A3.html">MCP 协议深入：AI 应用的 USB-C 接口</a> <small>(2026-05-09)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html" rel="prev">← 上一篇：AI Coding 落地存量大项目：规范先于工具</a>
+        
+        
+        <a class="next" href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html" rel="next">下一篇：多 Agent 系统的协作模式：从单兵到军团 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=AI%20%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C%EF%BC%9A%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90&url=http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>

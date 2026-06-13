@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>我的 2026 开发工作流 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="我的 2026 开发工作流" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="三年没写过这类文章了，工作流变化太大，趁春节后整理 dotfiles 的机会记录一版。终端、编辑器、AI 工具的分工，和几个自己写的小脚本。" />
+<meta property="og:description" content="三年没写过这类文章了，工作流变化太大，趁春节后整理 dotfiles 的机会记录一版。终端、编辑器、AI 工具的分工，和几个自己写的小脚本。" />
+<link rel="canonical" href="http://localhost:4000/%E5%B7%A5%E5%85%B7/2026/02/22/%E6%88%91%E7%9A%842026%E5%BC%80%E5%8F%91%E5%B7%A5%E4%BD%9C%E6%B5%81.html" />
+<meta property="og:url" content="http://localhost:4000/%E5%B7%A5%E5%85%B7/2026/02/22/%E6%88%91%E7%9A%842026%E5%BC%80%E5%8F%91%E5%B7%A5%E4%BD%9C%E6%B5%81.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-02-22T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="我的 2026 开发工作流" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-06-13T08:15:53+08:00","datePublished":"2026-02-22T00:00:00+08:00","description":"三年没写过这类文章了，工作流变化太大，趁春节后整理 dotfiles 的机会记录一版。终端、编辑器、AI 工具的分工，和几个自己写的小脚本。","headline":"我的 2026 开发工作流","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/%E5%B7%A5%E5%85%B7/2026/02/22/%E6%88%91%E7%9A%842026%E5%BC%80%E5%8F%91%E5%B7%A5%E4%BD%9C%E6%B5%81.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/%E5%B7%A5%E5%85%B7/2026/02/22/%E6%88%91%E7%9A%842026%E5%BC%80%E5%8F%91%E5%B7%A5%E4%BD%9C%E6%B5%81.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-06-13T08:15:53+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>我的 2026 开发工作流</h1>
+    <p class="post-meta">
+      <time datetime="2026-02-22T00:00:00+08:00">2026-02-22</time>
+       · 最后更新于 <time datetime="2026-06-13T08:15:53+08:00">2026-06-13</time>
+       · 工具
+       · 工具, 效率, 终端, dotfiles, AI
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">工具</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">我的 2026 开发工作流</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>上一次写工具类的文章还是 2023 年那篇 Mac 软件推荐。三年过去，列表里一半的软件已经不用了，工作流的变化比我预期的大得多——主要是 AI 工具进来之后，很多原来的「效率神器」变得没什么存在感了。趁春节后整理 dotfiles，记录一版现在的状态。</p>
+
+<p>先说结论：我现在的工作流大概是「终端 + 编辑器 + 两个 AI 入口」，软件数量比三年前少了一半。</p>
+
+<h2 id="终端还是大本营">终端还是大本营</h2>
+
+<p>终端用 Ghostty，从 iTerm2 迁过来一年多了。说实话迁移的理由不充分，就是馋它的渲染速度，迁完之后也没觉得生产力有什么变化，但用着舒服。配置就二十来行，这点比 iTerm2 那个设置面板强。</p>
+
+<p>shell 是 zsh + 一套用了快十年、缝缝补补的配置。几个真正高频的东西：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># fzf 接管历史搜索和文件跳转，每天按几百次</span>
+<span class="c"># zoxide 替代 cd，z proj 直接跳，肌肉记忆已经离不开</span>
+<span class="c"># direnv 进目录自动加载环境变量，多项目切换的救命稻草</span>
+<span class="nb">eval</span> <span class="s2">"</span><span class="si">$(</span>zoxide init zsh<span class="si">)</span><span class="s2">"</span>
+<span class="nb">eval</span> <span class="s2">"</span><span class="si">$(</span>direnv hook zsh<span class="si">)</span><span class="s2">"</span>
+<span class="nb">source</span> &lt;<span class="o">(</span>fzf <span class="nt">--zsh</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>项目级的任务统一用 justfile，把「这个项目怎么跑、怎么测、怎么发」固化下来。这个习惯在 AI 时代意外地增值了——Agent 进到项目里，看一眼 justfile 就知道怎么构建和跑测试，不用我在提示词里解释：</p>
+
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># justfile —— 同时给人和 Agent 看
+</span><span class="nl">test</span><span class="o">:</span>
+    <span class="err">go</span> <span class="err">test</span> <span class="err">-race</span> <span class="err">./...</span>
+
+<span class="nl">lint</span><span class="o">:</span>
+    <span class="err">golangci-lint</span> <span class="err">run</span> <span class="err">--timeout</span> <span class="err">5m</span>
+
+<span class="nl">dev</span><span class="o">:</span>
+    <span class="err">docker</span> <span class="err">compose</span> <span class="err">up</span> <span class="err">-d</span> <span class="err">db</span> <span class="err">redis</span> <span class="err">&amp;&amp;</span> <span class="err">air</span>
+</code></pre></div></div>
+
+<h2 id="编辑器分裂的一年">编辑器：分裂的一年</h2>
+
+<p>这块最不稳定。Cursor 用了一年半，去年下半年开始一部分工作迁回了「Neovim + 终端里的 Agent CLI」的组合。现在的分裂状态是：大块的功能开发和重构，在终端里直接派给 Agent，我盯产出；小修小补和需要「手感」的代码（性能敏感的热路径、棘手的并发逻辑），Neovim 手写。</p>
+
+<p>说不上哪种是终态。观察下来规律是：<strong>我对代码的「掌控欲」和任务的风险成正比</strong>。风险低的代码我越来越不在乎是谁写的，风险高的代码我必须一行行过手——哪怕 AI 写得比我好。这可能不是理性分工，是心理需求，但工作流要顺应心理，拧着来坚持不下去。</p>
+
+<p>编辑器内的 AI 补全反而关掉了。单行补全的打断感越来越明显，思路总被半截的建议带偏。要么整块委托，要么完全手写，中间态对我来说最难受。这个可能因人而异。</p>
+
+<h2 id="两个-ai-入口的分工">两个 AI 入口的分工</h2>
+
+<p>桌面端的 Chat 入口：查资料、讨论方案、读论文、写文档。特点是「我主导节奏，它提供信息」。</p>
+
+<p>终端里的 Agent CLI：派任务。特点是「它干活，我验收」。</p>
+
+<p>听起来是废话，但分工不清的时候真的很低效。早期我习惯什么都丢给 Chat,贴代码、贴报错，来回拷贝，又慢又丢上下文。后来强制自己：凡是涉及「改动这个仓库」的事，一律走 Agent，让它自己读文件;凡是「我需要弄懂一件事」，走 Chat。两边都顺了。</p>
+
+<p>还有个小习惯，每个项目根目录放一个 <code class="language-plaintext highlighter-rouge">AGENTS.md</code>（有的工具认 <code class="language-plaintext highlighter-rouge">CLAUDE.md</code>，内容同步），写清楚项目约定、测试怎么跑、哪些目录不要碰。这个文件的回报率是所有配置里最高的，没有之一。内容其实就是以前给新同事写的 onboarding 文档，稍微压缩了一下——给 AI 的文档和给人的文档正在变成同一份东西，这件事想想还挺有意思的。</p>
+
+<h2 id="几个自己写的小脚本">几个自己写的小脚本</h2>
+
+<p>零零碎碎写过不少，活下来的就三个。</p>
+
+<p><code class="language-plaintext highlighter-rouge">wip</code>：把当前改动打包成一个带上下文的描述（diff + 相关文件清单 + 最近的 commit），方便随时丢给 Agent 接着干。本质上是给 AI 的「交接文档」生成器，几十行 shell。</p>
+
+<p><code class="language-plaintext highlighter-rouge">prr</code>：拉一个 PR 的 diff 和评论到本地，喂给 Agent 做预审，把它的意见整理成草稿，我过一遍再提交。注意是草稿——直接让 AI 在 PR 上发评论这事我试过一个月，撤了，噪音太大惹人烦。</p>
+
+<p><code class="language-plaintext highlighter-rouge">logq</code>：包了一层日志平台的 API,支持用自然语言描述要查什么，转成查询语句。这个最常用，因为我到现在也记不住那个平台的查询语法，每次都现查文档，干脆不记了。</p>
+
+<h2 id="笔记和知识管理放弃治疗后反而好了">笔记和知识管理：放弃治疗后反而好了</h2>
+
+<p>笔记软件我换过的数量大概两位数，Notion、Obsidian、Logseq 都认真用过一年以上，每次都以「重新设计一遍标签体系然后吃灰」告终。</p>
+
+<p>去年彻底放弃了体系化这件事，退化成两个东西：一个仓库装 Markdown 文件，按年份分目录，文件名就是主题，写完不整理；查的时候不靠目录靠搜索——以前是 ripgrep，现在是直接问 AI，让它在仓库里找相关的几篇并把结论拼出来。</p>
+
+<p>讽刺的是，放弃整理之后笔记的实际利用率反而上去了。以前「这条笔记该放哪个分类」的纠结会让我少记很多东西，现在无脑往里扔，反正检索是 AI 的事。知识管理的瓶颈从来不在存，在取——取的问题被解决之后，存的规矩越少越好。这个变化我花了十年才接受，主要是心理上的：承认自己维护不了一个花园，只能维护一个堆。</p>
+
+<p>博客反而成了我唯一还在「精写」的输出。区别在于读者：笔记是给未来的自己和 AI 看的，越快越好；博客是给别人看的，值得花时间。两边的标准分开之后，两边都轻松了。</p>
+
+<h2 id="不用了的东西">不用了的东西</h2>
+
+<p>对照 2023 年那篇，被淘汰的：剪贴板历史工具（系统自带的够用了）、窗口管理器（外接一块竖屏后需求消失了）、各种 Markdown 编辑器（全部回到编辑器+预览）、番茄钟（试了十年，承认失败，我就不是这个节奏的人）。</p>
+
+<p>还有 Stack Overflow,不是刻意不用，是有一天突然意识到已经半年没打开过了。有点感慨，那个绿色对勾陪了我整个职业生涯的前半段。</p>
+
+<h2 id="还没解决的问题">还没解决的问题</h2>
+
+<p>也列一下没顺的地方，免得这篇显得太岁月静好。</p>
+
+<p>多 Agent 任务的「精神负担」问题：同时跑三个以上 Agent 的时候，虽然手上不忙了，脑子里要维护每个任务的状态，下班的时候比纯手写代码的日子更累。这个不知道是工具问题还是我的问题，目前无解,只能控制并发数。</p>
+
+<p>AI 产出的代码风格漂移：同一个仓库，不同时期派的任务，生成的代码风格肉眼可见地不一致——错误处理的方式、日志的详略、注释的密度。AGENTS.md 里写了规范，遵守率大概八成，剩下两成靠 review 兜底。比人类同事好管，但没有想象中省心。</p>
+
+<p>碎片时间的利用反而变差了：以前通勤路上刷技术文章，现在习惯了「有问题直接问」，输入变得越来越按需，广撒网式的阅读少了。短期没感觉，长期我怀疑会让「不知道自己不知道」的盲区变大。今年试着恢复每周固定的泛读时间，效果待观察。</p>
+
+<h2 id="写在最后">写在最后</h2>
+
+<p>工具文章有个通病，写的人兴致勃勃，看的人抄完用三天就放弃。所以这篇尽量只写了「为什么这么分工」而不是「装这二十个软件」。工作流这个东西，内核其实就一句：高频动作的摩擦力降到最低，低频动作不要花心思优化。剩下的都是个人口味。</p>
+
+<p>dotfiles 在 GitHub 上,感兴趣的可以翻，不过里面注释是写给我自己的，凑合看。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html">上下文工程：比 Prompt 更重要的那一层</a> <small>(2026-06-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">多 Agent 系统的协作模式：从单兵到军团</a> <small>(2026-06-06)</small></li>
+        
+        <li><a href="/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html">AI 时代的深度工作：注意力是最后的稀缺资源</a> <small>(2026-05-31)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html">AI Coding 落地存量大项目：规范先于工具</a> <small>(2026-05-27)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html">异步 Agent：把任务扔进后台之后</a> <small>(2026-05-14)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/%E6%8A%80%E6%9C%AF/%E6%80%9D%E8%80%83/2026/02/18/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%B7%A5%E7%A8%8B%E4%B8%8E%E8%87%AA%E6%88%91%E8%AE%BE%E8%AE%A1.html" rel="prev">← 上一篇：2026年技术人的系统工程与自我设计</a>
+        
+        
+        <a class="next" href="/%E6%8A%80%E6%9C%AF/mysql/2026/03/08/MySQL-8.4-%E5%8D%87%E7%BA%A7%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95.html" rel="next">下一篇：MySQL 8.4 升级踩坑记录 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=%E6%88%91%E7%9A%84%202026%20%E5%BC%80%E5%8F%91%E5%B7%A5%E4%BD%9C%E6%B5%81&url=http://localhost:4000/%E5%B7%A5%E5%85%B7/2026/02/22/%E6%88%91%E7%9A%842026%E5%BC%80%E5%8F%91%E5%B7%A5%E4%BD%9C%E6%B5%81.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/%E5%B7%A5%E5%85%B7/2026/02/22/%E6%88%91%E7%9A%842026%E5%BC%80%E5%8F%91%E5%B7%A5%E4%BD%9C%E6%B5%81.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/%E5%B7%A5%E5%85%B7/2026/02/22/%E6%88%91%E7%9A%842026%E5%BC%80%E5%8F%91%E5%B7%A5%E4%BD%9C%E6%B5%81.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>

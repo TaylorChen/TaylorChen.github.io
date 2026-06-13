@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Harness 工程：不只是给 Agent 包一层 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Harness 工程：不只是给 Agent 包一层" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="Harness 这个词最近很热，但大多数介绍要么太虚要么太碎。结合自己搭过几个 Agent 系统的经历，聊聊 Harness 到底是什么、为什么单靠 Prompt 和 Context 不够，以及几个我认为被低估的工程细节。" />
+<meta property="og:description" content="Harness 这个词最近很热，但大多数介绍要么太虚要么太碎。结合自己搭过几个 Agent 系统的经历，聊聊 Harness 到底是什么、为什么单靠 Prompt 和 Context 不够，以及几个我认为被低估的工程细节。" />
+<link rel="canonical" href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/16/Harness%E5%B7%A5%E7%A8%8B-%E4%B8%8D%E5%8F%AA%E6%98%AF%E7%BB%99Agent%E5%8C%85%E4%B8%80%E5%B1%82.html" />
+<meta property="og:url" content="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/16/Harness%E5%B7%A5%E7%A8%8B-%E4%B8%8D%E5%8F%AA%E6%98%AF%E7%BB%99Agent%E5%8C%85%E4%B8%80%E5%B1%82.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-04-16T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Harness 工程：不只是给 Agent 包一层" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-06-13T14:30:41+08:00","datePublished":"2026-04-16T00:00:00+08:00","description":"Harness 这个词最近很热，但大多数介绍要么太虚要么太碎。结合自己搭过几个 Agent 系统的经历，聊聊 Harness 到底是什么、为什么单靠 Prompt 和 Context 不够，以及几个我认为被低估的工程细节。","headline":"Harness 工程：不只是给 Agent 包一层","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/16/Harness%E5%B7%A5%E7%A8%8B-%E4%B8%8D%E5%8F%AA%E6%98%AF%E7%BB%99Agent%E5%8C%85%E4%B8%80%E5%B1%82.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/16/Harness%E5%B7%A5%E7%A8%8B-%E4%B8%8D%E5%8F%AA%E6%98%AF%E7%BB%99Agent%E5%8C%85%E4%B8%80%E5%B1%82.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-06-13T14:30:41+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>Harness 工程：不只是给 Agent 包一层</h1>
+    <p class="post-meta">
+      <time datetime="2026-04-16T00:00:00+08:00">2026-04-16</time>
+       · 最后更新于 <time datetime="2026-06-13T14:30:41+08:00">2026-06-13</time>
+       · AI / 技术
+       · AI, Harness, Agent, 工程实践, 架构
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">AI</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">Harness 工程：不只是给 Agent 包一层</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>Harness 这个词是今年突然火起来的。最早是 Anthropic 工程师 Justin Young 在 2025 年底写了篇文章叫《Effective Harnesses for Long-Running Agents》，然后 OpenAI 在今年初把它命名为一门独立学科，Martin Fowler 网站给了个定义，LangChain 的人提炼出公式：Agent = Model + Harness。于是这个词开始铺满各种 AI 工程的文章。</p>
+
+<p>但看了一圈，要么是纯概念科普讲不清楚边界，要么是厂商 demo 看着很酷、真去落地一脸懵。我自己陆续搭过几个 Agent 系统，从单轮的工具调用到跑几小时的长任务，把这些经历和这些文章对照了一下，写下来聊聊我的理解——包括几个我觉得被普遍低估的点。</p>
+
+<h2 id="不是模型就是-harness">「不是模型就是 Harness」</h2>
+
+<p>LangChain 的 Vivek Trivedy 那个定义我觉得是最准的：如果你不是模型本身，你就是 Harness。</p>
+
+<p>换成工程语言就是：上下文怎么组装、工具怎么注册和调用、状态怎么持久化、错误怎么处理、循环什么时候停——这些事情全部加在一起，就是 Harness。有人把它理解成「给 LLM 写个胶水层」，差一点，胶水层是一段脚本，Harness 是一套系统，区别在于它要管生命周期。</p>
+
+<p>有个类比我觉得挺传神的：原生 LLM 就是一个没有内存、没有硬盘、也没有 I/O 设备的 CPU。上下文窗口是内存（快但有限），外部数据库是硬盘（大但慢），工具调用是设备驱动。Harness 就是操作系统——不是 CPU 的一部分，但 CPU 离了它什么也干不了。</p>
+
+<p>这个类比解释了为什么「Prompt Engineering」和「Context Engineering」都不足以描述这件事。Prompt 是你怎么跟 CPU 下指令，Context 是你往内存里装什么，而操作系统管的是任务调度、进程隔离、错误恢复、权限控制，是另一个维度的问题。</p>
+
+<h2 id="编排循环是核心但不是全部">编排循环是核心，但不是全部</h2>
+
+<p>生产级 Harness 里最基础的部件是编排循环，就是那个 Reason → Act → Observe 的 while 循环。实现起来其实没多复杂，粗略看就是：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="nf">llm</span><span class="p">(</span><span class="nf">build_context</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+    <span class="n">tool_calls</span> <span class="o">=</span> <span class="nf">parse_tool_calls</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="n">observations</span> <span class="o">=</span> <span class="nf">execute_tools</span><span class="p">(</span><span class="n">tool_calls</span><span class="p">)</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="nf">update_state</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">observations</span><span class="p">)</span>
+    <span class="n">done</span> <span class="o">=</span> <span class="nf">check_termination</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>但「复杂的地方不在循环本身，而在循环要处理的各种状态和边界」——这句话我在几篇文章里都看到了，说得准。</p>
+
+<p>真正让我头疼的是这几个边界：</p>
+
+<p><strong>终止条件</strong>。Agent 什么时候该停？如果让它自己判断，它要么过早宣布完成（任务做到一半就说好了），要么陷入无限循环不知道自己在转圈。我现在的做法是显式设置两个上限：最大工具调用次数（一般 50~100 次）和最大耗时，触发任一个都强制终止并汇报进度。</p>
+
+<p><strong>上下文填充率</strong>。Anthropic 的数据说上下文窗口超过 40% 填充率后输出质量会快速衰退，这个我自己测下来大体符合。但很多人不知道这个数字，默认把工具定义、历史消息、检索结果全塞进去，然后抱怨模型变笨了。我现在给每个 Agent 任务设置一个「上下文预算」，工具定义不超过 15%，历史消息不超过 30%，剩下留给当前任务素材。</p>
+
+<p><strong>工具执行失败</strong>。工具报错后应该告诉 Agent 然后让它重试，还是直接终止？这没有统一答案，取决于工具的语义。数据库查询失败大多数情况下重试没意义（参数就是错的），但文件操作失败可能是路径问题、重试前让 Agent 反思一下有价值。我的规则是：幂等操作允许重试一次，非幂等操作（写入、发送消息）失败直接停，必须人工介入。</p>
+
+<h2 id="两个被低估的组件">两个被低估的组件</h2>
+
+<p>大家写 Harness 文章经常花大量篇幅讲工具和记忆系统，但我觉得两个更重要的组件被低估了：<strong>状态持久化</strong>和<strong>护栏（Guardrails）</strong>。</p>
+
+<p>状态持久化不只是「把对话历史存到数据库」。更重要的问题是：Agent 在执行过程中产生的中间状态——部分完成的任务、已发现但未处理的问题、用过又释放的资源——这些东西如果丢了，整个任务就要重头来。我现在让 Agent 维护一个外部的 <code class="language-plaintext highlighter-rouge">task_state.json</code>，每个关键动作后强制写入，类似数据库事务的 WAL。这个文件也成了 Debug 最有用的工件，出问题了直接看这个文件，能还原 Agent 在哪一步、基于什么信息做了什么决策。</p>
+
+<p>护栏则是很多团队等出了安全事故才补的东西。我之前有个 Agent 被输入里的一段文本诱导，调用了它本不应该调用的删除工具——prompt injection 这件事真实发生过，不是理论风险。现在我的标准做法是：写入类、删除类工具，调用前强制走一次人工确认（MCP 的 <code class="language-plaintext highlighter-rouge">elicitation</code> 机制可以做到）；工具的返回值和工具的参数一样，都是不可信输入，要过内容检测。</p>
+
+<h2 id="harness-会被模型吃掉吗">Harness 会被模型吃掉吗</h2>
+
+<p>Anthropic 的产品负责人 Cat Wu 在访谈里说了句很有意思的话：「harness 会被模型当早餐吃掉」。意思是随着模型能力提升，以前需要 Harness 来补偿的能力会被模型原生支持，Harness 的边界会不断后退。</p>
+
+<p>我觉得这个判断对，但不完整。模型会吃掉的是那些「因为模型不够能干才需要在外面额外做的部分」——比如更繁琐的 COT 提示、更复杂的记忆检索策略。但有些 Harness 的功能跟模型能力无关：状态持久化、执行隔离、权限控制、工具调用的幂等保证——这些是系统工程问题，不是模型智能问题，模型再强也不能替你解决服务挂了状态丢了的问题。</p>
+
+<p>所以我对「Harness 早餐」这句话的理解是：Harness 里跟「模型聪不聪明」有关的部分会逐渐缩水，跟「系统可靠不可靠」有关的部分会越来越是核心。工程师在 Harness 上应该花的时间不会减少，只是花在不同地方。</p>
+
+<p>目前我们内部有两个 Agent 系统在生产环境跑着，一个做代码审查，一个做日志分析。Harness 这层加起来的代码量已经比业务逻辑多了。刚开始觉得这不对劲，后来意识到这大概就是对的状态——模型是引擎，Harness 是车，引擎越强你越需要一辆好车来承载它。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html">上下文工程：比 Prompt 更重要的那一层</a> <small>(2026-06-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">多 Agent 系统的协作模式：从单兵到军团</a> <small>(2026-06-06)</small></li>
+        
+        <li><a href="/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html">AI 时代的深度工作：注意力是最后的稀缺资源</a> <small>(2026-05-31)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html">AI Coding 落地存量大项目：规范先于工具</a> <small>(2026-05-27)</small></li>
+        
+        <li><a href="/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html">MySQL 向量检索实践：当数据库遇上 Embedding</a> <small>(2026-05-23)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/ai/2026/04/12/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E7%AB%9E%E4%BA%89%E5%8A%9B-%E4%BB%8E%E6%89%A7%E8%A1%8C%E8%80%85%E5%88%B0%E5%88%A4%E6%96%AD%E8%80%85%E7%9A%84%E8%9C%95%E5%8F%98.html" rel="prev">← 上一篇：AI 时代的竞争力：不是比谁用得更勤，是比谁判断得更准</a>
+        
+        
+        <a class="next" href="/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html" rel="next">下一篇：CLAUDE.md 多层加载：比你想的复杂 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=Harness%20%E5%B7%A5%E7%A8%8B%EF%BC%9A%E4%B8%8D%E5%8F%AA%E6%98%AF%E7%BB%99%20Agent%20%E5%8C%85%E4%B8%80%E5%B1%82&url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/16/Harness%E5%B7%A5%E7%A8%8B-%E4%B8%8D%E5%8F%AA%E6%98%AF%E7%BB%99Agent%E5%8C%85%E4%B8%80%E5%B1%82.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/16/Harness%E5%B7%A5%E7%A8%8B-%E4%B8%8D%E5%8F%AA%E6%98%AF%E7%BB%99Agent%E5%8C%85%E4%B8%80%E5%B1%82.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/16/Harness%E5%B7%A5%E7%A8%8B-%E4%B8%8D%E5%8F%AA%E6%98%AF%E7%BB%99Agent%E5%8C%85%E4%B8%80%E5%B1%82.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>
