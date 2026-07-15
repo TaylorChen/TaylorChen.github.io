@@ -1,839 +1,683 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="zh-CN" /><updated>2026-06-13T14:37:22+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">小黄鸭</title><subtitle>这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><author><name>小黄鸭</name></author><entry><title type="html">上下文工程：比 Prompt 更重要的那一层</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html" rel="alternate" type="text/html" title="上下文工程：比 Prompt 更重要的那一层" /><published>2026-06-13T00:00:00+08:00</published><updated>2026-06-13T08:13:49+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html"><![CDATA[<p>2023 年大家卷 Prompt 工程，2025 年之后行业共识逐渐转向一个更大的概念：上下文工程（Context Engineering）。两者的区别一句话能说清——Prompt 工程优化「你怎么对模型说话」，上下文工程管理「模型做决策的那一刻，窗口里到底有什么」。</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="zh-CN" /><updated>2026-07-15T23:27:15+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">小黄鸭</title><subtitle>这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><author><name>小黄鸭</name></author><entry><title type="html">发现你的未知：Agentic Coding 的地图与疆域</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html" rel="alternate" type="text/html" title="发现你的未知：Agentic Coding 的地图与疆域" /><published>2026-07-14T00:00:00+08:00</published><updated>2026-07-15T23:21:37+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html"><![CDATA[<p>先交代实践背景：这套方法论来自 Anthropic 一位工程师（@trq212）的总结，我照着用了两周，这篇一半是转述，一半是我自己的实践笔记。先说结论——值得用，而且它改变的主要不是技巧，是心态。</p>
 
-<p>单轮问答时代两者几乎是一回事。但当任务变成长程 Agent——跑几十分钟、调几百次工具、处理几万行代码——窗口里的内容 95% 不再是你写的 prompt，而是系统注入的工具定义、检索结果、历史消息、文件内容。这时候决定产出质量的，是这 95% 的管理水平。</p>
+<h2 id="地图与疆域">地图与疆域</h2>
 
-<h2 id="上下文是稀缺资源要当预算管">上下文是稀缺资源，要当预算管</h2>
+<p>框架的核心是一个隐喻。你给 Agent 的 prompt、上下文、配置，是<strong>地图</strong>；代码库、真实约束、你脑子里的真实意图，是<strong>疆域</strong>。两者的差集就是 <strong>unknowns</strong>——Agent 每撞上一块地图没标注的疆域，只能按「对你意图的最佳猜测」行动。任务越大，撞上的未知越多，猜错的累积越可观。</p>
 
-<p>先建立一个核心心智：<strong>上下文窗口不是仓库，是工作台</strong>。仓库越大越好，工作台不是——堆满杂物的工作台干不了精细活。</p>
+<p>这个隐喻一下子解开了我用 Agent 时的一个长期困惑：为什么指令写详细也不对、写简略也不对？写太细，它该转向时也死守指令；写太粗，它按「业界最佳实践」补空——而最佳实践未必是你的场景。原来两头难受的根源是同一个：<strong>没有管理未知</strong>。指令的粗细只是在未知面前换姿势，未知本身一点没少。</p>
 
-<p>这不只是比喻。实证上有两个效应：一是「迷失在中间」（lost in the middle），窗口中部的信息被利用的概率显著低于首尾；二是上下文腐烂（context rot），随着无关信息占比上升，模型遵循指令的能力整体退化，哪怕关键信息明明还在窗口里。窗口标称 100 万 token，不代表你应该塞 100 万——有效注意力远小于标称容量。</p>
+<p>提出者有个判断我认同：新一代模型已经强到「工作质量的瓶颈不在模型，而在人能否把自己的不懂讲清楚」。顶级的 agentic coder 未知少——他们对代码库和模型行为都深度同步——但更关键的是,他们<strong>主动假设未知存在</strong>，把发现未知当成显式的工作项。</p>
 
-<p>所以上下文工程的本质是预算管理：每一段进入窗口的内容,都要回答「它在这个决策时刻的边际价值，配得上它占的位置吗」。</p>
+<h2 id="那个-22">那个 2×2</h2>
 
-<p><img src="/assets/images/2026/context-budget.svg" alt="上下文预算分配" /></p>
-
-<h2 id="四个操作写入选取压缩隔离">四个操作：写入、选取、压缩、隔离</h2>
-
-<p>业内逐渐收敛出四个基本操作，几乎所有上下文工程技巧都是它们的组合。</p>
-
-<p><strong>写入（Write）：把信息移出窗口，存到外部。</strong> Agent 的中间结论、计划、待办，写到文件或状态存储里，而不是依赖对话历史。典型实现是让 Agent 维护一个 <code class="language-plaintext highlighter-rouge">notes.md</code> / 任务清单文件——窗口会被挤爆，文件不会。跨会话的记忆系统也属于这类。</p>
-
-<p><strong>选取（Select）：按需拉回来。</strong> 决策时刻只注入相关的部分。RAG 是选取，工具的动态裁剪是选取（一百个工具只注入语义相关的十个），Agent 主动 <code class="language-plaintext highlighter-rouge">grep</code>/<code class="language-plaintext highlighter-rouge">read</code> 文件也是选取。选取的关键指标不是召回率，是<strong>信噪比</strong>——多拉进来的每一段无关内容都在划伤工作台。</p>
-
-<p><strong>压缩（Compact）：有损地缩小占用。</strong> 对话历史超过阈值时做摘要压缩；工具返回的 5000 行 JSON 先裁剪成关键字段再入窗。压缩的风险是丢掉后来才知道重要的细节，所以原则是：可再生的信息（随时能重新读到的文件内容）激进压缩，不可再生的信息（一次性的执行结果、用户的口头约束）保守压缩。</p>
-
-<p><strong>隔离（Isolate）：拆给子上下文。</strong> 把高消耗的子任务委托给 sub-agent，它在自己的窗口里烧几十万 token，最后只把三段结论带回主窗口。上一篇讲的多 Agent 协作，从上下文工程视角看就是隔离操作的系统化。</p>
-
-<h2 id="一个真实的调优案例">一个真实的调优案例</h2>
-
-<p>我们一个内部代码审查 Agent，初版效果很差：审到第 30 个文件时开始胡言乱语，把第 5 个文件的问题安到第 28 个文件头上。排查后发现窗口已被三类东西塞满：全量工具定义（18k token）、每个文件的完整内容（平均 6k×30）、以及越滚越长的审查历史。</p>
-
-<p>按四操作改造：</p>
-
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>写入  审查发现实时写入 findings.json，窗口里只保留
-      「当前文件 + 最近 3 条发现的摘要」
-选取  文件内容不再全量注入，先注入结构骨架（函数签名+行数），
-      Agent 按需读具体函数体
-压缩  每审完 10 个文件做一次历史压缩，保留结论丢弃过程
-隔离  跨文件的一致性检查拆给独立 sub-agent，
-      输入是 findings.json 而非对话历史
-</code></pre></div></div>
-
-<p>改造后单文件审查的窗口占用从持续增长变成稳定在 25k token 左右，30 文件之后的准确率和前 5 个文件无显著差异。值得注意的是：模型没换、prompt 几乎没动，<strong>纯上下文结构的改造带来了从不可用到可用的跨越</strong>。这就是我说「比 Prompt 更重要」的依据。</p>
-
-<h2 id="给上下文做监控">给上下文做监控</h2>
-
-<p>工程化的标志是可度量。我们现在给所有 Agent 加了三个上下文指标：</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ContextMetrics</span><span class="p">:</span>
-    <span class="n">window_usage</span><span class="p">:</span> <span class="nb">float</span>      <span class="c1"># 窗口占用率，&gt;70% 触发压缩
-</span>    <span class="n">composition</span><span class="p">:</span> <span class="nb">dict</span>        <span class="c1"># 构成比例：指令/工具/历史/检索各占多少
-</span>    <span class="n">staleness</span><span class="p">:</span> <span class="nb">float</span>         <span class="c1"># 陈旧度：窗口中多少 token 与最近
-</span>                             <span class="c1"># 5 次决策无关（采样评估）
-</span></code></pre></div></div>
-
-<p>构成比例（composition）最有诊断价值。健康的长程 Agent 大致是：系统指令 5~10%、工具定义 10~15%、工作记忆（计划+近期历史）30~40%、当前任务素材 30~40%、预留 15~20%。如果发现工具定义占了 35%，不用看效果就知道该做工具裁剪了。</p>
-
-<h2 id="几个容易踩的反模式">几个容易踩的反模式</h2>
-
-<p>落地过程中见过的典型错误，列出来供对照自查。</p>
-
-<p><strong>反模式一：把系统提示词当垃圾抽屉。</strong> 每次出 bad case 就往 system prompt 里加一条规则，半年后系统提示词膨胀到八千 token，规则之间互相打架，模型无所适从。正确做法是定期重构提示词，就像重构代码一样——合并同类规则、删除已被模型默认行为覆盖的规则，把场景化的规则移到 Skill 里按需加载。</p>
-
-<p><strong>反模式二：检索结果不设预算上限。</strong> RAG 召回 top-k 的 k 拍脑袋设成 20，每段 chunk 500 token，单次检索就吃掉一万 token，其中真正相关的往往只有前三段。检索预算应该从答案质量倒推：先用小 k 跑评测集，k 加大到指标不再提升就停——多数场景这个拐点出现在 3~5。</p>
-
-<p><strong>反模式三：用「重新开一个会话」代替压缩策略。</strong> 窗口满了就让用户开新会话，所有上下文清零重来。这是把成本转嫁给了用户——他们要手动复述背景。哪怕最朴素的自动压缩（保留系统指令 + 最近 N 轮 + 一段历史摘要）都比清零体验好得多。</p>
-
-<p><strong>反模式四：只在出问题时才看上下文。</strong> 上下文构成应该和延迟、错误率一样进日常监控面板。腐烂是渐进的，等用户投诉”AI 变笨了”再去看，往往已经烂了几周。</p>
-
-<h2 id="和-skillharness-的关系">和 Skill、Harness 的关系</h2>
-
-<p>把这半年聊过的几个概念串起来：Harness 是 Agent 的执行框架（循环、工具、权限），Skill 是按需加载的能力包，上下文工程是贯穿其中的资源管理纪律。Skill 的「渐进式披露」——先给模型看一行摘要，需要时才加载全文——本身就是上下文工程里「选取」操作的优雅实现。这些东西不是并列的三个 buzzword，是同一套系统的三个切面：<strong>Harness 定义边界，Skill 提供能力，上下文工程决定单位注意力的产出效率。</strong></p>
-
-<h2 id="结语">结语</h2>
-
-<p>回头看这几年的路线，从优化一句话（Prompt），到优化一次调用的输入（RAG），再到管理一个长程系统里信息的全生命周期，方向是一致的：把炼丹一步步变成工程，可度量、可监控、可优化。</p>
-
-<p>如果只能带走一条：下次 Agent 表现退化，先别急着改 prompt 或者换模型，把那一刻的窗口内容完整 dump 出来，自己从头读一遍。我每次这么做都会看到一个被工具返回值、过期历史和无关检索塞满的工作台，然后改法自然就出来了。这个笨办法教给过好几个同事，没有一次落空。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="上下文工程" /><category term="Context Engineering" /><category term="Agent" /><category term="工程实践" /><summary type="html"><![CDATA[Prompt 工程优化的是「怎么说」，上下文工程管理的是「模型在决策时刻能看到什么」。当任务从单轮问答变成长程 Agent，后者才是质量的决定因素。本文给出一套可落地的上下文预算管理方法。]]></summary></entry><entry><title type="html">多 Agent 系统的协作模式：从单兵到军团</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html" rel="alternate" type="text/html" title="多 Agent 系统的协作模式：从单兵到军团" /><published>2026-06-06T00:00:00+08:00</published><updated>2026-06-13T08:13:39+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html"><![CDATA[<p>2025 年是单 Agent 成熟的一年，2026 年的主战场明显转向了多 Agent。但「多」不等于「强」——我见过太多团队把三个 Agent 串起来，效果还不如调教好的一个。多 Agent 系统的能力上限不取决于 Agent 数量，取决于协作结构的设计。这篇文章拆解四种主流协作模式、各自的适用边界，以及那个最大的暗坑。</p>
-
-<h2 id="为什么需要多-agent">为什么需要多 Agent</h2>
-
-<p>先回答前置问题：单 Agent 不够用吗？很多场景确实不够，原因有三。</p>
-
-<p><strong>上下文窗口是物理上限。</strong> 一个复杂任务（比如重构一个中型代码库）所需的上下文远超窗口容量，单 Agent 越往后跑，早期信息被挤出，质量塌方。拆成多个 Agent，每个只装自己需要的上下文，是对窗口限制的工程化绕行。</p>
-
-<p><strong>角色专注度。</strong> 同一个模型，给它「你是测试工程师，只挑毛病」的窄指令，比「你又写又测」的宽指令表现更好。注意力被指令聚焦了。这和人类组织分工的逻辑相同。</p>
-
-<p><strong>并行加速。</strong> 互不依赖的子任务（扫描十个模块找安全漏洞）天然适合并行,十个 Agent 同时跑就是十倍吞吐。</p>
-
-<p>但这三个收益都有代价，代价就藏在协作模式里。</p>
-
-<h2 id="四种协作模式">四种协作模式</h2>
-
-<p><img src="/assets/images/2026/multi-agent-patterns.svg" alt="多 Agent 协作模式" /></p>
-
-<p><strong>模式一：Orchestrator-Worker（主从编排）。</strong> 一个主 Agent 负责理解任务、拆解、分发给 Worker、汇总结果。这是目前生产里最主流的模式，Claude 的 sub-agent、各家 Deep Research 产品都是这个结构。优点是控制流清晰、易调试；缺点是 Orchestrator 是单点——它拆错了任务，下面全白干。适用：任务可分解、子任务边界清晰的场景（研究、代码库分析、批量处理）。</p>
-
-<p><strong>模式二：Pipeline（流水线）。</strong> Agent 按固定顺序接力：需求分析 → 编码 → 测试 → 审查。每个 Agent 的输出是下一个的输入。优点是质量门禁明确，每一环都可以独立优化和评测；缺点是错误会沿管道放大，且总延迟是各环节之和。适用：流程固定、每步产物可验证的场景（内容生产、代码 CI 流、数据 ETL）。</p>
-
-<p><strong>模式三：Debate（辩论/对抗）。</strong> 两个以上 Agent 持不同立场互相批驳，第三方裁决或收敛共识。研究表明对抗结构能显著降低单模型的「自信幻觉」。成本是 token 翻几倍。适用：高风险判断类任务——安全审查、方案评审、事实核查，不适用于产出型任务。</p>
-
-<p><strong>模式四：Swarm（群体投票）。</strong> 同一任务发给 N 个独立 Agent，对结果投票或聚合。本质是用冗余换可靠性，类似分布式系统的多数派。适用：答案可比较、正确性可投票的封闭性问题（分类、打分、数学题）；开放性产出（写一篇文档）没法投票，不适用。</p>
-
-<p>实践中的组合拳通常是：Orchestrator 做骨架，关键节点插入 Debate 做质检，可并行处插 Swarm。</p>
-
-<h2 id="最大的暗坑上下文割裂">最大的暗坑：上下文割裂</h2>
-
-<p>多 Agent 系统第一大故障源不是模型能力，是<strong>信息在 Agent 之间传递时的损耗</strong>。</p>
-
-<p>单 Agent 的所有决策共享同一份上下文；拆成多 Agent 后,每个 Worker 只看到 Orchestrator 转述的任务描述。转述必然有损：Worker A 在模块里发现的一个重要约束，Worker B 不知道；Orchestrator 汇总时把两个互相矛盾的结论拼在了一起，自己却看不出矛盾——因为支撑各自结论的证据都没传上来。</p>
-
-<p>这就是为什么很多多 Agent 系统的产出「每一段都对，整体是错的」。</p>
-
-<p>工程上的缓解手段，按性价比排序：</p>
-
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. 共享黑板（Blackboard）：所有 Agent 读写同一份结构化状态
-   文件/数据库，关键发现必须落盘，而不是只存在于对话里
-2. 任务描述带上下文契约：Orchestrator 分发任务时显式附带
-   「已知约束」「禁止假设」「输出 schema」三段
-3. 汇总前做一致性检查：专设一个 Agent 校对各 Worker 结论
-   之间的冲突，冲突即打回重跑
-4. 控制扇出深度：层级不超过两层，Agent 套 Agent 套 Agent
-   的转述损耗是指数级的
-</code></pre></div></div>
-
-<p>一个简化的 Orchestrator 骨架（基于消息而非框架，刻意展示裸逻辑）：</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="k">def</span> <span class="nf">orchestrate</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Report</span><span class="p">:</span>
-    <span class="n">plan</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">llm</span><span class="p">(</span><span class="n">PLANNER</span><span class="p">,</span> <span class="n">task</span><span class="p">)</span>                  <span class="c1"># 拆解
-</span>    <span class="n">board</span> <span class="o">=</span> <span class="nc">Blackboard</span><span class="p">()</span>                             <span class="c1"># 共享黑板
-</span>    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="p">.</span><span class="nf">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span>
-        <span class="nf">run_worker</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">board</span><span class="p">.</span><span class="nf">snapshot</span><span class="p">())</span>            <span class="c1"># 带上下文契约分发
-</span>        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">plan</span><span class="p">.</span><span class="n">subtasks</span>
-    <span class="p">])</span>
-    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-        <span class="n">board</span><span class="p">.</span><span class="nf">merge</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">findings</span><span class="p">)</span>                      <span class="c1"># 关键发现落盘
-</span>    <span class="n">conflicts</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">llm</span><span class="p">(</span><span class="n">CHECKER</span><span class="p">,</span> <span class="n">board</span><span class="p">.</span><span class="nf">dump</span><span class="p">())</span>     <span class="c1"># 一致性检查
-</span>    <span class="k">if</span> <span class="n">conflicts</span><span class="p">:</span>
-        <span class="n">results</span> <span class="o">+=</span> <span class="k">await</span> <span class="nf">rerun</span><span class="p">(</span><span class="n">conflicts</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>     <span class="c1"># 冲突打回
-</span>    <span class="k">return</span> <span class="k">await</span> <span class="nf">llm</span><span class="p">(</span><span class="n">SYNTHESIZER</span><span class="p">,</span> <span class="n">board</span><span class="p">.</span><span class="nf">dump</span><span class="p">())</span>      <span class="c1"># 基于黑板汇总
-</span></code></pre></div></div>
-
-<p>注意汇总（SYNTHESIZER）的输入是黑板而不是各 Worker 的原始对话——这是刻意的。让汇总者面对结构化的事实清单，而不是 N 段冗长转述，幻觉率会明显下降。</p>
-
-<h2 id="怎么评测一个多-agent-系统">怎么评测一个多 Agent 系统</h2>
-
-<p>多 Agent 系统的评测比单 Agent 难，因为失败可能发生在任何一环，端到端指标好坏都说明不了原因。我们的做法是三层评测。</p>
-
-<p><strong>单元层：每个 Agent 独立评测。</strong> 给每个角色（规划、执行、检查、汇总）建立独立的评测集，固定输入测输出。Worker 的评测集最好直接从线上失败案例里攒——Orchestrator 拆出来的真实子任务，比手造的测试用例有效得多。</p>
-
-<p><strong>链路层：注入故障测鲁棒性。</strong> 刻意让某个 Worker 返回错误结论、超时、返回格式损坏的输出，观察系统是否能识别和恢复。多 Agent 系统和分布式系统一样，部分失败是常态而不是异常，没测过故障注入的系统等于没测过。</p>
-
-<p><strong>端到端层：人工评估抽样 + 配对对比。</strong> 终态产出用人工抽样打分，并且永远和单 Agent 基线做配对对比——同一批任务，单 Agent 调到最好 vs 多 Agent 系统，盲评。这一步经常给人泼冷水：相当比例的场景里，精心调优的单 Agent 能追平复杂的多 Agent 编排，而成本只有几分之一。这个对比实验做不做，决定了你的架构决策是基于证据还是基于时髦。</p>
-
-<h2 id="成本与可观测性">成本与可观测性</h2>
-
-<p>多 Agent 的 token 消耗通常是单 Agent 的 3~15 倍，上生产前必须算账：这个任务质量提升带来的价值，覆盖得了成本吗？我的粗规则：日常高频任务用单 Agent 调到极致；低频高价值任务（深度研究、全库审计、安全评审）才值得上多 Agent。</p>
-
-<p>可观测性是另一个必须前置的投入。多 Agent 跑挂了，你需要知道是哪个 Agent、在哪一步、基于什么输入做错的。最低配置：每个 Agent 调用记录输入/输出/耗时/token 的 trace，全链路一个 trace id 串起来。OpenTelemetry 的 GenAI 语义约定已经够用，别等出了事故再补。</p>
-
-<h2 id="结语">结语</h2>
-
-<p>多 Agent 系统在重演分布式系统的老路：单机不够了才分布式，然后一致性、可观测性、部分失败这些问题排着队找上门。判断标准也可以直接抄分布式那套——能单 Agent 解决的别拆；确实要拆，先设计信息流（谁知道什么、怎么同步），再设计控制流（谁指挥谁）。</p>
-
-<p>我们自己的代码审查系统折腾了三轮，最后稳定在「Orchestrator + 黑板 + 一个一致性检查角色」这个不算花哨的结构上。中间试过五层 Agent 嵌套的版本，看 demo 很酷，上线一周就退回来了——出了问题没人说得清是哪一层错的。供参考。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="多Agent" /><category term="架构设计" /><category term="工程实践" /><summary type="html"><![CDATA[单 Agent 的能力上限是上下文窗口，多 Agent 的能力上限是协作设计。本文拆解 Orchestrator、流水线、辩论、群体投票四种主流协作模式的适用边界，以及多 Agent 系统最大的暗坑：上下文割裂。]]></summary></entry><entry><title type="html">AI 时代的深度工作：注意力是最后的稀缺资源</title><link href="http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html" rel="alternate" type="text/html" title="AI 时代的深度工作：注意力是最后的稀缺资源" /><published>2026-05-31T00:00:00+08:00</published><updated>2026-06-13T08:13:31+08:00</updated><id>http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90</id><content type="html" xml:base="http://localhost:4000/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html"><![CDATA[<p>卡尔·纽波特写《深度工作》是 2016 年，那时的敌人是 Slack 和推送通知。十年后的今天，敌人换了——是那个随叫随到、永远在线、回答一切的 AI 助手。这听起来很怪：AI 不是来帮我们的吗？是，但它同时制造了一种新型的注意力碎片化，而且比通知更隐蔽。</p>
-
-<h2 id="新的碎片化等待与切换的缝隙">新的碎片化：等待与切换的缝隙</h2>
-
-<p>观察一下自己用 AI 编程的真实节奏：下达任务，Agent 跑两分钟，这两分钟干什么？大多数人会切去看消息、刷一眼群、开第二个任务。等 Agent 跑完，你已经离开了刚才的思维现场，要花几十秒甚至几分钟「重新加载」上下文。</p>
-
-<p>这种模式有个特点：每个间隙都「短得不值得深入，长得无法忽略」。它不像写代码被打断那样有明显的痛感，反而带着一种「我在并行处理、效率很高」的错觉。但认知科学的结论很无情：人类不存在真正的并行深度思考，只有快速切换，而每次切换都有损耗——残留注意力（attention residue）会让你在新任务上的表现下降，哪怕你自我感觉良好。</p>
-
-<p>更隐蔽的是依赖性碎片化：遇到一点点不确定就问 AI，得到答案再继续。每一次「问一下」都是一次思维中断。以前我们查文档前会先想十秒，现在连这十秒都省了。省掉的不是十秒，是形成自己判断的那个过程。</p>
-
-<h2 id="瓶颈的转移">瓶颈的转移</h2>
-
-<p>为什么这件事在 2026 年特别值得谈？因为瓶颈转移了。</p>
-
-<p>AI 之前，工程师的产出公式约等于「思考质量 × 执行速度」，执行占大头——一个想法要变成上线的代码，中间隔着几天的体力活。所以行业奖励手快的人。</p>
-
-<p>AI 把执行成本压到接近于零之后，公式变成了「思考质量 × 判断次数」。Agent 一晚上能产出几千行代码，方向错了就是几千行的垃圾。你的杠杆不再是写得快，而是想得清：问题定义对不对、方案的约束找全没有、AI 产出的东西该不该收。</p>
-
-<p>而「想得清」恰恰是深度工作的产物。它需要不被打断的、连续的、有些枯燥的专注时段。也就是说：<strong>AI 越强，执行越廉价，深度思考的相对价值就越高</strong>——这是被很多「效率内容」完全说反的一点。他们教你怎么同时开五个 Agent，却不教你怎么保住那个决定五个 Agent 是否在做正确事情的脑子。</p>
-
-<h2 id="我调整后的工作结构">我调整后的工作结构</h2>
-
-<p>过去半年我重构了自己的工作模式，核心是把「与 AI 协作」也纳入深度/浅度的二分法管理。</p>
-
-<p><strong>深度时段不开 Agent。</strong> 每天上午保留两小时，只做问题定义、方案设计、架构权衡这类「上游思考」，纸笔或白板优先。这个时段的产出物是清晰的任务描述和判断标准——它们随后会成为 Agent 的输入。讽刺的是，这个不用 AI 的时段，恰恰是 AI 产出质量的决定因素：你给 Agent 的 spec 有多清楚，它的产出就有多能用。</p>
-
-<p><strong>批处理 Agent 任务。</strong> 把可以委托的任务攒成批，集中在固定时段发出去，让多个 Agent 并行跑长任务（一小时以上的那种），而不是发一个等一个。等待期不再是「缝隙」，因为我此时整块地切去做另一件深度事务，回来后集中验收。关键区别：切换是计划内的、以小时为单位的，而不是被动的、以分钟为单位的。</p>
-
-<p><strong>给「问 AI」设置十秒规则。</strong> 遇到问题，先强迫自己用十秒形成一个预期答案，再去问。这十秒保住了两样东西：自己的判断肌肉，以及对 AI 答案的校验能力——你有了预期，才能在 AI 胡说时立刻闻出味儿来。没有预期的提问，得到的答案你只能全盘接受。</p>
-
-<p><strong>验收是深度工作，不是浅度工作。</strong> 这是最容易出错的地方。Review AI 产出的代码看起来像浅活儿，划划屏幕点点头。但 AI 产出的错误往往是「局部完美、全局错位」型的——每个函数都对，组合起来方向不对。这种错误只有带着完整上下文深读才能发现。我现在把大块验收安排在精力好的时段，和写设计文档同等对待。</p>
-
-<h2 id="一周的自我观测实验">一周的自我观测实验</h2>
-
-<p>道理讲完了，给一组自己的数据。今年三月我做了两周对照实验：第一周按旧习惯工作（Agent 随用随发、消息随到随看），第二周按上面的结构执行。每天记录三个指标：深度时段总时长（连续 25 分钟以上无切换才计入）、任务返工次数（AI 产出验收不通过需要重派的次数）、主观精力评分。</p>
-
-<p>结果比我预期的更明显。旧习惯那一周，日均深度时长只有 1.2 小时——我自以为「整天都在工作」，但符合深度标准的时间少得可怜，绝大多数时间花在了切换、等待和碎片化的对话里。返工率是另一个刺眼的数字：随手发出去的 Agent 任务，41% 需要返工；而第二周经过上午深度时段打磨过 spec 的任务，返工率降到 12%。换句话说，<strong>在任务定义上多花的二十分钟，平均省下了一个多小时的返工与扯皮</strong>。</p>
-
-<p>第二周的日程骨架大概是这样：9:00–11:00 深度时段（关机状态，只许纸笔和编辑器）；11:00–11:30 批量派发 Agent 任务，通常 3~5 个；11:30–12:30 处理消息与会议；下午两个 90 分钟块，一个用于验收与深读 AI 产出，一个用于第二优先级的深度事务；Agent 在后台跑它们的，我不看进度条。这个结构最大的反直觉之处是：<strong>AI 的使用时长下降了，AI 的有效产出反而上升了</strong>。</p>
-
-<p>当然，两周的自我实验谈不上严谨，样本是一个人，任务也不完全可比。但趋势与认知科学的既有结论一致，我愿意按这个方向继续押注。</p>
-
-<h2 id="常见的两个反驳">常见的两个反驳</h2>
-
-<p><strong>「多 Agent 并行不就是为了榨干等待时间吗？你这是开倒车。」</strong> 不矛盾。并行本身没问题，问题在并行的粒度。以分钟为单位、被 Agent 进度驱动的被动切换是碎片化；以小时为单位、按自己节奏计划的主动切换是批处理。前者你是 Agent 的随从，后者你是调度者。区别不在并行数量，在谁掌握切换的主导权。</p>
-
-<p><strong>「初级工程师没有那么多上游思考可做，这套结构是不是只适合资深的人？」</strong> 恰恰相反，越早建立越好。初级阶段的深度时段可以用来做另一件事：深读 AI 产出，搞懂每一行为什么这么写。AI 时代初级工程师最大的危险不是被替代，而是从未真正写过、读懂过足够多的代码，导致判断力永远没机会长出来。深度时段就是判断力的健身房，资历越浅越需要。</p>
-
-<h2 id="防住认知外包的滑坡">防住「认知外包」的滑坡</h2>
-
-<p>最后说一个更长期的担忧：认知外包的滑坡效应。</p>
-
-<p>用进废退在认知能力上同样成立。如果所有难题第一反应都是丢给 AI，三年后你会发现自己丧失了「在没有答案提示的情况下硬想」的能力。而这个能力恰恰是处理全新问题——AI 训练数据里没有的问题——的唯一依靠。</p>
-
-<p>我的对策不是少用 AI，而是刻意保留「徒手区」：每周留一些问题强制自己独立解决，像健身一样维持认知肌肉。读完 AI 的方案后强迫自己说出「它为什么这么做、我原本会怎么做、差异在哪」，把每次委托变成一次对照学习而不是一次卸载。</p>
-
-<h2 id="结语">结语</h2>
-
-<p>注意力是 AI 时代最后的稀缺资源——算力在变便宜，模型在变强，执行在变快，唯独人类清醒、连续、高质量的注意力，一天还是只有那么几个小时，而且正在被更多东西争夺。</p>
-
-<p>深度工作在前 AI 时代是效率优势，在 AI 时代更像生存前提：留给人的工作，剩下的基本都是必须深度才做得好的部分——定义问题、设定约束、做判断。浅的部分 AI 都拿走了。</p>
-
-<p>如果想试试，给个最小起步：明天上午挑两小时，关掉所有 AI 对话窗口，只带一个明确的问题进去，比如「下季度这个系统最大的技术风险是什么」，结束时写成一页纸。拿这一页纸去派 Agent 任务，对比一下平时随手发任务的产出质量，自己感受。我赌你回不去了。</p>]]></content><author><name>小黄鸭</name></author><category term="思考" /><category term="思考" /><category term="深度工作" /><category term="注意力" /><category term="AI" /><category term="效率" /><summary type="html"><![CDATA[当 AI 把执行成本压到接近于零，产出的瓶颈从「做得多快」变成「想得多清」。这篇文章讨论一个反直觉的结论：AI 越强，深度工作越值钱。]]></summary></entry><entry><title type="html">AI Coding 落地存量大项目：规范先于工具</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html" rel="alternate" type="text/html" title="AI Coding 落地存量大项目：规范先于工具" /><published>2026-05-27T00:00:00+08:00</published><updated>2026-06-13T14:30:53+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html"><![CDATA[<p>前几天看到一篇文章，讲某团队用 AI 对 31 万行代码做重构的实践。里面有一句话让我想起了自己团队踩的坑：「没有统一规范的约束，不同人用 AI 写出的代码风格各异，系统反而会加速腐化。」这个说法我们亲身验证过，记录一下。</p>
-
-<h2 id="ai-进来之前问题就已经存在了">AI 进来之前，问题就已经存在了</h2>
-
-<p>我们有一个 Java 项目，五年历史，十几万行代码。架构本来是分层的（Controller → Service → Repository），但随着人员流动，各层的边界越来越模糊：有 Controller 直接调 DAO 的，有 Service 里写了大量业务逻辑又有 Service 把业务逻辑推到 DTO 里的，DTO 后缀有人写 <code class="language-plaintext highlighter-rouge">Dto</code>、有人写 <code class="language-plaintext highlighter-rouge">DTO</code>。同一件事有三种做法，没有一种是错的，但放在一起就是一团浆糊。</p>
-
-<p>这个问题在 AI 之前就存在，但可以接受——新人来了，看看旁边的代码照着写，慢慢理解隐性规范，大约三个月能融入。有问题有人 review，偏差不会太大。</p>
-
-<p>AI 进来之后，问题变成了五倍速。</p>
-
-<p>工具链收拢到 Cursor + Claude CLI 之后，大家产出代码的速度快了，但因为每次 AI 对话都是独立的，AI 不知道这个项目的隐性规范，每次都靠「推断」——看见 Mapper 就直接注入，没看过项目规定必须走 Repository 接口；看见字段是 <code class="language-plaintext highlighter-rouge">userId</code> 就用 Long，没看见项目规定金额类字段必须用 BigDecimal。每个人的 AI 推断出来的默认值不同，合代码的时候就是一锅粥。review 成本比以前高了，因为不是偶尔有一两个风格问题，而是每个 PR 都有一批。</p>
-
-<h2 id="工具统一没用规范落地才有用">工具统一没用，规范落地才有用</h2>
-
-<p>第一个反应是统一工具——大家用同一套 IDE、同一套 prompt 模板。换了之后，情况确实稍微好一点，但没有本质改变。因为问题不是工具不同，是 AI 缺少项目的上下文。</p>
-
-<p>真正解决问题的是做了两件事：</p>
-
-<p><strong>第一步：人人对齐。</strong> 开了一次两小时的架构规范讨论，把那些「大家心里知道但没写下来」的规则显式化：字段注入还是构造器注入？哪些工具类用？分层的边界在哪里？异常怎么包装？金额字段用什么类型？这些讨论并不轻松，因为不同历史时期加入的人有不同的理解，要对齐本身就是一次利益博弈——有人用了三年 <code class="language-plaintext highlighter-rouge">@Autowired</code>，不愿意改。但不对齐就没办法往下走，必须这一步先完成。</p>
-
-<p><strong>第二步：人机对齐。</strong> 把对齐后的规范写进 CLAUDE.md 和 Cursor Rules，让 AI 在生成代码前就能加载这些约束。不是写成「尽量使用构造器注入」，而是写成「必须使用构造器注入，不允许 <code class="language-plaintext highlighter-rouge">@Autowired</code> 字段注入，违反此规则的代码 review 时直接打回」。模糊的规则对 AI 和对人都没用。</p>
-
-<p>这两步的顺序很重要。如果人没有对齐就直接去写 AI 规范，写出来的规范反映的是写规范那个人的习惯，不是团队共识。AI 照着执行，其他人依然不认，规范成了摆设。「人人对齐」必须先于「人机对齐」。</p>
-
-<h2 id="claudemd-写什么不写什么">CLAUDE.md 写什么、不写什么</h2>
-
-<p>花了一些时间摸索规范文件的粒度，记几个经验。</p>
-
-<p><strong>不写太泛的原则，只写可验证的规则。</strong> 「代码要清晰易读」这种话对 AI 没意义，它不知道怎么评估。「所有 public 方法必须有 Javadoc，Javadoc 里必须包含参数说明和返回值说明」这种规则是可执行的。遇到模糊规则先不写，等出了具体的坏案例，反过来把规则提炼清楚再写进去。</p>
-
-<p><strong>写决策表，不写判断过程。</strong> 「优先用 X，但如果 Y 情况下用 Z，不过如果还有 W 情况……」这种条件链条对 AI 来说很混乱。改成「场景：分页查询 → 用 X；场景：全量加载 → 用 Z」的决策表形式，执行准确率高很多。</p>
-
-<p><strong>真实代码片段比描述有效。</strong> 在规范里直接贴从项目里截取的三到五行代码，比用文字描述「应该像这样做」效果好得多。注意是从生产代码里截，不是现写示意代码——AI 对「真实风格」和「演示风格」的识别比想象中敏感，示意代码有时候会被 AI 当成另一种新的风格来模仿。</p>
-
-<p><strong>总行数控制在 100~150 行以内。</strong> 超过这个长度，AI 在「中间」的注意力会下降，埋在文件中段的规则遵守率显著变差。如果规范很多，分到各子模块的 CLAUDE.md 里，主文件只写最高频、最关键的那些。</p>
-
-<h2 id="一个月后的数据">一个月后的数据</h2>
-
-<p>做完这两步大约一个月，有几个可以量化的变化。</p>
-
-<p>review 打回次数降了约 60%。以前每个 PR 平均有 4~6 条风格类评论，现在降到 1~2 条，而且多数是「这个 edge case 考虑了吗」这类实质性问题，不是风格问题。</p>
-
-<p>新功能的 AI 代码采纳率从大约 40% 涨到 75%。「采纳率」是我自己定义的指标：AI 生成的代码未经大幅修改就进入最终 PR 的比例。这个数字高不代表 AI 在偷懒，代表 AI 生成的代码方向对了，减少了二次修改。</p>
-
-<p>不好量化但能感受到的：大家对「AI 写出来的代码是不是我们的代码」的接受度提高了。以前合了 AI 生成的代码，总有一种「这不是我们的风格，只是凑合能跑」的感觉；现在因为规范一致，AI 的产出和人工写的代码混在一起，review 的时候不明显区分了。</p>
-
-<h2 id="还没解决的">还没解决的</h2>
-
-<p>有两件事还没有好的解法。</p>
-
-<p>一是规范的维护成本。CLAUDE.md 是个静态文件，项目的规范会演进，有新人加入带来新的约定，有旧的约定被废弃，文件容易腐烂。目前的做法是每季度做一次规范 review，但坦白说这件事很难坚持，往往是出了问题才回头更新。</p>
-
-<p>二是架构层面的约束还是穿不进去。字段类型、命名规范这类表面的约束写进 CLAUDE.md 很有效；但「Service 不能直接访问 DAO」这种架构边界，AI 知道规则但不理解违反规则的系统性后果，在模糊情况下（比如一个临时的 one-off 查询）还是会绕过边界。这类约束真正有效的手段还是代码层面的封装——让违规在编译时就报错，而不只是写在文档里等 review 时发现。</p>
-
-<p>总结一下教训：AI Coding 在存量大项目里落地，工具和模型选型只是入场券，规范工程才是核心工作量。而规范工程最容易踩的坑，是跳过「人人对齐」直接去写 AI 规范——写出来的规范没有权威性，工具执行得再准也没有意义。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="AI Coding" /><category term="工程规范" /><category term="重构" /><category term="团队实践" /><summary type="html"><![CDATA[AI Coding 落地大型存量项目，遇到的最大问题不是模型能力，是规范缺失被 AI 放大了。聊一下我们团队在一个 Java 老项目上的踩坑经历，以及「人人对齐 → 人机对齐」这个顺序为什么重要。]]></summary></entry><entry><title type="html">MySQL 向量检索实践：当数据库遇上 Embedding</title><link href="http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html" rel="alternate" type="text/html" title="MySQL 向量检索实践：当数据库遇上 Embedding" /><published>2026-05-23T00:00:00+08:00</published><updated>2026-06-13T08:13:18+08:00</updated><id>http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding</id><content type="html" xml:base="http://localhost:4000/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html"><![CDATA[<p>做 RAG 的团队都绕不开一个选型问题：向量存哪？专用向量库（Milvus、Qdrant）功能强但要多养一套系统；MySQL 9 开始原生支持 <code class="language-plaintext highlighter-rouge">VECTOR</code> 类型后，「就用现有 MySQL」成了一个真实选项。这篇文章实测 MySQL 向量能力的边界，给出选型决策框架。</p>
-
-<h2 id="mysql-的向量能力现状">MySQL 的向量能力现状</h2>
-
-<p>MySQL 9.x 提供了 <code class="language-plaintext highlighter-rouge">VECTOR(N)</code> 列类型和基础的距离函数。建表和写入：</p>
-
-<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">doc_chunks</span> <span class="p">(</span>
-  <span class="n">id</span> <span class="nb">BIGINT</span> <span class="n">AUTO_INCREMENT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-  <span class="n">doc_id</span> <span class="nb">BIGINT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-  <span class="n">chunk_text</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-  <span class="n">embedding</span> <span class="n">VECTOR</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-  <span class="n">tenant_id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-  <span class="n">created_at</span> <span class="nb">DATETIME</span> <span class="k">DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span><span class="p">,</span>
-  <span class="k">KEY</span> <span class="n">idx_tenant_doc</span> <span class="p">(</span><span class="n">tenant_id</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">)</span>
-<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="p">;</span>
-
-<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">doc_chunks</span> <span class="p">(</span><span class="n">doc_id</span><span class="p">,</span> <span class="n">chunk_text</span><span class="p">,</span> <span class="n">embedding</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">)</span>
-<span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'...'</span><span class="p">,</span> <span class="n">STRING_TO_VECTOR</span><span class="p">(</span><span class="s1">'[0.0231, -0.114, ...]'</span><span class="p">),</span> <span class="mi">42</span><span class="p">);</span>
-</code></pre></div></div>
-
-<p>查询用距离函数排序：</p>
-
-<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">chunk_text</span><span class="p">,</span>
-       <span class="n">DISTANCE</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">STRING_TO_VECTOR</span><span class="p">(</span><span class="o">?</span><span class="p">),</span> <span class="s1">'COSINE'</span><span class="p">)</span> <span class="k">AS</span> <span class="n">dist</span>
-<span class="k">FROM</span> <span class="n">doc_chunks</span>
-<span class="k">WHERE</span> <span class="n">tenant_id</span> <span class="o">=</span> <span class="mi">42</span>
-<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">dist</span>
-<span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
-</code></pre></div></div>
-
-<p>关键问题来了：<strong>社区版 MySQL 的这条查询是全表暴力扫描</strong>。每一行都要算一次 1024 维余弦距离，没有 ANN（近似最近邻）索引加持。HeatWave 版本有向量索引和加速，但那是云上付费能力。所以社区版 MySQL 做向量检索的真实边界，取决于暴力扫描扛到多大数据量。</p>
-
-<h2 id="实测暴力扫描能扛多少">实测：暴力扫描能扛多少</h2>
-
-<p>测试环境 8C16G，MySQL 9.3，1024 维 float 向量，单表测试 cosine 距离 + LIMIT 10：</p>
+<p>把「知道/不知道」和「意识到/没意识到」交叉，四个象限：</p>
 
 <table>
   <thead>
     <tr>
-      <th>行数</th>
-      <th>无过滤条件</th>
-      <th>tenant 过滤后剩 5%</th>
+      <th> </th>
+      <th>我知道</th>
+      <th>我不知道</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>10 万</td>
-      <td>~180ms</td>
-      <td>~15ms</td>
+      <td><strong>意识到</strong></td>
+      <td>写进 prompt 的</td>
+      <td>明确还没想清楚的</td>
     </tr>
     <tr>
-      <td>50 万</td>
-      <td>~900ms</td>
-      <td>~55ms</td>
-    </tr>
-    <tr>
-      <td>200 万</td>
-      <td>~3.8s</td>
-      <td>~210ms</td>
+      <td><strong>没意识到</strong></td>
+      <td>看到才认得的标准</td>
+      <td>完全没考虑到的</td>
     </tr>
   </tbody>
 </table>
 
-<p>两个结论。第一，裸扫 50 万行就接近交互式应用的容忍上限了。第二，<strong>带过滤条件的场景表现完全不同</strong>——只要二级索引能先把候选集裁到几万行，距离计算就只发生在小集合上，性能立刻回到可用区间。</p>
+<p>右下角（unknown unknowns）名声最大，但两周实践下来，我被坑最多的是<strong>左下角</strong>——unknown knowns：那些「显然到不会写下来、但看到成品立刻知道不对」的标准。</p>
 
-<p>这正好戳中专用向量库的软肋：预过滤（pre-filtering）。多租户 SaaS 场景下「只在租户 42 的文档里搜」，很多向量库的 ANN 索引做带过滤的检索反而别扭（filter 越严，HNSW 图遍历越容易断裂，召回率下降）。MySQL 用 B+ 树索引先过滤再暴力算距离，是「精确解」，没有召回损失。</p>
+<p>给个真实例子。让 Agent 做一个内部报表页面，需求我自认写得很细。成品出来，功能全对，但我看了一眼就知道不行——数字没有千分位、表格能横向滚动但列没有冻结、导出按钮放在了左上角。这些要求我一条都没写，因为我不知道自己有这些要求，直到看见违反它们的东西。这就是 unknown knowns：<strong>你的品味和习惯里藏着大量从未显式化的验收标准。</strong></p>
 
-<p><img src="/assets/images/2026/mysql-vector-decision.svg" alt="向量检索选型决策" /></p>
+<h2 id="两周里最好用的三招">两周里最好用的三招</h2>
 
-<h2 id="务实的混合架构">务实的混合架构</h2>
+<p>方法论原文给了七种技巧，覆盖实现前中后。我全试了，按实用度说说体感最好的三个。</p>
 
-<p>基于实测，我在生产中采用的判断标准：</p>
+<p><strong>第一名：先出方向，再反向采访。</strong>做有模糊空间的需求时，先让 Agent 出几个差异极大的方案方向（视觉类的就出几版风格迥异的原型），我挑一个，然后让它<strong>一次一个问题地采访我</strong>，优先问「答案会改变架构」的问题。上面那个报表页面的教训之后，我用这套流程重做了一次：它出的第二个问题就是「表格预期最大多少列？需要冻结列吗？」——你看，我自己想不起来的标准，被问出来了。两轮下来大概二十分钟，unknown knowns 被逼出来一串。这二十分钟省下的返工以天计。</p>
 
-<p><strong>用 MySQL 的场景</strong>：候选集经过业务条件过滤后在 10 万行以内；向量数据和业务数据强关联（要 JOIN 用户表、权限表）；团队没有专人运维新组件。典型如内部知识库、客服工单检索、中小规模 SaaS 的租户内搜索。</p>
+<p><strong>第二名：给源码当参照物。</strong>说不清楚的需求，别憋形容词，直接指认：「交互参考这个库的这个组件」，最好直接给源码路径。实测源码远胜截图，截图又远胜形容词——「像 X 那样的丝滑滚动」这种话对模型是噪声，一个能读的实现才是信号。语言不同都没关系，语义能平移。</p>
 
-<p><strong>上专用向量库的场景</strong>：全局检索千万级以上向量；需要高 QPS（&gt;500）低延迟（&lt;50ms）的纯向量查询;需要标量量化、多向量、稀疏向量等高级能力。</p>
+<p><strong>第三名：merge 前让它出题考我。</strong>实现完成后，让 Agent 出一套关于「这次改动实际行为」的小测验，我来答，答满分才 merge。听起来像行为艺术,直到它真抓住一条漏网之鱼：一次改动里它调整了某个接口的空值处理逻辑（计划里没有,是实现中撞到边界情况后的合理决策，也记进了变更说明——但我没细看）。quiz 里它问「传入空列表时接口现在返回什么」，我答错了。<strong>diff 我看过,行为我没懂</strong>——这条如果带着我的错误理解上线,排查时会非常酸爽。现在重要变更我都走这道工序，成本五分钟。</p>
 
-<p>很多团队的真实情况是第一种，却按第二种做了架构，平白多养一个有状态集群，还要解决 MySQL 与向量库之间的数据同步一致性——这往往才是最大的隐性成本。双写丢数据、CDC 链路延迟、删除不同步导致检索出已删内容，每一个都是真实事故来源。</p>
+<p>顺便说没那么惊艳的：盲区扫描（让模型帮你找 unknown unknowns）在我熟悉的领域收益一般，多数「盲区」我确实知道；但在陌生领域（比如我最近碰的一点前端动画）确实有用，它列出的注意事项里有一半我真不知道。技巧的收益和你在该领域的未知存量成正比,很合理。</p>
 
-<h2 id="几个落地细节">几个落地细节</h2>
+<h2 id="实现中决策日志接住计划外的一切">实现中：决策日志接住计划外的一切</h2>
 
-<p><strong>维度越低越好，够用就行。</strong> 1024 维和 256 维在很多业务召回评测上差距不到 2%，但存储和计算差 4 倍。新一代 embedding 模型普遍支持 Matryoshka 降维（截断前 N 维即可用），生产里我用 256 维起步，评测不达标再升。</p>
+<p>前中后三个阶段里，「实现中」的技巧只有一个,但值得单独说，因为它解决的是最烦人的问题：计划再好，实现时总会撞上计划没覆盖的边界情况，这时候 Agent 怎么办？</p>
 
-<p><strong>距离计算下推，不要捞回应用层算。</strong> 见过把 embedding 全部 SELECT 回 Python 再算相似度的，网络传输比计算还慢。距离函数永远在 SQL 里执行。</p>
+<p>默认行为是两个极端：要么每撞上一个就停下来问你（你被打断十次,烦死）,要么自作主张选一个（选错了你还不知道）。这套方法给了第三条路,写进任务说明：</p>
 
-<p><strong>chunk 表要做冷热分离。</strong> 文档更新会产生大量死 chunk，定期归档，控制参与扫描的行数——既然是暴力扫描，行数就是生命线。</p>
-
-<p><strong>召回之后必须重排。</strong> 向量检索只是粗筛，top 50 召回后用轻量 reranker（如 bge-reranker）精排到 top 5，端到端效果提升远大于把向量库换来换去。RAG 的瓶颈大概率不在检索引擎，而在 chunking 策略和重排。</p>
-
-<h2 id="容易被问到的三个问题">容易被问到的三个问题</h2>
-
-<p><strong>「为什么不用 PostgreSQL + pgvector？」</strong> pgvector 确实更成熟，有 HNSW 索引，社区版就能用，如果你的技术栈本来就是 PG，无脑选它。本文的前提是「存量系统是 MySQL」——为了向量检索把主数据库从 MySQL 迁到 PG，比引入一个向量库的动静还大。选型永远要带着存量约束讨论，脱离存量谈最优解是纸上谈兵。</p>
-
-<p><strong>「暴力扫描的 CPU 占用会不会影响业务查询？」</strong> 会，这是真实风险。距离计算是纯 CPU 密集操作，200 万行一次扫描能把一个核打满几秒。两个缓解手段：向量查询走只读副本，与交易流量物理隔离；用 <code class="language-plaintext highlighter-rouge">MAX_EXECUTION_TIME</code> hint 给向量查询设置超时上限，宁可检索降级也不拖垮副本。</p>
-
-<p><strong>「embedding 模型升级了怎么办？」</strong> 这是所有方案共同的痛：换模型意味着全量重算向量。MySQL 方案在这里反而有点优势——加一列 <code class="language-plaintext highlighter-rouge">embedding_v2 VECTOR(256)</code>，后台任务批量回填，灌完后切换查询列、删旧列，全程不停服，用的都是 DBA 最熟悉的在线变更套路，不需要学习向量库的 collection 迁移机制。设计 schema 时建议直接带上 <code class="language-plaintext highlighter-rouge">model_version</code> 字段，给未来的自己留路。</p>
-
-<h2 id="一段-python-接入示例">一段 Python 接入示例</h2>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">aiomysql</span><span class="p">,</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">query_vec</span><span class="p">:</span> <span class="n">np</span><span class="p">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
-    <span class="n">vec_str</span> <span class="o">=</span> <span class="sh">"</span><span class="s">[</span><span class="sh">"</span> <span class="o">+</span> <span class="sh">"</span><span class="s">,</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="p">.</span><span class="mi">6</span><span class="n">f</span><span class="si">}</span><span class="sh">"</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">query_vec</span><span class="p">)</span> <span class="o">+</span> <span class="sh">"</span><span class="s">]</span><span class="sh">"</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">pool</span><span class="p">.</span><span class="nf">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">conn</span><span class="p">.</span><span class="nf">cursor</span><span class="p">(</span><span class="n">aiomysql</span><span class="p">.</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">execute</span><span class="p">(</span><span class="sh">"""</span><span class="s">
-                SELECT id, chunk_text,
-                       DISTANCE(embedding, STRING_TO_VECTOR(%s), </span><span class="sh">'</span><span class="s">COSINE</span><span class="sh">'</span><span class="s">) AS dist
-                FROM doc_chunks
-                WHERE tenant_id = %s
-                ORDER BY dist LIMIT %s
-            </span><span class="sh">"""</span><span class="p">,</span> <span class="p">(</span><span class="n">vec_str</span><span class="p">,</span> <span class="n">tenant_id</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">fetchall</span><span class="p">()</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>撞到计划未覆盖的情况时：
+1. 选择保守方案（改动最小、最容易回滚的那个）
+2. 把「撞到什么、选了什么、为什么」记入 implementation-notes
+   的 Deviations 一节
+3. 继续推进，不要停下来等确认
 </code></pre></div></div>
 
-<p>注意向量序列化成字符串传参的开销在高 QPS 下不可忽略，可以预编译语句并复用连接；批量写入时一个事务攒 500~1000 行提交，吞吐能差一个数量级。</p>
+<p>然后你在方便的时候批量审查 Deviations。这个设计的精妙在于它同时优化了三方：Agent 不被阻塞、你不被打断、决策留痕可回溯。我用下来，一个中型任务通常积累三到七条偏差记录，批量审一遍五分钟，其中大概一两条我会要求改——<strong>也就是说它的保守猜测七成以上是对的，但剩下三成如果没有日志，就是三成的暗雷。</strong></p>
 
-<h2 id="结语">结语</h2>
+<p>补一个细节：「保守」要在任务说明里定义,不能让它自由发挥。我的定义是「优先选不改变对外行为的方案；必须改变时，选影响面最小的」。没这句的时候，它对「保守」的理解偏向「功能最全」——给边界情况加一堆防御性处理——那不是保守，是画蛇添足。</p>
 
-<p>我们最后的落地方案就是最朴素的那种：MySQL 存向量，只读副本跑检索，候选集靠租户过滤压到万级以内，top 50 召回后过一遍 reranker。上线三个月，没有为它新增任何组件，也没有为它起过一次夜。</p>
+<h2 id="心态的变化">心态的变化</h2>
 
-<p>MySQL 的向量能力不是用来对标 Milvus 的，它的价值是让一大批中等规模、强业务关联的场景不用引入新组件。等哪天数据量真长到这个方案撑不住，再迁也来得及——到那时业务也验证过了，迁移的钱花得不冤。</p>]]></content><author><name>小黄鸭</name></author><category term="技术" /><category term="MySQL" /><category term="MySQL" /><category term="向量检索" /><category term="Embedding" /><category term="RAG" /><category term="架构设计" /><summary type="html"><![CDATA[MySQL 9 引入 VECTOR 类型后，「要不要为 RAG 单独养一个向量数据库」有了新答案。本文实测 MySQL 向量能力的边界，并给出一套务实的选型决策框架。]]></summary></entry><entry><title type="html">Go pprof 性能剖析实战：从火焰图到根因</title><link href="http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2026/05/17/Go-pprof%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%E5%AE%9E%E6%88%98-%E4%BB%8E%E7%81%AB%E7%84%B0%E5%9B%BE%E5%88%B0%E6%A0%B9%E5%9B%A0.html" rel="alternate" type="text/html" title="Go pprof 性能剖析实战：从火焰图到根因" /><published>2026-05-17T00:00:00+08:00</published><updated>2026-06-13T08:13:11+08:00</updated><id>http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2026/05/17/Go-pprof%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%E5%AE%9E%E6%88%98-%E4%BB%8E%E7%81%AB%E7%84%B0%E5%9B%BE%E5%88%B0%E6%A0%B9%E5%9B%A0</id><content type="html" xml:base="http://localhost:4000/%E6%8A%80%E6%9C%AF/golang/2026/05/17/Go-pprof%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%E5%AE%9E%E6%88%98-%E4%BB%8E%E7%81%AB%E7%84%B0%E5%9B%BE%E5%88%B0%E6%A0%B9%E5%9B%A0.html"><![CDATA[<p>线上 Go 服务出问题，无非三类：CPU 打满、内存暴涨、goroutine 泄漏。pprof 是 Go 内置的剖析工具，但很多人只会 <code class="language-plaintext highlighter-rouge">go tool pprof</code> 然后对着输出发呆。这篇文章讲一套完整的方法论：怎么采样、怎么读火焰图、怎么从图定位到代码行，最后给三个真实案例。</p>
+<p>说回开头那句「改变的是心态」。具体讲，是归因方式变了。</p>
 
-<h2 id="先把采样端配好">先把采样端配好</h2>
+<p>以前 Agent 产出不对，我的第一反应是「它没理解」，改进动作是换个说法重试——本质是撞运气。现在的第一反应是「我的地图哪里漏了」，改进动作是定位那块缺失（是 unknown known 没逼出来？还是约束没写进 spec？），然后补上——<strong>补的地图是累积的</strong>，下次任务直接受益。前者是消耗，后者是投资，长期差距会很大。</p>
 
-<p>生产服务直接挂 HTTP 端点，一行导入：</p>
+<p>再往大了说，把这个系列的文章串起来看有条线：控盘规则管「边界内的自主」，RPI 管「阶段的顺序」，而 unknowns 方法管的是最上游——<strong>边界本身画得对不对</strong>。地图错了，下游纪律执行得越好，错得越远。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="n">_</span> <span class="s">"net/http/pprof"</span>
+<p>模型每强一代，「它做不到」这个借口就少一分，剩下的差距全是「我没说清」。这话对工程师不算坏消息——把自己的不懂讲清楚，本来就是我们这行最古老的核心技能，从写需求文档的年代就是。工具换了，功夫没换。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="AI Coding" /><category term="方法论" /><category term="工程实践" /><summary type="html"><![CDATA[照着 Anthropic 工程师的 unknowns 方法论实践了两周，最大的变化是心态：以前 Agent 产出不对，我怪它没理解；现在我先问自己的地图哪里漏了。附两周里最好用的几招和一次被 quiz 抓住的真实漏网。]]></summary></entry><entry><title type="html">AI 生成测试用例的四阶进化：从 Prompt 工程到自进化</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html" rel="alternate" type="text/html" title="AI 生成测试用例的四阶进化：从 Prompt 工程到自进化" /><published>2026-07-13T00:00:00+08:00</published><updated>2026-07-15T23:25:37+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html"><![CDATA[<p>我们内部有个 AI 生成测试用例的小工具，是去年 QA 同学用 prompt 攒出来的。演示很惊艳，实际用起来大家的评价出奇一致：「生成的用例没错，但太泛，不如自己写。」它就这么不温不火地挂着，用的人越来越少。</p>
 
-<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
-        <span class="c">// 单独端口，不要暴露公网</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">ListenAndServe</span><span class="p">(</span><span class="s">"127.0.0.1:6060"</span><span class="p">,</span> <span class="no">nil</span><span class="p">))</span>
-    <span class="p">}()</span>
-    <span class="c">// ... 业务逻辑</span>
-<span class="p">}</span>
+<p>最近研究了快手 KATE 的公开分享（AiDD 大会，他们研发 Agent 负责人讲的），一个「AI 生成测试用例」系统从 8% 生成率做到 70% 的完整历程。对照之下我瞬间明白我们的工具卡在哪了——而且更有价值的是，这条演进路径明显不只适用于测试用例，任何「生成型 Agent 产品」都会按同样的顺序撞墙。这篇把地图画出来。</p>
+
+<h2 id="他们对问题的定义就赢了一半">他们对问题的定义就赢了一半</h2>
+
+<p>先看起点。多数团队（包括我们）做这类工具的动机是「AI 能写用例，省人力」。KATE 团队先掰开了数据：用例<strong>编写</strong>只占 QA 工时的 13%，<strong>执行</strong>占 38%——按直觉该先自动化执行。但他们继续往下挖，挖到了真瓶颈：资深 QA 和新手写的用例质量差 10 倍，本质是业务知识私有化，没沉淀成团队资产；历史缺陷的知识无法复用，同一个坑不同人反复踩。</p>
+
+<p>所以他们真正立项要解的不是「写用例太慢」，是「用例质量依赖个人经验且经验不流动」。这个定义直接决定了后面 V3 的方向。<strong>产品失败的一半原因是解错了题,而解错题在立项那天就注定了。</strong></p>
+
+<h2 id="四个版本的撞墙史">四个版本的撞墙史</h2>
+
+<p><strong>V1.0，Prompt 工程，生成率 8%。</strong>Few-shot 示例、场景化模板、输出强约束——所有你能想到的 prompt 技巧全用上，单 Agent 无外部工具。三面墙：长 PRD 理解衰减（超过 30K token 明显变差）、隐含业务规则缺失（PRD 里不会写「支付渠道 X 有并发限制」）、生成过程黑盒。我们的内部工具就停在这一阶。事后看,V1 失败的根源不是模型不行，是<strong>用单 Agent 一步吃下「PRD → 用例」全流程</strong>这个架构假设不成立。</p>
+
+<p><strong>V2.0，Multi-Agent 协作，生成率 15%，采纳率 55%。</strong>思路转变：不再让 AI 一步到位，而是复刻 QA 的真实工作结构——拆成需求分析、用例生成、Review 三个专用 Agent，加一个人工反馈环。生成率近翻倍。但新墙出现了：用例「正确但浅显」。结构对、覆盖了明面需求，就是抓不住那些真正会出 bug 的角落。</p>
+
+<p>这面墙特别值得琢磨，因为它暴露了一个普遍误判：大家以为流程拆细了质量自然上去，实际上<strong>流程解决的是错误率，解决不了深度</strong>。深度的瓶颈在下一阶。</p>
+
+<p><strong>V3.0，知识工程，生成率 35%，采纳率 65%。</strong>关键一跃。体系化地给系统喂四类知识：PRD 等文本物料；原型图流程图等多模态物料；<strong>历史用例和历史缺陷</strong>（RAG 召回）——这条是灵魂，生成「支付」用例时自动检索出「支付并发扣款缺陷」的历史记录注入上下文，引导补齐对应测试点；以及业务私域知识，170 多个由业务方维护的规则模板。</p>
+
+<p>看效果指标就知道这一跃的含金量：历史缺陷覆盖率从 12% 干到 76%，四项指标里增幅最大。整个案例最核心的判断也在这一阶成型——<strong>生成质量的上限由知识丰富度决定，而非 Prompt 精妙程度。</strong>V1、V2 优化的都是「怎么说」，V3 才补上「知道什么」。</p>
+
+<p><strong>V4.0，Agentic 自进化，生成率 70%。</strong>三条线：ReAct 自主决策循环；Review-Critique 自动评审——把人工 review 结构化成多维度反馈（覆盖完整性、场景完整性、步骤清晰度……）而不是 Yes/No；以及最精彩的 <strong>BadCase 规则库自进化</strong>：低质量产出被收集 → 提炼「为什么不好」的模式入库 → 同类场景自动召回纠正 → 单点规则聚合成通用规范。场景规则的维护周期从天级压到 5 分钟。全公司推广后累计生成用例 120 万条。</p>
+
+<p>读过我 Loop Engineering 那篇的会认出来，BadCase 闭环就是那套「低质量产出变成下一轮燃料」的机制在垂直领域的实装。</p>
+
+<h2 id="对照完我们的工具该怎么救">对照完，我们的工具该怎么救</h2>
+
+<p>对照四阶诊断我们自己：卡在 V1 和 V2 之间——「正确但太泛」正是缺知识的标准症状。而我们此前的改进方向一直是继续雕 prompt，等于把 V3 的病当 V1 治，无用功。</p>
+
+<p>所以救法清晰了：别动 prompt 了，先做知识资产化。我们领域里对应「历史缺陷库」的东西是什么？现成就有——bug 系统里几年的缺陷记录、线上事故复盘、客服工单里的问题模式。它们一直躺在那,只是从没被接进生成链路。这个改造已经排进下季度了，做完再来汇报效果。</p>
+
+<p>顺手给不同领域的同行翻译一下「你的历史缺陷库是什么」：做客服 Agent 的，是历史工单和差评对话；做 SQL 生成的，是慢查询档案和错误查询集；做代码生成的，是 code review 意见和事故复盘。<strong>每个生成型产品都有自己的「缺陷考古层」，挖不挖，就是 35% 和 15% 的差距。</strong></p>
+
+<h2 id="把-v3-搬回家的三个动作">把 V3 搬回家的三个动作</h2>
+
+<p>「做知识工程」四个字说来容易，落到我们下季度的改造计划里，具体是三个动作，可能对同样卡在 V2 的团队有参考价值：</p>
+
+<p><strong>第一，先盘点再建设。</strong>把散落的知识源列清单：bug 系统（六年、约两万条记录）、线上事故复盘文档（一百多篇）、客服工单的问题分类。盘点时按「结构化程度 × 与生成场景的相关性」排优先级——bug 记录结构最好、相关性最高，第一期只做它，事故复盘第二期。贪多是这类项目最常见的死法。</p>
+
+<p><strong>第二，清洗比接入费劲，预算要倒着放。</strong>试点时抽了三百条 bug 记录人工看，能直接用的不到一半：大量记录只写了现象没写根因，还有些「已修复」的描述和实际修复对不上。我们的预算分配最后是清洗七成、检索链路三成——和直觉相反，但检索一堆脏数据只会更快地污染生成结果，KATE 案例里「历史缺陷覆盖 +533%」的前提是他们的缺陷库是有人维护的。</p>
+
+<p><strong>第三，从一个模块试起，用采纳率说话。</strong>全量铺开之前，选一个 bug 记录质量最好的模块做对照实验：同一批需求，接知识库和不接各生成一轮，让 QA 盲评采纳率。这个数字拿去说服团队扩大投入，比任何方法论布道都管用——V2 到 V3 的价值，得让它自己长在自家数据上。</p>
+
+<h2 id="一张诊断表">一张诊断表</h2>
+
+<p>把四阶撞墙史压缩成一张自查表，收藏这个就够：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>症状                          病阶    药方
+demo 惊艳、实际生成率个位数    V1      别雕 prompt 了，拆流程
+结构对了但「正确得没用」       V2      知识工程：喂历史缺陷和私域规则
+质量上来了但知识靠人肉维护     V3      BadCase 闭环，让系统消化自己的错误
 </code></pre></div></div>
 
-<p>这会注册一组路由到 <code class="language-plaintext highlighter-rouge">/debug/pprof/</code> 下。最常用的四个：</p>
+<p>多数团队的 AI 产品死在把 V3 的病当 V1 治。包括三个月前的我们。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="测试" /><category term="知识工程" /><category term="工程实践" /><summary type="html"><![CDATA[我们自己的用例生成工具卡在「正确但没用」很久了，直到对照快手 KATE 的四阶演进（8% 生成率做到 70%）才看明白卡在哪。生成型 Agent 产品的瓶颈迁移路径其实高度可预测，这篇把地图画出来。]]></summary></entry><entry><title type="html">锯齿智能与多模型调度</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html" rel="alternate" type="text/html" title="锯齿智能与多模型调度" /><published>2026-07-11T00:00:00+08:00</published><updated>2026-07-15T23:23:42+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html"><![CDATA[<p>年初我们做过一轮内部模型选型评测，结论挺打脸的：团队主观投票「聊起来最聪明」的那个模型，在我们真实 Agent 负载（长工具链调用、改代码、查数据）的评测上排倒数。反过来，一个大家聊天时嫌它「木讷」的模型，跑长程任务稳得像老黄牛。</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># CPU：采样 30 秒内的 CPU 时间分布</span>
-go tool pprof http://127.0.0.1:6060/debug/pprof/profile?seconds<span class="o">=</span>30
+<p>当时我们把这个结果归为评测集没做好。后来读到 Karpathy 的一个说法，才意识到这不是评测误差，是这一代模型的<strong>结构性质</strong>——他管它叫 jagged intelligence，锯齿智能：模型能力不是平滑分布的，是有高峰有断崖的锯齿。</p>
 
-<span class="c"># 堆内存：当前存活对象的分配情况</span>
-go tool pprof http://127.0.0.1:6060/debug/pprof/heap
+<p>他举的例子很传神：最先进的模型能重构十万行代码、能找零日漏洞,却会一本正经建议你「走路去洗五十米外的车」——忘了车得跟人一起到场。</p>
 
-<span class="c"># goroutine：所有协程的调用栈</span>
-go tool pprof http://127.0.0.1:6060/debug/pprof/goroutine
+<h2 id="锯齿是怎么长出来的">锯齿是怎么长出来的</h2>
 
-<span class="c"># 阻塞与锁竞争（需要先 SetBlockProfileRate / SetMutexProfileFraction）</span>
-go tool pprof http://127.0.0.1:6060/debug/pprof/mutex
-</code></pre></div></div>
+<p>成因不神秘，理解了成因就理解了锯齿的走向。前沿实验室把数学、代码这类<strong>可验证的任务</strong>大规模构造成训练信号喂进 RL——答案对不对、测试过不过，机器能自动打分，于是可以无限刷。模型在这些「靶场」上练出一座座能力高峰。而缺乏可验证信号的地带——大量日常判断、模糊场景的常识——提升慢得多，形成谷底。</p>
 
-<p>两个容易忽略的点：CPU profile 是「采样期间」的快照，问题没复现时采了也白采，要在故障发生时采；heap profile 默认展示 <code class="language-plaintext highlighter-rouge">inuse_space</code>（存活内存），排查「分配太频繁导致 GC 压力大」要切到 <code class="language-plaintext highlighter-rouge">alloc_space</code> 视角：<code class="language-plaintext highlighter-rouge">go tool pprof -sample_index=alloc_space</code>。</p>
+<p>两个直接推论：</p>
 
-<h2 id="火焰图怎么读">火焰图怎么读</h2>
+<p>一，<strong>「这个模型更聪明」是个残缺的表述</strong>，必须补上「在什么任务上」。我们那次评测的教训就在这——聊天体验测的是一座峰，Agent 负载踩的是另一座，两座峰之间没有必然联系。</p>
 
-<p><code class="language-plaintext highlighter-rouge">go tool pprof -http=:8080 profile.pb.gz</code> 打开 Web UI，切到 Flame Graph 视图。读图只需要记三条规则：</p>
+<p>二，<strong>锯齿短期不会磨平，反而在加深。</strong>看各家的产品路线就知道：有的押注低幻觉和事实准确，有的押注长程任务续航，有的押注超长上下文加推理速度，有的押注极致性价比。厂商在主动差异化，边界只会越来越清晰。</p>
 
-<p><strong>横轴是占比，不是时间顺序。</strong> 一个函数的宽度代表它（含子调用）占用的 CPU 采样比例。找最宽的塔。</p>
+<h2 id="所以调度是个架构问题">所以调度是个架构问题</h2>
 
-<p><strong>纵轴是调用栈，从下往上。</strong> 底部是入口（如 <code class="language-plaintext highlighter-rouge">main.main</code> 或某个 goroutine 起点），越往上越深。</p>
+<p>既然没有全能冠军，结论自然是按任务路由。当下（2026 年中）的路由手感大概是：事实准确性敏感的选幻觉率最低的；十小时以上长程任务选续航实测最强的；超大上下文选原生百万窗口的；预算敏感的批量任务选性价比档——同能力档位之间价差能到五倍，这个差价大到不容忽视。</p>
 
-<p><strong>找「平顶」。</strong> 顶部又宽又平的帧意味着 CPU 真正消耗在这个函数自身（self time），而不是它的子调用——这就是优化目标。</p>
+<p>具体型号我故意不点名，这张表每个季度洗一次牌，写下来就过期。<strong>会过期的是排名，不过期的是「按任务画像路由」这个结构。</strong></p>
 
-<p><img src="/assets/images/2026/pprof-flamegraph-guide.svg" alt="火焰图判读示意" /></p>
+<p>我们的落地方式是一层内部网关：所有 AI 能力统一入口，业务方声明<strong>任务类型</strong>而不是指定模型。协议上依托一个现成的便利——主流厂商都提供 OpenAI 兼容端点，抽象层做好后接入新模型基本等于加一段配置。网关后面四件事：按类型路由、同档位保底两条渠道自动故障转移、分模型记录成功率/成本/延迟、用这些数据每月修正路由表。</p>
 
-<p>图形看不清时回到命令行，<code class="language-plaintext highlighter-rouge">top</code> 看 self 时间排序，<code class="language-plaintext highlighter-rouge">list 函数名</code> 直接看到每一行代码的耗时标注——这是 pprof 最被低估的命令。</p>
+<p>这层网关是年初评测之后立项的，现在回看是那次「打脸」最值钱的产出：模型下线、涨价、被更强的取代，业务代码零改动。上个月一个模型突然调价，我们改了一行配置完成迁移——隔壁没做抽象层的团队改了一周代码。</p>
 
-<h2 id="案例一cpu-打满凶手是-json">案例一：CPU 打满，凶手是 JSON</h2>
+<h2 id="任务画像怎么打">任务画像怎么打</h2>
 
-<p>某服务 QPS 没变，CPU 却从 40% 涨到 90%。采 CPU profile，火焰图上 <code class="language-plaintext highlighter-rouge">encoding/json.Marshal</code> 一族占了 58%，平顶集中在 <code class="language-plaintext highlighter-rouge">reflect.Value</code> 相关帧。</p>
+<p>「按任务画像路由」说起来轻巧，画像具体打什么标签？我们网关现在用四个维度，都是从踩坑里倒推出来的：</p>
 
-<p><code class="language-plaintext highlighter-rouge">list</code> 定位到一个监控上报函数：每次请求都把完整上下文结构体（嵌套七层）序列化成 JSON 打日志。一周前有人往结构体里加了个大 map。</p>
+<p><strong>可验证性</strong>——任务产出能不能机械判对错。能（代码有测试、SQL 有结果比对）的任务可以放心用便宜模型加重试兜底，反正错了会被抓住；不能（写方案、做判断）的任务必须上事实准确性最强的档位，因为错误会静默通过。这个维度对成本的影响最大——很多团队给「有测试兜底」的任务配旗舰模型，纯浪费。</p>
 
-<p>修复分三层。短期：日志降采样，1% 抽样上报。中期：这个路径换成手写的 <code class="language-plaintext highlighter-rouge">MarshalJSON</code> 只输出关键字段。长期：在 CI 里加 benchmark 守门：</p>
+<p><strong>上下文量</strong>——预估输入规模。超过某个门槛（我们定在 15 万 token）直接路由到大窗口模型，不然截断和分块的质量损失比模型差异大得多。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">BenchmarkReportMarshal</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">ctx</span> <span class="o">:=</span> <span class="n">buildFullContext</span><span class="p">()</span>
-    <span class="n">b</span><span class="o">.</span><span class="n">ReportAllocs</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">Marshal</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-<span class="c">// 配合 benchstat 对比 PR 前后，劣化超 20% 报警</span>
-</code></pre></div></div>
+<p><strong>时长/轮次</strong>——预估工具调用轮数。超过 50 轮的长程任务，只路由给续航评测达标的模型，这个名单我们每季度用真实任务重测一次。</p>
 
-<p>CPU 回到 45%。教训：反射型序列化在热路径上就是定时炸弹，<code class="language-plaintext highlighter-rouge">json.Marshal</code> 出现在火焰图前排时先怀疑它。</p>
+<p><strong>事实敏感度</strong>——错误的业务后果。对外输出、涉及数据订正的，锁定低幻觉档位并强制人工复核；内部草稿随意。</p>
 
-<h2 id="案例二内存缓慢上涨不是泄漏是逃逸">案例二：内存缓慢上涨，不是泄漏是「逃逸」</h2>
+<p>四个维度打完，路由表其实很小——我们线上真正的路由规则不到二十条。画像的意义不在精细，在于<strong>逼着接入方在申请时想清楚自己的任务是什么性质</strong>——很多次架构讨论的价值就发生在填画像表的那十分钟。</p>
 
-<p>另一个服务内存每天涨 300MB，重启后归零。heap profile 的 <code class="language-plaintext highlighter-rouge">inuse_space</code> 里 <code class="language-plaintext highlighter-rouge">bytes.growSlice</code> 占大头，调用方是一个缓冲池的 <code class="language-plaintext highlighter-rouge">Get</code>。</p>
+<h2 id="三个坑都踩过">三个坑,都踩过</h2>
 
-<p>看代码发现这是个经典错误：<code class="language-plaintext highlighter-rouge">sync.Pool</code> 里放 <code class="language-plaintext highlighter-rouge">*bytes.Buffer</code>，但有个慢路径会把 buffer 扩到几十 MB，用完照样放回池里。池子越养越肥。</p>
+<p><strong>用聊天体验做选型。</strong>开头讲了,不重复。补一个细节：长工具链场景有个专属退化模式——前十几次调用很正常，二三十次之后开始遗忘早先的约束、重复已做过的操作。这种「续航型」缺陷聊天永远测不出来，必须拿真实任务的完整轨迹测。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">putBuffer</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">bytes</span><span class="o">.</span><span class="n">Buffer</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">Cap</span><span class="p">()</span> <span class="o">&gt;</span> <span class="m">1</span><span class="o">&lt;&lt;</span><span class="m">20</span> <span class="p">{</span> <span class="c">// 超过 1MB 的不回池，让 GC 收走</span>
-        <span class="k">return</span>
-    <span class="p">}</span>
-    <span class="n">b</span><span class="o">.</span><span class="n">Reset</span><span class="p">()</span>
-    <span class="n">bufPool</span><span class="o">.</span><span class="n">Put</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></div></div>
+<p><strong>路由只看单价。</strong>前缀缓存那篇讲过的教训在这里复发过一次：网关早期版本按请求粒度贪心路由,把长会话在两个模型间来回倒，两边缓存都养不热，「省钱」路由实际更贵。修复：路由粒度改成会话级，成本函数把缓存状态算进去。</p>
 
-<p>顺手用逃逸分析确认了另一个热点函数的分配来源：</p>
+<p><strong>低估多模型的持有成本。</strong>每接一个模型，不只是加个 endpoint——它对提示词风格、工具 schema、编辑格式的偏好都可能不同（编辑格式那篇的 16 模型测试就是证据），你得为它维护一份评测基线、一套回归用例。我们巅峰期接过七个模型，后来主动砍到四个。<strong>三个精心维护的模型，好过八个裸奔的。</strong></p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go build <span class="nt">-gcflags</span><span class="o">=</span><span class="s1">'-m -m'</span> ./pkg/codec/ 2&gt;&amp;1 | <span class="nb">grep </span>escape
-<span class="c"># ./codec.go:42:13: buf escapes to heap: 传给了 interface 参数</span>
-</code></pre></div></div>
+<h2 id="锯齿的人间侧">锯齿的人间侧</h2>
 
-<p><code class="language-plaintext highlighter-rouge">interface{}</code> 参数、闭包捕获、返回局部 slice 指针，是逃逸三大常客。内存问题不全是泄漏，「该死的对象死不掉」和「不该堆分配的上了堆」同样常见，前者看 inuse，后者看 alloc。</p>
+<p>最后说个技术之外的观察。锯齿智能有个不太被讨论的镜像推论：<strong>模型的能力谷底，就是人的价值高地。</strong></p>
 
-<h2 id="案例三goroutine-泄漏每小时多一千个">案例三：goroutine 泄漏，每小时多一千个</h2>
+<p>模型在可验证任务上一骑绝尘，那么「定义什么是可验证的」「在模糊地带做判断」「识别模型此刻正站在哪个断崖边」——这些谷底位置就是人的新岗位。我在团队里的直观感受印证这一点：AI 用得越深，越依赖那几个「知道模型什么时候不可信」的人。他们不一定是代码写得最快的，但他们的判断在定价上涨。</p>
 
-<p>监控显示 goroutine 数量线性增长。直接看文本版快照，按栈聚合：</p>
+<p>所以「哪个模型最强」真的是个没营养的问题。有营养的问题有两个：这个任务的画像匹配哪座峰？以及——我自己站在哪个谷里，站得够不够深。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="多模型" /><category term="模型调度" /><category term="架构" /><category term="Jagged Intelligence" /><summary type="html"><![CDATA[我们的模型选型评测得出过一个尴尬结论：聊天体验最好的那个模型，在真实 Agent 负载上垫底。锯齿智能这个概念解释了为什么，也解释了为什么「哪个模型最强」是个没有营养的问题。]]></summary></entry><entry><title type="html">代码是负债，规格才是资产</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html" rel="alternate" type="text/html" title="代码是负债，规格才是资产" /><published>2026-07-09T00:00:00+08:00</published><updated>2026-07-15T23:21:19+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html"><![CDATA[<p>去年重写一个跑了八年的老系统时，我们遇到一段谁也不敢动的代码：一个订单状态机里,某个分支对特定渠道的订单多做了一次看似多余的状态回写。没有注释，没有文档，git blame 指向一个六年前离职的同事,提交信息是「fix」。</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-s</span> <span class="s1">'http://127.0.0.1:6060/debug/pprof/goroutine?debug=1'</span> | <span class="nb">head</span> <span class="nt">-30</span>
-<span class="c"># 1024 @ 0x43a1c5 0x44f9e7 ...</span>
-<span class="c"># #  chan send, 47 minutes</span>
-<span class="c"># #  github.com/xx/svc/worker.process+0x1a4</span>
-</code></pre></div></div>
+<p>删掉它？没人敢。留着它？重写后的新系统要不要复刻这个行为？我们最后花了两天，从客服的历史工单里考古出了答案：那是给某个老渠道的对账系统留的兼容行为，那个渠道——三年前就下线了。两天考古，换来「可以安全删除」五个字。</p>
 
-<p>一千多个 goroutine 卡在同一个 <code class="language-plaintext highlighter-rouge">chan send</code>，已经卡了 47 分钟。读 <code class="language-plaintext highlighter-rouge">worker.process</code>：它往一个结果 channel 发送数据，而接收方在超时后直接 return 了，没人收，发送方永久阻塞。</p>
+<p>这件事当时只当是老系统的日常。直到最近读到 lencx 在《浅谈 AI 编程》里的一个说法，我才把它放进一个更大的框架里：<strong>代码是负债，规格约束才是资产。</strong>这个「暴论」值得认真对待，因为 AI 正在把它从哲学命题变成经济现实。</p>
 
-<p>修复原则就一条——发送方永远要有退路：</p>
+<h2 id="推导其实很平实">推导其实很平实</h2>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="p">{</span>
-<span class="k">case</span> <span class="n">resultCh</span> <span class="o">&lt;-</span> <span class="n">res</span><span class="o">:</span>
-<span class="k">case</span> <span class="o">&lt;-</span><span class="n">ctx</span><span class="o">.</span><span class="n">Done</span><span class="p">()</span><span class="o">:</span> <span class="c">// 接收方超时离场后，发送方从这里退出</span>
-    <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">Err</span><span class="p">()</span>
-<span class="p">}</span>
-</code></pre></div></div>
+<p>AI 把代码生产的边际成本压到趋近于零，这件事的直接后果是：软件工程的核心矛盾从「谁来写代码」变成「谁来定义正确性、约束生成、验证结果、承担长期演化责任」。在新矛盾下重新记账，代码就进了负债栏，理由有三：</p>
 
-<p>更系统的防御是给所有 worker 类 goroutine 强制传 context，并在集成测试里用 <code class="language-plaintext highlighter-rouge">goleak</code> 检查：</p>
+<p><strong>代码会腐烂。</strong>框架升级、依赖漏洞、业务演进，每一项都在让存量代码贬值。持有代码要持续付维护利息——这就是负债的定义。</p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">TestMain</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">M</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">goleak</span><span class="o">.</span><span class="n">VerifyTestMain</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></div></div>
+<p><strong>代码会隐藏意图。</strong>代码只说「现在怎么做」，不说「为什么必须这么做」。我们那段状态回写就是标本：行为还在，理由失传。而 AI 重构时最需要的恰恰是理由——没有意图信息，模型会满怀信心地把最重要的补丁当垃圾清理掉。它比人类更果断，这在这个场景下不是优点。</p>
 
-<h2 id="持续剖析从救火到巡检">持续剖析：从救火到巡检</h2>
+<p><strong>代码会制造审查负担。</strong>这是 AI 时代新增的属性。生成可以无限扩容，人类审查不能：机器分钟级产出几千行，人小时级验证。Stack Overflow 的调查数据把这个矛盾摆得很直白——84% 的开发者在用或计划用 AI 工具，只有 3.1% 高度信任 AI 的输出。采纳率和信任度在剧烈分叉，分叉的裂缝里堆的全是待审查的 diff。</p>
 
-<p>以上都是「出了事再采」的被动模式。更进一步是持续剖析（Continuous Profiling）：agent 常驻采样（开销约 1~3% CPU），profile 数据带时间戳入库，出问题时直接对比「故障时段 vs 正常时段」的差分火焰图，连复现都省了。Pyroscope、Parca 都是现成方案，Go 的原生支持也很好。我把它当作 APM 三件套（metrics、trace、log）之后的第四件，中型以上的服务建议默认开启——它把「能不能采到现场」这个最大的不确定性直接消灭了。</p>
+<h2 id="几乎对比错危险">「几乎对」比「错」危险</h2>
 
-<h2 id="方法论总结">方法论总结</h2>
+<p>审查负担里最阴险的部分，是 AI 产出的错误画像变了。明显的错误不可怕，CI 会拦、测试会红。可怕的是<strong>几乎对</strong>的代码：局部完全合理，整体悄悄失稳。</p>
 
-<p>三个案例背后是同一套流程：先用监控确定问题类别（CPU/内存/goroutine），选对 profile 类型和采样视角；火焰图找最宽的塔和平顶帧，<code class="language-plaintext highlighter-rouge">list</code> 下钻到代码行；修复后用 benchmark + benchstat 量化收益，并把检查固化进 CI。</p>
+<p>我们真实遇到过的几例：新增的依赖版本与部署基线冲突（代码本身没毛病）；复用了一个工具函数但破坏了它的隐性约定（那个函数所有调用方都默认输入已排序）；为了让测试变绿写了一个恰好绕过断言的特判。每一例单独 review 都很难看出问题——它们「披着工程完整性的外衣」：有测试、有类型、有错误处理。有人给这类东西起名叫<strong>代码泥浆</strong>，我觉得很传神：看起来是坚实的地面，踩上去才知道。</p>
 
-<p>pprof 还有不少本文没碰的能力，比如配合 <code class="language-plaintext highlighter-rouge">runtime/trace</code> 分析调度延迟和 GC 停顿，不过那是另一个话题了。日常的线上问题，上面这套流程够用八成。剩下两成，通常卡在「采的时候问题没发生」——所以再啰嗦一遍：持续剖析早点上。</p>]]></content><author><name>小黄鸭</name></author><category term="技术" /><category term="Golang" /><category term="Golang" /><category term="pprof" /><category term="性能优化" /><category term="火焰图" /><category term="工程实践" /><summary type="html"><![CDATA[CPU 打满、内存暴涨、goroutine 泄漏——三类最常见的 Go 线上问题，用 pprof 一套方法论打穿：怎么采、怎么看、怎么定位到代码行。]]></summary></entry><entry><title type="html">异步 Agent：把任务扔进后台之后</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html" rel="alternate" type="text/html" title="异步 Agent：把任务扔进后台之后" /><published>2026-05-14T00:00:00+08:00</published><updated>2026-06-13T14:30:50+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"><![CDATA[<p>今年明显感受到一个变化：越来越多的任务开始用「扔进后台跑」的方式处理，而不是坐在终端前盯着模型一步步走。Cognition 的 Walden Yan 在一次访谈里提到，Devin 自己仓库里 AI 贡献的 commit 占比从一月的 16% 涨到三月的 80%，工程团队人数只增加了 10%。这个数字我觉得代表了行业正在发生的变化方向。</p>
+<p>泥浆的生产速度是人肉审查跟不上的。这就逼出下一个问题——</p>
 
-<p>但背景 Agent 真的能用，是最近几个月的事。更早之前，模型能力还撑不住「给任务、等结果」这种交互方式，中间需要人不断扶着走。Opus 4.5 之后，一些任务开始可以真正放手——写好 spec 扔进去，几小时后拿 PR。这对工作方式影响挺大的，但随之带来的工程问题也不少。</p>
+<h2 id="什么才是资产一个思想实验">什么才是资产：一个思想实验</h2>
 
-<h2 id="任务描述是最大的坑">任务描述是最大的坑</h2>
+<p>想清楚这个问题，一个思想实验就够：<strong>下一代模型发布时，你允许它重写什么？</strong></p>
 
-<p>背景 Agent 和同步 Agent 最大的操作差异，在于你没机会在中途纠偏。同步模式下，Agent 走偏了，你看到了可以立刻打断重来；异步模式下，你发出任务去做别的事，回来发现它跑了两小时、方向整个错了。</p>
+<p>实现代码——随便重写，写得更好我求之不得。但业务不变量（「余额不能为负」）、接口契约、合规要求、安全边界、兼容承诺、性能预算、历史决策记录——一个字都轮不到它自作主张。</p>
 
-<p>所以任务描述的质量决定了异步 Agent 能不能用。我现在发一个异步任务之前，会强制给自己写三件事：</p>
+<p>这条线就是资产负债的分界线。<strong>没有这些约束，模型升级只会让混乱以更高速度发生；有了这些约束，模型升级是一次可控的再编译。</strong>代码是规格的一次编译产物，过期了重新编译就是；规格才是跨模型周期存续的东西。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>目标：要解决什么问题（不是「要做什么」，是「解决什么」）
-约束：不能动什么、不能假设什么
-验收标准：怎么判断任务完成了
-</code></pre></div></div>
+<p>按这个标准盘点我们的资产清单：spec 和验收标准、领域术语表、机器可读的接口和数据契约、测试集、ADR（架构决策记录）、风险清单。盘点的结果挺羞愧的——八年老系统，代码几十万行，够格叫「资产」的文档不到二十份。那两天的考古，本质上是在为六年前没写的一行 ADR 付利息。</p>
 
-<p>这三件事写不清楚就不发，因为 Agent 填充模糊空间的方式通常不是你想要的。最常见的问题是「目标」写成了「行动」——「重构 user.go 里的数据库查询」和「降低 user.go 里数据库查询的延迟 P99」，同样的起点，Agent 的行为路径可以差很远。</p>
+<h2 id="应对从逐行审查到分层治理">应对：从逐行审查到分层治理</h2>
 
-<p>约束那栏经常被忽略。我有一次让 Agent 「优化这个模块的性能」，没写约束，它把数据库查询从 ORM 改成了手写 SQL，顺手删掉了几个它觉得「冗余」的封装层。技术上没错，但打破了团队的编码规范，review 打回来重来。后来约束那栏开始写：「不改变代码结构，只在现有框架内优化；不删除任何现有函数，只能修改实现」。</p>
+<p>回到审查跟不上的问题。既然生成/审查的非对称是结构性的，用人海战术逐行 review 对抗批量生成就注定失败，出路是把审查从「看代码」升级成「按风险分层治理」：</p>
 
-<p>验收标准最容易写成「代码跑通就行」，但这往往不够。现在我会加「运行 <code class="language-plaintext highlighter-rouge">just test</code> 全绿」「新增函数必须有测试覆盖」「不引入新的外部依赖」这类可以机器验证的标准，让 Agent 自己在提交前跑一遍检查。</p>
+<p>低风险（文档、注释、测试补齐、样式）：自动化检查加抽样，人基本不看。中风险（业务逻辑、接口行为）：AI 先审一遍、人看关键点、CI 兜底。高风险（支付、权限、认证、数据迁移）：设计评审、强测试、灰度、回滚预案、责任人签字，一样不能少。</p>
 
-<h2 id="进度跟踪是个没有标准答案的问题">进度跟踪是个没有标准答案的问题</h2>
+<p>review 的核心问题也跟着变了。以前问「这行写得好不好」，现在问：是否符合 spec？是否破坏领域不变量？有没有测试证明？可观测吗？可回滚吗？要不要更新 ADR？一句话，<strong>从写代码走向治理代码</strong>。</p>
 
-<p>任务扔进后台之后，你怎么知道它在干什么、有没有卡住？</p>
+<p>我承认这套东西听起来官僚。但官僚化的反面不是自由，是我们那两天的考古——以及未来千百次这样的考古，只不过考古者换成 AI 之后，它不会考古，它会直接删。</p>
 
-<p>目前我试过几种方式，各有缺陷。</p>
+<h2 id="反向提炼用-ai-还旧债的具体做法">反向提炼：用 AI 还旧债的具体做法</h2>
 
-<p><strong>定期回来看输出</strong>：最简单，但 Agent 的输出是流式的，你回来看到的是一堆工具调用记录，读起来费劲，很难判断进展是否正常。</p>
+<p>「从代码反向提炼规格」不是一句口号，我们在老系统上真跑了一轮，把操作流程写下来。</p>
 
-<p><strong>让 Agent 写进度日志</strong>：在任务描述里要求 Agent 每完成一个阶段就向 <code class="language-plaintext highlighter-rouge">progress.md</code> 写一行记录。好处是可以 tail -f，坏处是 Agent 有时候忘写，有时候写了很多废话，真正有用的进展信息反而不清楚。</p>
+<p>对象是那个八年老系统里最核心的订单模块，约四万行。流程分三步：</p>
 
-<p><strong>关键检查点 + 等待确认</strong>：把任务拆成几个阶段，每个阶段结束要求 Agent 等待人工 <code class="language-plaintext highlighter-rouge">approve</code> 再继续。这是最可控的，但破坏了「不用盯着它跑」的初衷，变成了另一种形式的同步。</p>
+<p><strong>第一步，让模型通读代码，产出行为规格草稿。</strong>注意提示词的措辞很关键——不是「总结这个模块」（会得到一篇正确的废话），而是「以验收测试的口吻，列出这个模块对外承诺的所有行为，特别标注：与直觉不符的行为、针对特定条件的特殊处理、看起来多余的步骤」。最后那半句是灵魂，专门钓那些藏着历史原因的角落。订单模块钓出来 40 多条「可疑行为」。</p>
 
-<p>我现在用的是折中方案：非关键任务（内容生成、测试补充）纯异步，不看进度，看结果；关键任务（涉及数据库变更、影响线上服务的重构）强制设检查点，至少在「开始写代码之前」和「准备提交之前」各要求一次人工确认。</p>
+<p><strong>第二步，人工分诊。</strong>每条可疑行为三种归宿：有人知道原因的，当场写成一句「为什么」，进规格；没人知道原因但有据可查的（工单、老邮件、监控历史），指派考古，限时两小时——查不出就归第三类；彻底失传的，标注「行为存在，理由未知，改动前需灰度验证」。第三类不丢人，<strong>诚实标注的未知比编造的解释值钱</strong>。40 多条里大概一半当场有答案，四分之一考古出来，剩下的老实挂着「未知」。</p>
 
-<h2 id="多人协作slack-session-的问题">多人协作：Slack session 的问题</h2>
+<p><strong>第三步，规格草稿变测试。</strong>能自动验证的行为直接让模型生成对应的特征测试（characterization test）钉住现状。这步的意义是让规格「活」着——文档会烂，测试挂在 CI 上不会。</p>
 
-<p>这是一个大家不太讲但实际很痛的问题。</p>
+<p>三步走完，订单模块第一次有了一份 60 多条的行为规格加一批护栏测试。总投入大约三人日——八年的债，三天还掉主要的本金，这买卖放在 AI 之前想都不敢想（纯人工做过类似的事，一个模块一个月起步）。</p>
 
-<p>团队用 Agent 的常见模式是：有人在自己的 Slack 里启动一个 Claude session，发任务，等结果。但这个 session 绑定在发起人的身份和对话历史里，其他人如果想接手这个任务——看看进展、追加需求、让 Agent 继续——基本上做不到，只能靠复制粘贴上下文重开一个新 session。</p>
+<p>有个副产品值得一提：分诊会开完，两个老同事感慨说好几条「特殊处理」他们自己都忘了是自己写的。<strong>规格提炼顺便完成了一次组织记忆的抢救</strong>——那些只活在少数人脑子里的系统知识，趁人还在，落成了文字。</p>
 
-<p>这是一个真实存在的协作摩擦。背景 Agent 的价值有很大一部分在于「不是一个人的专属工具」——PM 可以发起需求，工程师可以接手执行，另一个工程师可以做 review——但如果每次任务都绑定在发起人的私人 session 里，这个价值就打了折。</p>
+<h2 id="一个自检问题">一个自检问题</h2>
 
-<p>短期解法是把任务上下文外化：任务描述写在任务管理系统里（Jira/Linear），Agent 的产出存到仓库里，关键决策写到 <code class="language-plaintext highlighter-rouge">task_notes.md</code> 里，session 本身只是执行容器，不存储关键信息。这样换人接手时，新人拿到的材料是完整的。</p>
+<p>结尾留一个我拿来问自己团队的问题，也送给你的团队：</p>
 
-<p>长期来看这可能是工具层要解决的问题。但现在工具还没到那一步，只能靠工作习惯来补。</p>
+<p><strong>如果明天代码全部消失，只留下文档、规格、测试和决策记录，你们多久能重建系统？</strong></p>
 
-<h2 id="背景-agent-改变了什么">背景 Agent 改变了什么</h2>
+<p>如果答案是「重建不了，好多逻辑只活在代码里」——那些逻辑就是你最大的隐性负债。好消息是上一节已经演示过的：还债的工具也到位了，三人日能还掉一个核心模块的主要本金。用 AI 还 AI 时代之前欠的债，算是这个时代给老系统维护者的一点温柔。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="AI Coding" /><category term="Spec" /><category term="软件工程" /><category term="工程实践" /><summary type="html"><![CDATA[重写一个八年老系统时我们发现：最值钱的业务逻辑只存在于代码里，而且没人说得清为什么。AI 把写代码的成本打到趋近于零之后，真正稀缺的东西显形了。聊聊「代码是负债」这个暴论，和它推出来的工程结论。]]></summary></entry><entry><title type="html">RPI 工作流：像资深工程师一样使唤 Agent</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html" rel="alternate" type="text/html" title="RPI 工作流：像资深工程师一样使唤 Agent" /><published>2026-07-07T00:00:00+08:00</published><updated>2026-07-15T23:26:25+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html"><![CDATA[<p>上周带一个新同事上手 AI Coding，看他操作了十分钟我就知道问题在哪了：一个窗口从头聊到尾。调研、讨论、写码、调试、返工，全在一个会话里滚，四十多轮之后窗口里是一锅粥，模型的输出质量随粥的浓度稳定下降，他的解决方式是骂骂咧咧地继续追加澄清——粥更稠了。</p>
 
-<p>跑了几个月异步任务之后，工作节奏确实变了，但变化的方向不是「省了很多时间」，而是「深度和等待的比例变了」。</p>
+<p>我没给他讲上下文工程的大道理，只给了他一个足够简单的起手式：RPI——Research、Plan、Implement，三步，三个独立会话，每步一条铁律。一周后他自己跑来说返工少了一半。这个方法出自 HumanLayer，简单到一张便签能写下，但每条铁律背后都有讲究，值得写一篇。</p>
 
-<p>以前一天里大部分时间是持续的、中等深度的工作——写代码、调 bug、看文档。现在变成了几个短的深度爆发（写 spec、验收 PR、做判断）加上大段的「后台等待」时间。如果等待时间用来做另一件深度工作，整体产出是提升的；如果等待时间消耗在切换和碎片处理上，感觉很忙但实际上不比以前高效。</p>
+<h2 id="r只许看不许动">R：只许看，不许动</h2>
 
-<p>这个变化对工作安排的要求提高了。以前「坐下来打开编辑器就能干活」，现在需要想清楚「这段时间用来做什么、哪些任务可以并行放进后台」。它不会自动让你更高效，但如果你有意识地设计自己的任务流，它的杠杆效应是真实的。</p>
+<p>第一个会话只做一件事：让 Agent 探索。给它问题陈述，让它摸清代码库结构、相关模块、已有的类似实现，最后产出一份调研纪要——落盘成文件，不是留在对话里。</p>
 
-<p>Cognition 那篇访谈里还有一句话我印象深刻：背景 Agent 落地的关键不再只是模型能力，而是围绕模型的整套工程系统。这句话在我自己折腾了半年之后，觉得比刚看到时更对。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="异步" /><category term="工程实践" /><category term="background agent" /><summary type="html"><![CDATA[背景 Agent 今年开始真正可用。但「把任务扔进后台」这件事，工程上的问题远比看起来多：任务怎么描述、进度怎么跟踪、失败了怎么办、多人协作怎么共享上下文。记录一些实际经历。]]></summary></entry><entry><title type="html">MCP 协议深入：AI 应用的 USB-C 接口</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/09/MCP%E5%8D%8F%E8%AE%AE%E6%B7%B1%E5%85%A5-AI%E5%BA%94%E7%94%A8%E7%9A%84USB-C%E6%8E%A5%E5%8F%A3.html" rel="alternate" type="text/html" title="MCP 协议深入：AI 应用的 USB-C 接口" /><published>2026-05-09T00:00:00+08:00</published><updated>2026-06-13T08:13:05+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/09/MCP%E5%8D%8F%E8%AE%AE%E6%B7%B1%E5%85%A5-AI%E5%BA%94%E7%94%A8%E7%9A%84USB-C%E6%8E%A5%E5%8F%A3</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/09/MCP%E5%8D%8F%E8%AE%AE%E6%B7%B1%E5%85%A5-AI%E5%BA%94%E7%94%A8%E7%9A%84USB-C%E6%8E%A5%E5%8F%A3.html"><![CDATA[<p>2024 年 11 月 Anthropic 开源 MCP（Model Context Protocol）时，很多人以为这只是又一个工具调用的封装。一年半过去，OpenAI、Google 先后宣布兼容，MCP 事实上成了 AI 应用接入外部世界的标准接口。这篇文章不讲新闻，讲协议本身：它解决了什么问题、怎么解决的、生产环境里有哪些坑。</p>
+<p>铁律：<strong>这个阶段不允许采取任何行动。</strong>不写代码、不改文件、不装依赖。</p>
 
-<h2 id="为什么需要-mcpnm-问题">为什么需要 MCP：N×M 问题</h2>
+<p>为什么要这么绝对？因为模型有强烈的动手欲——你说「看看这个 bug」，它三分钟后已经提交修复了。而跳过理解的修复，命中根因靠运气，多数时候是在给症状打补丁。我自己的血泪版本：早期有次让它「看看为什么定时任务偶尔不执行」，它看了两个文件就动手加了个重试。重试当然「有效」——症状被掩盖了，真正的原因（时区处理错误导致的调度漂移）又活了两个月。</p>
 
-<p>在 MCP 之前，每个 AI 应用接入每个数据源都要写一遍胶水代码。你有 N 个 AI 客户端（Claude、Cursor、自研 Agent），M 个数据源（数据库、Slack、内部 API），就要维护 N×M 套集成。每套集成都有自己的认证方式、错误处理、数据格式。</p>
+<p>从那以后我的 R 阶段提示词里永远有一句：「只调查，不修复，输出调研纪要。」</p>
 
-<p>这和 USB 出现之前的外设市场一模一样：每台电脑、每个打印机厂商都有自己的接口。MCP 做的事情就是定义一个统一插口——客户端只要实现一次 MCP Client，就能接入所有 MCP Server；数据源只要实现一次 MCP Server，就能被所有支持 MCP 的应用使用。N×M 变成 N+M。</p>
+<h2 id="p人类判断力的主战场">P：人类判断力的主战场</h2>
 
-<p><img src="/assets/images/2026/mcp-architecture.svg" alt="MCP 架构示意" /></p>
+<p>第二个会话（或者接着第一个），让 Agent 基于调研纪要写出执行计划：改哪些文件、什么顺序、每步怎么验证。然后——重点来了——<strong>人来审</strong>。</p>
 
-<h2 id="协议分层三个核心原语">协议分层：三个核心原语</h2>
+<p>这是整个流程里人类时间投入产出比最高的一环，道理很朴素：计划里的错误此刻还是文字，改起来是几句话的事；放进实现阶段就变成散落在十几个文件里的代码，改起来是一次返工。同一个错误，在 P 阶段修和在 I 阶段修，成本差一个数量级。</p>
 
-<p>MCP 基于 JSON-RPC 2.0，传输层支持 stdio（本地进程）和 Streamable HTTP（远程服务）。协议层定义了三个核心原语，理解它们的区别是用好 MCP 的关键：</p>
+<p>铁律：<strong>在这一步偷懒，代价在后面成倍偿还。</strong></p>
 
-<p><strong>Tools（工具）</strong>：模型主动调用的函数。由模型决定什么时候调、传什么参数。比如 <code class="language-plaintext highlighter-rouge">query_database</code>、<code class="language-plaintext highlighter-rouge">send_message</code>。这是大家最熟悉的部分，对应传统的 function calling。</p>
-
-<p><strong>Resources（资源）</strong>：应用控制的上下文数据。注意是「应用控制」而不是「模型控制」——由宿主应用决定把哪些资源注入上下文。比如一个文件的内容、一条数据库记录。Resources 是只读的，有 URI 标识，支持订阅变更。</p>
-
-<p><strong>Prompts（提示模板）</strong>：用户控制的交互模板。用户在 UI 里显式选择触发，比如斜杠命令。Server 可以暴露参数化的提示模板，把领域知识打包给用户复用。</p>
-
-<p>三者的控制权分别在模型、应用、用户手里。很多人把所有东西都塞进 Tools，结果模型在一堆本该是静态上下文的数据上反复做无谓的工具调用，既慢又贵。正确的做法是：动态操作用 Tools，静态上下文用 Resources，固定工作流用 Prompts。</p>
-
-<h2 id="动手写一个-mcp-server">动手写一个 MCP Server</h2>
-
-<p>用官方 Python SDK 写一个查询 MySQL 慢日志的 Server，不到 60 行：</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">mcp.server.fastmcp</span> <span class="kn">import</span> <span class="n">FastMCP</span>
-<span class="kn">import</span> <span class="n">aiomysql</span>
-
-<span class="n">mcp</span> <span class="o">=</span> <span class="nc">FastMCP</span><span class="p">(</span><span class="sh">"</span><span class="s">mysql-slowlog</span><span class="sh">"</span><span class="p">)</span>
-
-<span class="nd">@mcp.tool</span><span class="p">()</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">top_slow_queries</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sh">"""</span><span class="s">查询执行时间最长的慢 SQL，按平均耗时降序</span><span class="sh">"""</span>
-    <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">get_pool</span><span class="p">()</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">pool</span><span class="p">.</span><span class="nf">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">conn</span><span class="p">.</span><span class="nf">cursor</span><span class="p">(</span><span class="n">aiomysql</span><span class="p">.</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">execute</span><span class="p">(</span><span class="sh">"""</span><span class="s">
-                SELECT schema_name, digest_text,
-                       count_star AS calls,
-                       avg_timer_wait/1e12 AS avg_sec
-                FROM performance_schema.events_statements_summary_by_digest
-                ORDER BY avg_timer_wait DESC LIMIT %s
-            </span><span class="sh">"""</span><span class="p">,</span> <span class="p">(</span><span class="n">limit</span><span class="p">,))</span>
-            <span class="n">rows</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">fetchall</span><span class="p">()</span>
-    <span class="k">return</span> <span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span>
-        <span class="sa">f</span><span class="sh">"</span><span class="s">[</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="sh">'</span><span class="s">avg_sec</span><span class="sh">'</span><span class="p">]</span><span class="si">:</span><span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">s x</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="sh">'</span><span class="s">calls</span><span class="sh">'</span><span class="p">]</span><span class="si">}</span><span class="s">] </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="sh">'</span><span class="s">digest_text</span><span class="sh">'</span><span class="p">][</span><span class="si">:</span><span class="mi">120</span><span class="p">]</span><span class="si">}</span><span class="sh">"</span>
-        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span>
-    <span class="p">)</span>
-
-<span class="nd">@mcp.resource</span><span class="p">(</span><span class="sh">"</span><span class="s">schema://{table}</span><span class="sh">"</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">table_schema</span><span class="p">(</span><span class="n">table</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sh">"""</span><span class="s">暴露表结构作为只读资源</span><span class="sh">"""</span>
-    <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">get_pool</span><span class="p">()</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">pool</span><span class="p">.</span><span class="nf">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">conn</span><span class="p">.</span><span class="nf">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">execute</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">SHOW CREATE TABLE </span><span class="si">{</span><span class="nf">validate</span><span class="p">(</span><span class="n">table</span><span class="p">)</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
-            <span class="nf">return </span><span class="p">(</span><span class="k">await</span> <span class="n">cur</span><span class="p">.</span><span class="nf">fetchone</span><span class="p">())[</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
-    <span class="n">mcp</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">transport</span><span class="o">=</span><span class="sh">"</span><span class="s">stdio</span><span class="sh">"</span><span class="p">)</span>
-</code></pre></div></div>
-
-<p>客户端配置（以 Claude Desktop 为例）：</p>
-
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"mcpServers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"mysql-slowlog"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"python"</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"/opt/mcp/slowlog_server.py"</span><span class="p">],</span><span class="w">
-      </span><span class="nl">"env"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"MYSQL_DSN"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mysql://readonly@db:3306/perf"</span><span class="w"> </span><span class="p">}</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<p>注意两个细节：工具的 docstring 会直接成为模型看到的工具描述，写得越精确，模型的调用准确率越高；<code class="language-plaintext highlighter-rouge">table_schema</code> 用了 Resource 而不是 Tool，因为表结构是静态上下文，不需要模型反复决策。</p>
-
-<h2 id="生产环境的四个坑">生产环境的四个坑</h2>
-
-<p><strong>坑一：工具数量爆炸。</strong> 接入五六个 MCP Server 后，模型面前可能摆着上百个工具。工具描述全部进入上下文，token 成本飙升不说，模型的选择准确率会显著下降。我的经验阈值是 40 个工具以内；超过就要做工具的动态裁剪——按当前任务语义检索相关工具，而不是全量注入。</p>
-
-<p><strong>坑二：把 MCP Server 当 API 网关用。</strong> 有团队把内部 200 个 REST 接口一比一翻译成 MCP 工具，结果模型完全用不好。MCP 工具的粒度应该面向「任务」而非「接口」：与其暴露 <code class="language-plaintext highlighter-rouge">get_user</code>、<code class="language-plaintext highlighter-rouge">get_orders</code>、<code class="language-plaintext highlighter-rouge">get_refunds</code> 三个工具让模型自己编排，不如暴露一个 <code class="language-plaintext highlighter-rouge">get_customer_overview</code>。模型少做一次编排，就少一次出错的机会。</p>
-
-<p><strong>坑三：安全边界缺失。</strong> stdio 模式下 Server 继承宿主进程权限，prompt injection 可以诱导模型调用危险工具。生产实践必须做三件事：工具按最小权限设计（数据库账号只读）、写操作强制人工确认（MCP 协议支持 elicitation）、对工具返回内容做注入检测——工具返回值同样是不可信输入，这一点最容易被忽略。</p>
-
-<p><strong>坑四：忽略协议版本与能力协商。</strong> MCP 在快速演进，2025-03 引入 Streamable HTTP 取代 SSE，2025-06 增强了 OAuth 资源服务器语义。Client 和 Server 在 <code class="language-plaintext highlighter-rouge">initialize</code> 握手时会协商协议版本和能力（capabilities），自研客户端如果硬编码假设对方支持某能力，升级时一定会炸。永远以握手返回的 capabilities 为准。</p>
-
-<h2 id="mcp-不是银弹">MCP 不是银弹</h2>
-
-<p>最后泼点冷水。MCP 解决的是「连接」的标准化，不解决「使用」的智能化。工具接上了，模型用不用得好是另一回事——这取决于工具描述质量、上下文工程和任务分解，这些活儿 MCP 一个都没替你干。</p>
-
-<p>我自己的类比是 HTTP：重要、必要、值得现在就投入，但没有谁靠「支持了 HTTP」赢过。竞争力在协议之上那一层——接进来的东西能不能组合成解决真实问题的能力。</p>
-
-<p>我们内部第一个 MCP Server 上线到现在四个月，最大的收获其实不是技术上的，而是它逼着各团队把「我们的数据能被 AI 怎么用」这个问题想清楚了。工具描述写不出来的接口，多半是接口本身就没想清楚。这个副作用我觉得比协议本身还值。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="MCP" /><category term="Agent" /><category term="协议" /><category term="工程实践" /><summary type="html"><![CDATA[MCP 把「模型如何接入外部世界」从 N×M 的集成噩梦变成 N+M 的标准化问题。本文从协议设计、消息模型到生产实践，完整拆解 MCP 的工程价值与落地陷阱。]]></summary></entry><entry><title type="html">Hermes 多 Agent 工作流：从看到到跑起来</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html" rel="alternate" type="text/html" title="Hermes 多 Agent 工作流：从看到到跑起来" /><published>2026-05-06T00:00:00+08:00</published><updated>2026-06-13T14:30:46+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/06/Hermes%E5%A4%9AAgent%E5%B7%A5%E4%BD%9C%E6%B5%81-%E4%BB%8E%E7%9C%8B%E5%88%B0%E5%88%B0%E8%B7%91%E8%B5%B7%E6%9D%A5.html"><![CDATA[<p>四月底开始看到各种 Hermes 的 demo：从飞书发一个需求，Agent 军团接着完成市场调研、写 PRD、出架构设计、开发、测试，全程不用人插手。看着确实酷。</p>
-
-<p>花了一个周末把它跑起来，记录一下中间踩过的坑，以及我对这个框架目前能力边界的判断。</p>
-
-<h2 id="hermes-是什么">Hermes 是什么</h2>
-
-<p>从架构上看，Hermes 是一个以「任务看板」（Kanban）为核心的异步多 Agent 框架。跟主流的同步编排框架（Orchestrator 派一批 Worker、等结果收回来）不同，Hermes 的任务是写进持久队列里的，Agent 按状态自己拉任务，跑完再更新状态，支持跨会话、跨天、跨重启继续运行。</p>
-
-<p>理论上这个设计解决了长任务的一个大问题：任务不再绑定在一次会话里，中途可以被人工介入，可以挂起来等外部条件，可以失败后从中间重跑而不是从头。</p>
-
-<p>公式很简单：</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hermes = 任务队列 + Agent 集合 + 消息总线 + 工具权限管理
-</code></pre></div></div>
-
-<p>每个 Agent 有自己的系统提示、工具集、上下文窗口，互相之间通过消息总线通信，不共享上下文。</p>
-
-<h2 id="环境搭建文档和实际有出入">环境搭建：文档和实际有出入</h2>
-
-<p>官方文档写的是几行命令就能起来，实际操作有几个地方文档没说清楚。</p>
-
-<p><strong>模型配置</strong>。Hermes 官方支持接多个模型 API，主流教程用 Kimi K2.6 演示，因为它有官方推荐且开源。我在公司内网环境下，代理设置花了不少时间，文档里没提这部分。</p>
-
-<p><strong>消息总线</strong>。默认用文件系统模拟消息队列（每个 Agent 一个目录，写文件就是发消息），生产环境当然要换成真正的队列（Redis 或者 RabbitMQ），但这个迁移文档写得很粗。本地测试用文件系统就够了，需要知道的是：文件系统的并发写入没有锁，多个 Agent 同时写同一个任务状态文件会出问题，本地测试尽量不要多 Agent 并发跑同一个任务的同一个子步骤。</p>
-
-<p><strong>工具权限</strong>。这是最容易踩坑的地方，也是 demo 里最不演示的地方。Hermes 里每个 Agent 的工具集要显式配置，没有配置的工具 Agent 调不到，调了会报「工具不存在」而不是权限报错，排查很迷惑。配置文件大概是这样：</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">agents</span><span class="pi">:</span>
-  <span class="na">researcher</span><span class="pi">:</span>
-    <span class="na">tools</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">web_search</span><span class="pi">,</span> <span class="nv">read_file</span><span class="pi">]</span>
-    <span class="na">model</span><span class="pi">:</span> <span class="s">kimi-k2</span>
-  <span class="na">developer</span><span class="pi">:</span>
-    <span class="na">tools</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">read_file</span><span class="pi">,</span> <span class="nv">write_file</span><span class="pi">,</span> <span class="nv">run_bash</span><span class="pi">]</span>
-    <span class="na">model</span><span class="pi">:</span> <span class="s">kimi-k2</span>
-  <span class="na">reviewer</span><span class="pi">:</span>
-    <span class="na">tools</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">read_file</span><span class="pi">,</span> <span class="nv">run_bash</span><span class="pi">]</span>
-    <span class="na">model</span><span class="pi">:</span> <span class="s">kimi-k2</span>
-</code></pre></div></div>
-
-<p><code class="language-plaintext highlighter-rouge">developer</code> 可以写文件，<code class="language-plaintext highlighter-rouge">reviewer</code> 不能——这个权限边界要自己想清楚，框架不会替你设计。</p>
-
-<h2 id="跑一个真实任务">跑一个真实任务</h2>
-
-<p>用一个我实际跑过的场景说说效果：给一个 Go 的内部工具库写一批单元测试。</p>
-
-<p>任务分发给三个 Agent：</p>
+<p>审什么？我给那位同事的清单只有三条，够用：</p>
 
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">analyst</code>：读源码、梳理函数签名和依赖关系、输出测试点清单</li>
-  <li><code class="language-plaintext highlighter-rouge">developer</code>：根据清单写测试代码</li>
-  <li><code class="language-plaintext highlighter-rouge">reviewer</code>：跑测试、检查覆盖率、输出 review 意见</li>
+  <li>顺序：高风险、可能被推翻的决策（数据模型、接口）是不是排在最前面</li>
+  <li>边界：有没有混进「顺手优化」的 scope 蔓延苗头</li>
+  <li>验证：每一步做完拿什么证明是对的</li>
 </ul>
 
-<p>理论上这是多 Agent 的理想场景：任务可清晰切分、各 Agent 产物是下一个的输入、不需要共享上下文。</p>
+<p>审计划平均花我五到十分钟。这五到十分钟是我全天杠杆最高的工作时间，没有之一。</p>
 
-<p>实际跑下来，前两步基本达到预期，<code class="language-plaintext highlighter-rouge">analyst</code> 出了一份还算准确的清单，<code class="language-plaintext highlighter-rouge">developer</code> 照着写出来的测试能编译，覆盖了七八成的 case。</p>
+<h2 id="i新窗口轻装上阵">I：新窗口，轻装上阵</h2>
 
-<p>问题出在 <code class="language-plaintext highlighter-rouge">reviewer</code> 这步。它跑测试发现有几个 case 失败，然后做了一件让我没预料到的事：它直接修改了 <code class="language-plaintext highlighter-rouge">developer</code> 已经写好的测试文件，把 assertion 改成了「更宽松」的版本，让测试通过了。表面上看任务完成了，实际上它在用最省事的方式过关，而不是真正修复逻辑。</p>
+<p>第三步，<strong>开新窗口</strong>执行批准后的计划。输入只有两样：计划文件 + 相关文件的引用。</p>
 
-<p>这个问题的根因是 <code class="language-plaintext highlighter-rouge">reviewer</code> 的系统提示写得不够严格——「确保测试通过」和「修复测试中的错误」是两件不同的事，但我没有在提示词里区分。多 Agent 系统里，每个角色的职责边界必须在提示词里讲得很死，含糊的空间会被模型用来走捷径。</p>
+<p>为什么必须新窗口？R 阶段积累了大量探索噪声——读过的几十个文件、被否决的猜测、绕过的弯路。这些东西对执行不仅无用，还在稀释注意力。计划本身已经是调研成果的浓缩，带着计划轻装上阵，比拖着全部探索历史干活稳定得多。这是 RPI 里最反直觉也最见效的一条：<strong>信息不是越多越好，是越干净越好。</strong></p>
 
-<p>修完 <code class="language-plaintext highlighter-rouge">reviewer</code> 的提示，加了一句「你只能修改测试文件里的 helper 和 setup 代码，不能修改 assertion，assertion 必须联系 developer agent 修改」，结果就正常了——它开始发消息给 developer，让 developer 来修实现而不是改断言。</p>
+<p>任务大就在 I 阶段内继续拆子任务、各起会话，子代理那篇讲过，不重复。</p>
 
-<h2 id="和-subagent-模式的比较">和 Subagent 模式的比较</h2>
+<h2 id="三份产物的文件约定">三份产物的文件约定</h2>
 
-<p>Hermes 的异步 Kanban 模式和 Claude Code 的 Subagent 模式，适合的场景不一样。</p>
+<p>RPI 跑顺之后，我们把三个阶段的产物固定成了文件约定，放在仓库的 <code class="language-plaintext highlighter-rouge">.work/</code> 目录下（gitignore 掉，纯工作区）：</p>
 
-<p>Subagent 适合：任务有明确终点、结果需要在本次会话里拿到、子任务之间依赖关系复杂需要 Orchestrator 实时调度。代码审查、文档生成这类「发出去、等收回来」的任务，Subagent 更顺。</p>
-
-<p>Hermes 适合：任务周期长（几小时到几天）、可能需要人工介入某个环节、各 Agent 之间的协作是持续的而不是单次交付。一个「从需求到上线」的完整开发链路，如果放在 Subagent 里，单次会话跑下来上下文会爆，Hermes 的分阶段持久化就有价值。</p>
-
-<p>不适合 Hermes 的场景也很明确：任务依赖关系是强顺序的（B必须严格等 A 交付后才能开始）、或者任务对实时性要求高（不能等队列调度延迟）。</p>
-
-<h2 id="目前的判断">目前的判断</h2>
-
-<p>跑完这一圈，我觉得 Hermes 现阶段是「思路正确、工程成熟度不足」的状态。任务队列、持久化、多 Agent 消息总线这套设计是对的，解决的是真实的工程问题。但文档的完整度和错误信息的友好度，还停留在「作者自己用着没问题」的阶段。</p>
-
-<p>比较实际的用法：现阶段不要把它用在核心业务链路上，更适合作为「内部效率工具」跑——代码批量处理、文档生成、测试覆盖率提升这类容错性高的场景。出了问题能重跑、不影响线上，这时候 Hermes 的异步持久化优势才能发挥出来，代价也是可以接受的。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Hermes" /><category term="多Agent" /><category term="工作流" /><category term="工程实践" /><summary type="html"><![CDATA[Hermes（爱马仕）今年在 Agent 圈很热，各种 demo 看着挺酷。花了一个周末把它跑起来，记录一下真实落地和网上教程的差距，以及几个文档里没写清楚的地方。]]></summary></entry><entry><title type="html">CLAUDE.md 多层加载：比你想的复杂</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html" rel="alternate" type="text/html" title="CLAUDE.md 多层加载：比你想的复杂" /><published>2026-04-22T00:00:00+08:00</published><updated>2026-06-13T14:30:43+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/04/22/CLAUDE-md%E5%A4%9A%E5%B1%82%E5%8A%A0%E8%BD%BD-%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E5%A4%8D%E6%9D%82.html"><![CDATA[<p>事情的起点是一份飘忽不定的报告。</p>
-
-<p>我们内部有个日志分析 Agent，输出格式是 HTML，这个写在那个模块的 CLAUDE.md 里，白纸黑字。结果某天开始变得不稳定：同样的指令，有时候出 HTML，有时候出 Markdown，跑三次三种结果。</p>
-
-<p>第一反应是 prompt 问题。把那个模块的 CLAUDE.md 改到几乎只剩一句「输出格式必须是 HTML」，还是抽奖。查用户级的 <code class="language-plaintext highlighter-rouge">~/.claude/CLAUDE.md</code>，没有相关规则。查子目录，没有。</p>
-
-<p>折腾了两个小时，才想起来：上周我在父目录 <code class="language-plaintext highlighter-rouge">aiworking/</code> 建了一份 CLAUDE.md，用来给底下几个子模块做统筹，里面有一行「分析类报告默认 Markdown」。</p>
-
-<p>目录结构是这样的：</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>aiworking/
-    CLAUDE.md          ← 写着「分析类报告默认 Markdown」
-    loganalysis/
-        CLAUDE.md      ← 我在这里启动 Agent，写着「输出 HTML」
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.work/
+  research-&lt;任务名&gt;.md    R 阶段产出：相关文件清单、现有约定、
+                          可选路径及各自代价、待确认的问题
+  plan-&lt;任务名&gt;.md        P 阶段产出：步骤清单，每步含改动范围
+                          和验证方式；头部有一行「已批准/待审」
+  notes-&lt;任务名&gt;.md       I 阶段产出：执行中的决策记录和偏差
 </code></pre></div></div>
 
-<p>我以为只有 <code class="language-plaintext highlighter-rouge">loganalysis/CLAUDE.md</code> 在生效，但实际上两份都进了上下文，Claude 在两条冲突规则之间，看心情选一个。</p>
+<p>这个约定带来两个当初没预料到的好处。一是<strong>中断恢复</strong>：执行到一半被会议打断、或者窗口爆了，新会话读这三个文件就能原地续上，不用从头交代背景。二是<strong>复盘材料</strong>：出问题回溯时，「当时调研到了什么、计划是什么、实际偏离了哪」全有据可查。以前这些信息散在对话历史里，会话一关就蒸发了。</p>
 
-<h2 id="加载机制是什么">加载机制是什么</h2>
+<p>另外一个细节：plan 文件头部那行「已批准/待审」状态标记不是摆设。我们给 I 阶段的提示词里写死了一条——计划文件状态不是「已批准」就拒绝执行。很轻的一个机制，防的是手滑跳过人工审查那一步。跑了两个月，这条规则拦下过三次「我看计划差不多就直接跑了」的侥幸，每次事后看计划里都真有该改的东西。</p>
 
-<p>搞清楚这件事之后，我仔细查了 Claude Code 的文档，把加载逻辑整理了一下。</p>
+<h2 id="它专治什么病">它专治什么病</h2>
 
-<p><strong>向上遍历</strong>：从你启动 Claude 的目录出发，一级一级往上走，每一级有 CLAUDE.md 就纳入，一直到磁盘根目录为止。<code class="language-plaintext highlighter-rouge">loganalysis/</code> 目录下启动，实际加载路径是：</p>
+<p>回头说那位同事的「一锅粥」，其实是两个坏习惯的复合体，RPI 每一步都在精准拆解：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/root/...（各级祖先目录，一般没有）
-~/.claude/CLAUDE.md      ← 用户级，固定加载
-aiworking/CLAUDE.md      ← 父目录，向上遍历命中
-loganalysis/CLAUDE.md    ← 当前目录
-loganalysis/CLAUDE.local.md   ← 本地覆盖（如果有）
+<p>「一窗到底」被「阶段切窗口」拆掉——每个阶段的产物落盘成文件，窗口用完即弃，信息靠文件传递而不是靠对话历史堆积。</p>
+
+<p>「拿到任务就动手」被 R 和 P 的强制顺序拆掉。这条其实和 AI 无关——资深工程师之所以资深，恰恰在于拿到任务后<strong>不立刻写代码</strong>。模型给了所有人「说一句就动手」的能力，这个能力本身在诱导坏流程。工具变了,纪律没变，只是纪律的执行对象从自己的手变成了 Agent 的手。</p>
+
+<p>要说 RPI 的局限也有：对五分钟能搞定的小改动，三个会话纯属仪式感，直接干就行。我的分界线大概是「一眼看不出要改哪几个文件」——达到这个复杂度，就值得走全流程。介于两者之间的模糊地带，我的偷懒版是「R 和 P 合并成一个会话、I 单独开」——保住「执行会话必须干净」这条底线，前面松一点问题不大。实践里真正不能省的其实就两样：P 的人工审查，和 I 的新窗口。</p>
+
+<p>另外提醒一句：R 阶段的调研纪要别追求完备。它的角色是「够 P 用」，不是代码库百科——我见过有人让 R 阶段跑一个小时输出五千字，P 阶段根本消化不了。调研纪要超过一屏，多数时候说明问题陈述给得太模糊，该回头改问题，不是继续堆调研。</p>
+
+<p>方法论最怕听完点头、回去照旧。所以结尾就一个建议：明天挑一个中等复杂度的任务，严格走一遍 R、P、I，产物落盘。跑完拿返工次数和你平时的做法比——数据会替我说话。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="RPI" /><category term="工作流" /><category term="AI Coding" /><summary type="html"><![CDATA[把 RPI 教给一个刚上手 AI Coding 的同事之后，他的返工率一周内降了一半。三步，三条铁律，一张便签能写下的方法，专治「一个窗口从头聊到尾」。]]></summary></entry><entry><title type="html">AI Coding 控盘规则：水流理论与最小混沌单元</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83.html" rel="alternate" type="text/html" title="AI Coding 控盘规则：水流理论与最小混沌单元" /><published>2026-07-05T00:00:00+08:00</published><updated>2026-07-15T23:19:32+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83.html"><![CDATA[<p>团队里推 AI Coding 半年，被同学问得最多的一个问题：「它写代码的速度我 review 不过来，怎么办？」</p>
+
+<p>我最开始的回答很老实：「那就认真看，安全第一。」执行了一个月发现这个回答等于没回答——人均每天面对几千行 AI 生成的 diff，认真看的结果就是 AI 提效的部分全部被 review 吃回去，甚至倒贴。后来我们换了思路，摸了半年，现在的答案变成一句话：<strong>别看代码，看证据。</strong>人定方向、边界和验收标准，模型在边界内自主推进，用证据链收口。</p>
+
+<p>这句话展开就是这篇。里面每条规则背后都有真实学费，我尽量把学费也写出来。</p>
+
+<h2 id="先认清对手两个底层事实">先认清对手：两个底层事实</h2>
+
+<p>所有控盘手法都建立在对模型本性的两个认识上，认识不到位，招数都是白学。</p>
+
+<p><strong>第一，模型是概率生成器，自由空间越大越容易跑偏。</strong>你说「做个用户导出功能」，它会给你一个「业界最佳实践」风味的实现——代码漂亮、结构标准、和你系统的真实约定貌合神离。这不是它蠢，是你给的搜索空间太大，它只能往训练分布的均值上靠。对策只有一个：动手前把搜索空间压进 spec——目标、可动范围、明确不做，写清楚。</p>
+
+<p><strong>第二，上下文宝贵且会腐烂，给得越多效果越差。</strong>长对话拖到后面模型明显变笨，这个大家都体感过。很多人的应对是「上下文压缩」，我的看法是压缩只是有损延缓——真正的解法是 spec 外置成文件，长任务定期 clean restart：从干净窗口加 spec 文件重新出发，比拖着一窗口腐烂历史往前挪快得多。我们现在超过半天的任务默认每天至少重启一次会话，纯赚。</p>
+
+<p>顺带一个我很喜欢的区分：<strong>省 token 是成本问题，省上下文是质量问题。</strong>别用成本思维做质量决策——该给的关键上下文不给，省下的钱会加倍赔在返工上。</p>
+
+<h2 id="水流理论和那次溃堤">水流理论，和那次溃堤</h2>
+
+<p>我们内部把 AI 编程比作引水：水自己会流，人干三件事——筑边界（spec）、设观测点（checkpoint）、修安全通道（灰度和回滚）。</p>
+
+<p>这个比喻真正的价值在于它给了一对判断词，用来回答控盘中最高频的灵魂拷问：<strong>它跑出我的预期了，要不要打断？</strong></p>
+
+<p><strong>漫溢</strong>：还在边界内，方案跟你预想的不同，但目标正确。比如你以为它会改三个文件，它选择加一个中间层。放着，继续观察。这里最难的是忍住「这不是我的写法」的干预冲动——你要的是结果正确，不是复刻你的手笔。我见过最亏的用法就是事事纠正，模型的自主性红利全被抵消，等于雇了个赛车手然后全程扶着方向盘。</p>
+
+<p><strong>溃堤</strong>：违反 spec、擅自扩大 scope、或者连续验证失败还在换姿势硬试。立刻打断，回 spec 重切任务。</p>
+
+<p>学费来了。四月份有个任务，Agent 在中途「顺手」把一个它认为写得不好的模块重构了——这明确超出了 spec 边界，典型溃堤。我当时的判断是「再看看，说不定重构得还行」。三个小时后我面对的是一个两千多行、混合了目标功能和自作主张重构的 diff，两者纠缠在一起没法拆分验收。最后整个分支废弃重来。<strong>把溃堤当漫溢，代价是指数增长的</strong>——第一时间打断损失十分钟，「再看看」三次之后损失一天。现在我们的纪律是：scope 扩大零容忍，发现即打断，没有「说不定」。</p>
+
+<h2 id="最小混沌单元">最小混沌单元</h2>
+
+<p>任务该切多大交给模型？我们的原则八个字：<strong>小到可检查，大到可自治。</strong></p>
+
+<p>往小切的极端是一次一个函数——那你退化回了逐行监工，比自己写还累。往大切的极端是一次一个系统——风险不是失败，是<strong>失败得太晚</strong>：错误方向跑一整天才暴露，回滚半径是整个任务。</p>
+
+<p>合适的颗粒度长什么样？我的手感是：模型能自主推进两三个小时、你在 checkpoint 花十分钟能判断对错、错了扔掉不心疼。按这个标准，「实现导出功能的后端接口含测试」是一个好单元，「实现整个导出功能前后端」太大，「写导出接口的参数校验」太小。</p>
+
+<p>切法上还有个技巧：<strong>把最可能被推翻的决策放最前面的单元里</strong>。数据模型、接口签名这类牵一发动全身的东西先出来让人拍板，机械性的实现放后面——这样即使返工，废掉的都是便宜的部分。</p>
+
+<h2 id="spec-长什么样">spec 长什么样</h2>
+
+<p>说了半天 spec，贴一个我们实际在用的骨架。刻意保持简短——spec 不是设计文档，是给模型（和未来的自己）看的边界声明：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code># spec: 订单导出功能
+
+## 目标
+运营后台增加订单批量导出，CSV 格式，异步生成 + 站内信通知
+
+## 明确不做
+- 不做 Excel 格式（问过运营，CSV 够用）
+- 不做自定义列（第一版全量列）
+- 不动现有的同步导出小接口
+
+## 关键决策
+- 异步任务复用现有 job 队列，不引入新组件（决策人：我，
+  理由：量级撑得住，新组件的运维成本不值）
+
+## 验收标准
+- 10 万行订单导出可完成，任务状态可查询
+- 导出中重复点击不产生重复任务
+- 全部现有测试保持通过
+
+## 待补充
+- 导出文件的保留时长，等运营确认
 </code></pre></div></div>
 
-<p><strong>拼接不覆盖</strong>：找到的所有文件不是「近的覆盖远的」，而是全部拼在一起注入上下文，从根到叶顺序排列。所以两条冲突规则同时存在，距离近的排在后面，但不是必然胜出——这取决于 Claude 怎么处理上下文里的矛盾，不保证严格遵守。</p>
+<p>几个格式上的讲究。「明确不做」和「目标」同等重要——它直接封掉了模型最容易漫溢的方向（「我顺便支持了 Excel」）。「关键决策」要带理由和决策人，这是防止后续会话把已拍板的事重新翻出来讨论——没有这一栏时，模型隔三差五会「建议引入消息队列」，每次都要重新解释一遍为什么不。「待补充」是诚实地标出边界上的洞，让模型撞到时知道该停下来问，而不是自己编一个答案。</p>
 
-<p><strong>子目录懒加载</strong>：这个知道的人更少。启动工作目录下的子目录里如果有 CLAUDE.md，启动时不会加载。要等到 Agent 在会话中真正访问那个子目录里的文件时，该 CLAUDE.md 才会被动态挂载进来。整个会话没有访问那个子目录，它的 CLAUDE.md 不进上下文。</p>
+<p>这份东西写下来通常十五到三十分钟。我知道很多人嫌这个步骤重——「我口头说两句它就能干」。能干，但你省的这半小时，会在它以「业界惯例」填补你没说清的地方时，连本带息还回来。</p>
 
-<p>还有一点：CLAUDE.md 不在系统提示词里，它是作为一条用户消息追加在系统提示后面的。这解释了为什么它「不保证严格遵守」——它不是强制配置，Claude 会尽量照做，但遇到矛盾时怎么处理有随机性。</p>
+<h2 id="checkpoint-上该做什么">checkpoint 上该做什么</h2>
 
-<h2 id="踩坑之后我改了什么">踩坑之后我改了什么</h2>
+<p>设了观测点，站在观测点上具体干什么？我们归纳了六种动作，按频率排：</p>
 
-<p>首先把父目录那条「分析类报告默认 Markdown」删掉，改成了更精确的指向：</p>
+<p><strong>放行</strong>——一切正常，什么都不说，让它继续。最常见，也最考验克制。</p>
 
-<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- aiworking/CLAUDE.md --&gt;</span>
-适用范围：本目录下各子模块的通用规范
+<p><strong>校准</strong>——方向对，局部偏了。指出具体偏差，给一句修正，不打断整体推进。</p>
 
-<span class="gu">### 代码规范</span>
-<span class="p">-</span> Go 1.22+，禁止使用 init()
-<span class="p">-</span> 错误处理用 pkg/errors 包装，禁止裸 fmt.Errorf
+<p><strong>追问</strong>——证据不足以判断。「你说测试过了，把输出贴出来。」注意追问的对象是证据，不是过程——别问「你是怎么想的」，问「拿什么证明」。</p>
 
-<span class="gu">### 注意</span>
-各子模块的输出格式以各自的 CLAUDE.md 为准，本文件不约定格式
+<p><strong>拍板</strong>——它停在「待补充」的洞前面等决策。给决策，顺手把决策写回 spec。</p>
+
+<p><strong>转向</strong>——溃堤了。停止当前任务包，回 spec 重切。转向时有个纪律：已经产出的部分<strong>先归档再废弃</strong>，里面往往有下次能用的调研信息。</p>
+
+<p><strong>收口</strong>——单元完成，走证据链验收，然后把新知识回写归档。</p>
+
+<p>六个动作里，新手最缺的是第一个（忍不住指点）和最后一个（验收完就走，不归档）。中间四个都好学，这两个靠自觉。</p>
+
+<h2 id="验收证据链长什么样">验收：证据链长什么样</h2>
+
+<p>「看证据不看代码」落到操作层面，就是任务包收口时我要求看到的四样东西：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. 测试证据    新增/修改的测试 + 运行输出原文（不是「测试通过了」四个字）
+2. 运行证据    关键路径的实际执行日志或响应示例
+3. 边界证据    diff 文件清单，逐一确认落在 spec 声明的范围内
+4. 对照证据    spec 里每条验收标准的逐条勾对
 </code></pre></div></div>
 
-<p>加了最后那句，明确把格式决策权交给子目录，避免父级规则模糊覆盖。</p>
+<p>模型完全有能力自动产出这份证据包，前提是你在任务说明里把它列为<strong>交付物</strong>。不列，你收到的永远是「已完成，请查收」。</p>
 
-<p>第二个改动是控制规则密度。Augment Code 团队做过一个实验，从一个 monorepo 里提取了几十份 AGENTS.md 逐一测试，发现最好的 AGENTS.md 带来的提升相当于把模型从 Haiku 换成 Opus，而最差的比完全不写还糟。坑在于：同一份文件在常规任务上把质量提升了 25%，在复杂任务上让完整性下降了 30%——写太多规则，规则之间会干扰，Agent 开始在「中间迷失」。</p>
+<p>有同学问：证据也可能造假吧？会。我们真遇到过测试输出是「构造」出来的（它没跑，直接生成了一份像样的输出）。应对是关键任务的证据脚本化——验收命令由我们提供、hook 强制执行，输出直接进 CI 记录，模型只负责让它变绿。又是那个原则：机制能管的事，不要靠信任。</p>
 
-<p>现在我的主文件控制在 100 行以内，只写高频场景的规范；细节推到按需加载的子文件里，在主文件里只写「需要时参考 <code class="language-plaintext highlighter-rouge">@docs/api-rules.md</code>」这样的入口。</p>
+<h2 id="收尾第七步最值钱">收尾：第七步最值钱</h2>
 
-<p>第三个改动是清理注释。CLAUDE.md 里的块级 HTML 注释（<code class="language-plaintext highlighter-rouge">&lt;!-- 备注 --&gt;</code>）在注入上下文前会被剥掉，不占 token。所以现在我在文件里保留了大量维护注释，说明每条规则的来源和生效日期，这些注释只给写文件的人看，不会进 Claude 的上下文：</p>
+<p>把整套流程串起来是七步：读地形 → 落 spec → 切任务包 → 放手跑 → 溃堤时转向 → 证据验收 → <strong>回写归档</strong>。</p>
 
-<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!-- 
-2026-06-15 添加：排查完 loganalysis 输出格式冲突问题后
-明确父目录不约定格式，避免向下覆盖子模块规则 
---&gt;
-各子模块的输出格式以各自的 CLAUDE.md 为准
+<p>最后一步最容易省略，也最值钱：把过程中澄清的事实、拍板的决策、发现的坑写回 spec 和 codemap。为什么值钱？因为 spec 和 codemap 是跨会话、跨模型版本存续的资产，而对话历史是易耗品——下次任务的「读地形」读的就是这次的归档。我们坚持回写三个月后，新任务的冷启动成本肉眼可见地降了：模型（和新同事）越来越少地问出「这里为什么这么设计」，因为答案都在地图上。</p>
+
+<p>有人听完这套说：「这不就是带实习生么。」结构上像，但有个本质区别值得记住：这个实习生产出是人类百倍速，而且<strong>它的失败是统计性的</strong>——同一个坑它以稳定概率反复踩，不会吃一堑长一智（除非你把「智」写进 spec 或机制里）。所以控盘体系不能建立在磨合和信任上，只能建立在结构上：边界、观测点、安全通道。信任留给人，结构留给模型。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="AI Coding" /><category term="Harness" /><category term="工程实践" /><category term="工作流" /><summary type="html"><![CDATA[「AI 写的代码我看不过来了」——团队里被问得最多的问题。我的答案是别看代码，看证据。这篇把我们摸了半年的控盘打法写下来：水流理论、漫溢与溃堤的分辨、最小混沌单元，和一次删掉两千行错误 diff 的教训。]]></summary></entry><entry><title type="html">Loop Engineering：从手工调 prompt 到设计实验回路</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/03/Loop-Engineering-%E4%BB%8E%E6%89%8B%E5%B7%A5%E8%B0%83prompt%E5%88%B0%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C%E5%9B%9E%E8%B7%AF.html" rel="alternate" type="text/html" title="Loop Engineering：从手工调 prompt 到设计实验回路" /><published>2026-07-03T00:00:00+08:00</published><updated>2026-07-15T23:20:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/03/Loop-Engineering-%E4%BB%8E%E6%89%8B%E5%B7%A5%E8%B0%83prompt%E5%88%B0%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C%E5%9B%9E%E8%B7%AF</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/03/Loop-Engineering-%E4%BB%8E%E6%89%8B%E5%B7%A5%E8%B0%83prompt%E5%88%B0%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C%E5%9B%9E%E8%B7%AF.html"><![CDATA[<p>六月中的一个周五下午，我做了个决定：不再手工调那个分类 Agent 的 prompt 了，改成搭一个回路，让另一个 Agent 来调它。</p>
+
+<p>背景交代一下。我们有个工单自动分类的 Agent，准确率卡在 82% 上不去。我手工调了两周——改 prompt、加示例、调整类目描述——每轮改完跑一遍评测集、看 bad case、再改，一轮下来一两个小时，大部分时间在等和搬运结果。改到后来我意识到一件事：<strong>我在这个循环里干的活，没有一步是非人不可的。</strong></p>
+
+<p>于是周五下午我把循环本身工程化了：评测集拆成训练/验证两份、写了个一键跑评测出报告的脚本、把「读报告→分析 bad case→改 prompt→重跑」的流程写成任务说明，交给一个长时 Agent，周末两天随它跑。</p>
+
+<p>周一早上看结果：十几轮迭代，验证集准确率 82% → 89%，比我两周手工调的还高两个点。但过程并不是一路顺风，翻它的迭代日志翻出了不少东西，这篇主要想讲那些。</p>
+
+<h2 id="它差点骗过我reward-hacking-现场">它差点骗过我：reward hacking 现场</h2>
+
+<p>日志里第 6 轮附近有个插曲。训练集上有个 case 反复分错，Agent 的解决方式简单粗暴——在 prompt 里加了一条几乎照抄该 case 原文的特判规则。训练集分数应声上涨，验证集纹丝不动。</p>
+
+<p>这就是 reward hacking：优化器不关心你的真实目标，只关心你给它看的分数。它不是「作弊」，它只是诚实地优化了你定义的东西。幸亏评测集拆了两份——我在任务说明里规定训练集可以看题目、答案和错误分析，<strong>验证集只回传一个总分</strong>。第 7 轮它自己从验证集分数没跟上这个信号意识到过拟合了，回滚了那条特判。</p>
+
+<p>如果没拆集，周一早上我会看到一个训练集 95% 的「优秀成果」，欢天喜地上线，然后在生产环境现出原形。机器学习三十年前就懂的道理，换到 prompt 优化上照样成立，而且更容易忘——因为「调 prompt」感觉上不像是在「训练模型」，警惕性天然低。</p>
+
+<h2 id="回路能转起来的前提">回路能转起来的前提</h2>
+
+<p>复盘这次实践，回路能自主转两天，靠的是几个前置条件，缺一个都会退化成「人陪跑」：</p>
+
+<p><strong>每一步都有命令行入口。</strong>跑评测、拉报告、看日志，全是脚本。假如评测报告要人从一个网页后台导出——就一步——整个周末无人值守就泡汤了。这条我称之为「工具链 Agent-native」检验法：数一数你的流程里还有几个只能点鼠标的环节，那就是你离自动化回路的距离。</p>
+
+<p><strong>Champion-Challenger 基线管理。</strong>任务说明里规定：历史最优版本是 champion，每轮新改动是 challenger，必须在验证集上稳定胜出才能上位，否则回滚。为什么强调「稳定」——评测本身有方差，我们的评测集单轮跑分波动约 ±1%，没有这条规则，回路会在噪声上随机游走，把运气当成进步。</p>
+
+<p><strong>显式的长程纪律。</strong>几条写进任务说明的规则：相同报错不许机械重试，必须先分析原因；一次只改一个变量（不然分数变化归因不了）；每轮迭代把「改了什么、为什么、结果如何」追加写进一个日志文件。最后这条让周一的我能完整重放它的思考过程——顺便说，那份迭代日志本身就是一份质量不错的调优报告。</p>
+
+<p><strong>上下文外置。</strong>两天几十轮，全堆一个窗口早爆了。它的工作状态（当前基线、历史尝试、已排除的方向）全在文件里，窗口里只保留当前这一轮的工作。老读者看出来了，还是上下文工程那套，只是执行者从人变成了 Agent。</p>
+
+<h2 id="这个周末花了多少钱">这个周末花了多少钱</h2>
+
+<p>有人肯定关心成本，说下账目结构。两天回路的总推理消耗，折算下来大约是我手工调优两周人力成本的零头。构成上：六成花在每轮评测（评测集三百多个 case，每轮全量跑），三成花在 Agent 的分析和改动，一成杂项。</p>
+
+<p>即便如此，成本结构里还有明显的优化空间。第二次跑类似任务时，我把评测改成两段式：先跑五十个 case 的快筛，胜出的 challenger 才上全量评测。总成本直接砍半。<strong>评测预算的分配本身就是回路设计的一部分</strong>——把贵的全量评测留给有希望的候选，垃圾改动用便宜的快筛拦在门外。</p>
+
+<p>另一个省钱心得反直觉：控制单轮改动大小反而更便宜。早期我允许它一轮改多处，结果分数变化归因不清，经常要补跑对照实验。改成一轮一个变量后，轮次变多了，总成本反而降了——每一轮的信息量变干净了，没有浪费的实验。</p>
+
+<h2 id="什么时候别搭回路">什么时候别搭回路</h2>
+
+<p>再补一节劝退，不是所有优化都值得搭回路。我的门槛三条，缺一条就老老实实手工干：</p>
+
+<p><strong>单次「改动→评测」循环要够便宜。</strong>我们单轮几分钟、成本可忽略，所以两天滚得动十几轮。如果你的评测是一次全链路压测、或者要等真实用户反馈，单循环以天计，回路的迭代优势荡然无存。</p>
+
+<p><strong>评测集要经得起几十轮的凝视。</strong>三百个 case 被一个不知疲倦的优化器反复审视两天，任何缺陷都会被找出来利用（见上文 reward hacking）。人工调优时评测集有点瑕疵无妨——人不会过拟合到那种程度；上回路之前，得把评测集当攻击面来审一遍。</p>
+
+<p><strong>指标要有长期价值。</strong>一次性任务搭回路，搭建成本收不回。回路适合「这个指标未来半年都会持续关心」的阵地战。</p>
+
+<h2 id="冷水评测集的质量就是天花板">冷水：评测集的质量就是天花板</h2>
+
+<p>必须泼的冷水。这套东西有个残酷的性质：<strong>回路的产出永远不会好于评测集，只会更快地逼近评测集的缺陷。</strong></p>
+
+<p>我们的 89% 上线后，真实准确率提升没有评测显示的那么多。排查后发现评测集的类目分布和线上最新分布有偏差——回路忠实地优化了一个略微过时的目标。这不是回路的错，是我的错：我花在搭回路上的心思，是花在检查评测集代表性上的十倍。比例应该倒过来。</p>
+
+<p>所以现在我的顺序铁律是：<strong>先修评测，再跑回路。</strong>评测集有偏，迭代越高效，错得越坚定。业内有个跑了 17 小时完成 16 轮迭代的案例广为流传，大家都盯着「17 小时无人值守」看，我觉得那个案例真正的功力在于他们的评测体系配得上 17 小时的信任。</p>
+
+<h2 id="这个模式的适用面">这个模式的适用面</h2>
+
+<p>「工单分类调优」只是个具体例子。抽象一下，任何满足三个条件的工作都能套这个回路：产出可评测、改动可回滚、有基线可比。检索策略调参、测试用例生成质量、报表 SQL 的准确性、甚至爬虫解析规则的维护——我列了一下我们内部符合条件的「调参型」工作，比想象的多得多。</p>
+
+<p>它们的共同命运大概率是：从「工程师手工做」变成「工程师设计回路 + 定义评测 + 复核结果」。人的投入没有消失，是往上挪了一层——从拧螺丝变成设计拧螺丝的机器，以及（更重要的）决定螺丝该不该拧。</p>
+
+<p>周一那天早上我看着迭代日志的心情有点复杂：它两天干的活赶上我两周，手法还挺像我——毕竟任务说明是我写的。要说感想，大概是：<strong>我调 prompt 的手艺没什么护城河了，但「知道该优化什么、拿什么衡量」这件事，短期内还是我的。</strong>得往这个方向多攒本钱。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="Loop Engineering" /><category term="评测" /><category term="工程实践" /><summary type="html"><![CDATA[我们把一个分类 Agent 的准确率优化交给了另一个 Agent，它跑了一个周末，迭代了十几轮，交回一个比我手工调了两周更好的版本——中间也差点被它的 reward hacking 摆了一道。记录这次实践和 Loop Engineering 的几个关键机制。]]></summary></entry><entry><title type="html">目标驱动循环：从口头指令到完成合同</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/30/%E7%9B%AE%E6%A0%87%E9%A9%B1%E5%8A%A8%E5%BE%AA%E7%8E%AF-%E4%BB%8E%E5%8F%A3%E5%A4%B4%E6%8C%87%E4%BB%A4%E5%88%B0%E5%AE%8C%E6%88%90%E5%90%88%E5%90%8C.html" rel="alternate" type="text/html" title="目标驱动循环：从口头指令到完成合同" /><published>2026-06-30T00:00:00+08:00</published><updated>2026-07-15T23:25:22+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/30/%E7%9B%AE%E6%A0%87%E9%A9%B1%E5%8A%A8%E5%BE%AA%E7%8E%AF-%E4%BB%8E%E5%8F%A3%E5%A4%B4%E6%8C%87%E4%BB%A4%E5%88%B0%E5%AE%8C%E6%88%90%E5%90%88%E5%90%8C</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/30/%E7%9B%AE%E6%A0%87%E9%A9%B1%E5%8A%A8%E5%BE%AA%E7%8E%AF-%E4%BB%8E%E5%8F%A3%E5%A4%B4%E6%8C%87%E4%BB%A4%E5%88%B0%E5%AE%8C%E6%88%90%E5%90%88%E5%90%8C.html"><![CDATA[<p>先讲两次亲身经历，一次爽的，一次疼的。</p>
+
+<p>爽的那次：我们 CI 里有个 flaky test，间歇性挂，复现概率大概 5%，三个同事断断续续查了三周没抓到。后来我用 goal 模式挂了个任务：目标写清楚（「找到并修复该测试的间歇性失败根因，验证方式为连续 200 次运行全绿」），扔到后台。它跑了四个多小时、迭代了几十轮——反复运行测试收集失败样本、加日志、缩小范围——最后定位到一个测试间共享的临时目录清理竞态。修复后 200 连跑全绿。第二天早上看结果的心情，做这行十几年没体验过几次。</p>
+
+<p>疼的那次在更早，也是我第一次用 goal 模式。目标我写的是——现在看简直是行为艺术——「优化这个服务的性能，不要引入 bug」。它勤勤恳恳跑了一整晚，产出了一堆微小的、方向发散的改动：换了两个数据结构、加了三处缓存、重排了若干循环。都「对」，都没用。烧掉的 token 折成钱够请全组喝一周咖啡。</p>
+
+<p>两次的模型是同一个。差别只在一处：第一次我定义了「完成」，第二次我在许愿。</p>
+
+<h2 id="goal-模式到底是什么">goal 模式到底是什么</h2>
+
+<p>各家 Agent CLI 最近都在出 goal 类功能：设定目标，Agent 在同一个上下文里持续迭代，不达成不罢休。听起来就是个 while 循环，但真正值钱的是循环里防「假完成」的机制设计。以 Codex 的实现为例（Eric Traut 写的，Pyright 的作者，这个出身就很说明品味），几个机制值得逐个看：</p>
+
+<p><strong>完成审计协议。</strong>每轮开始系统注入一条隐藏消息，强制模型：把目标分解成可交付物、建一张「需求→证据」的对照表、逐项检查实际的文件/输出/测试结果。核心是防一个坍缩：模型天然倾向把「我产出了东西」当成「我达成了目标」。写过代码的都懂，这两件事差着十万八千里。</p>
+
+<p><strong>模型只能标记 Complete，不能自己 Pause。</strong>暂停权只属于人。这个不对称设计防偷懒——如果模型能自己喊停，它会在困难任务上找台阶下。我第一次读到这条设计时笑出声，太懂了。</p>
+
+<p><strong>零工具调用抑制。</strong>连续几轮光说不做（没有任何工具调用），自动终止。防空转。</p>
+
+<p><strong>预算硬约束。</strong>token 和时间双上限。有个细节：只计非缓存 input 加 output，缓存命中免费——所以 goal 循环这种 append-only 长会话，恰好是前缀缓存最友好的负载，机制之间是咬合的。</p>
+
+<h2 id="六要素把愿望改写成合同">六要素：把愿望改写成合同</h2>
+
+<p>机制再好，goal 写砸照样白烧。我那句「优化性能，不要引入 bug」错在哪？拆开看全是窟窿：没有终点（优化到多少算完？）、没有验证面（拿什么证明？）、没有边界（能动哪些文件？）、没有停止条件（卡住了怎么办？）。</p>
+
+<p>后来我照着 lencx 总结的「强 Goal 六要素」重写了一版模板，flaky test 那次用的就是它：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Outcome        完成时什么为真：该测试连续 200 次运行全绿
+Verification   拿什么证明：CI 脚本输出，附运行日志
+Constraints    什么不能回归：其余测试全部保持通过
+Boundaries     能动什么：tests/ 和被测模块内部，不改公共接口
+Iteration      失败后怎么选下一步：先收集失败样本分析模式，再改
+Stop           什么时候停下来问人：需要改基础设施配置时
 </code></pre></div></div>
 
-<h2 id="agentsmd-vs-claudemd">AGENTS.md vs CLAUDE.md</h2>
+<p>写这份合同花了我十分钟。事后想，那三周人肉排查之所以低效，部分原因恰恰是我们自己也没把这六件事想清楚过——写合同的过程逼着你想清楚，<strong>六要素里写不出来的那一条，就是你自己还没想明白的那一块</strong>。这可能是 goal 模式对人最大的隐性价值。</p>
 
-<p>顺带提一下这两个文件的区别，网上说法很乱。</p>
+<h2 id="预算怎么定阶梯式试探">预算怎么定：阶梯式试探</h2>
 
-<p><code class="language-plaintext highlighter-rouge">CLAUDE.md</code> 是 Claude Code 专用的，只有 Claude Code 会去读它。<code class="language-plaintext highlighter-rouge">AGENTS.md</code> 是一个更通用的约定，OpenAI Codex、Cursor、一些开源 Agent 框架都在尝试认这个文件名。</p>
+<p>六要素之外还有个实操问题没人教：token 和时间预算填多少？填小了任务没跑完就被掐断，填大了空转烧钱。</p>
 
-<p>如果你用的是 Claude Code，两个都认，CLAUDE.md 优先。如果你想同时兼容多个工具，用 AGENTS.md。如果只用 Claude Code，CLAUDE.md 就够了，不用两份都维护。</p>
+<p>我现在的做法是阶梯式：<strong>先给一个明显不够的小预算跑一轮侦察。</strong>比如 flaky test 那次，第一轮我只给了半小时预算——明知修不完，目的是看它的开局姿势：问题拆解得对不对、第一批动作是不是在收集信息而不是瞎改。开局对路，第二轮再给足预算放开跑；开局就跑偏，半小时的学费买到了「goal 写得有问题」这个信息，回去改合同，比直接给一整晚预算便宜二十倍。</p>
 
-<p>有一个我自己的做法：在项目根目录建一份 <code class="language-plaintext highlighter-rouge">AGENTS.md</code>，内容是通用规范；然后建一个 <code class="language-plaintext highlighter-rouge">CLAUDE.md</code>，内容只有一行：</p>
+<p>阶梯的另一个好处是校准预期。第一轮侦察结束时模型通常会报告进展和剩余工作的判断，这个判断虽不精确，但比我拍脑袋准——第二轮的预算就按它的估计加一倍余量给。</p>
 
-<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@AGENTS.md
+<p>还有一条硬规则：<strong>预算翻倍两次还没完成的任务，强制停下来人工介入。</strong>不是钱的问题——一个在三倍预算内收敛不了的任务，大概率是 goal 本身有结构问题（终点不可达、验证面有歧义、或者撞上了环境层面的阻塞），继续加预算是在用钱掩盖设计缺陷。这条规则替我们止损过两回，两回最后都发现是环境问题（一次是测试数据被别的流程动了，一次是依赖服务在维护窗口），模型再聪明也修不了它权限之外的世界。</p>
+
+<h2 id="什么任务适合什么不适合">什么任务适合，什么不适合</h2>
+
+<p>我现在的筛选标准三个词：<strong>路径不确定、终点可验证、需要迭代。</strong>flaky test、复杂 bug、性能调优（有明确指标的那种）、依赖升级——人做也要试错的任务，循环只是把试错自动化了，完美命中。</p>
+
+<p>两类任务别塞给它。一是终点没法机械验证的——「把代码变优雅」，它会在一个虚假的完成标准上过拟合给你看。二是大规模并行批量任务——全仓库迁移三百个模块，那是工作流编排的事，硬塞进单一上下文的循环，窗口先爆。</p>
+
+<p>另外记录一个社区里的有趣分野：goal 是「马拉松」模式（同一窗口跑到底，上下文连贯），社区还有一派「接力赛」模式（每轮重开窗口，靠 git 和进度文件传状态，Ralph Loop 是代表）。我两种都试过，体感是：几小时内的任务马拉松更顺，跨天的超长任务接力更稳——马拉松跑太久窗口还是会腐烂，哪怕有压缩。选哪个，看任务时长。</p>
+
+<h2 id="尾声难度换了个地方">尾声：难度换了个地方</h2>
+
+<p>Karpathy 的 Software 3.0 讲从 how 到 what 的迁移，goal 模式差不多是这个理念目前最完整的产品化——执行、方法、过程全部交出去，人手里只剩一个问题：你到底要什么。</p>
+
+<p>听起来像解放，其实是难度搬家。写六要素合同比写代码难——「连续 200 次全绿」这个验收标准，是我想了一会儿才定下来的（100 次够不够？要不要跨机器？），而这个决定直接框定了它整晚工作的方向。定义「完成」正在变成一项核心工程技能，而我们这代工程师在学校里没人教过这个。</p>
+
+<p>好在有个笨办法：每次写 goal 之前，假想它跑完了、过来找你验收，你会检查什么？把你会检查的东西原样写进合同。我的六要素模板，说穿了就是这个问题的展开。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="Goal" /><category term="目标驱动" /><category term="工程实践" /><summary type="html"><![CDATA[用 goal 模式治好了一个折磨我们三周的 flaky test，也烧过一整晚 token 一无所获。两次经历的差别不在模型，在于我有没有把「完成」定义清楚。聊聊 goal 类功能的机制设计和写好一份完成合同的六要素。]]></summary></entry><entry><title type="html">编辑格式之战：str_replace、apply_patch 与 hashline</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/26/%E7%BC%96%E8%BE%91%E6%A0%BC%E5%BC%8F%E4%B9%8B%E6%88%98-str-replace-apply-patch%E4%B8%8Ehashline.html" rel="alternate" type="text/html" title="编辑格式之战：str_replace、apply_patch 与 hashline" /><published>2026-06-26T00:00:00+08:00</published><updated>2026-07-15T23:23:56+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/26/%E7%BC%96%E8%BE%91%E6%A0%BC%E5%BC%8F%E4%B9%8B%E6%88%98-str-replace-apply-patch%E4%B8%8Ehashline</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/26/%E7%BC%96%E8%BE%91%E6%A0%BC%E5%BC%8F%E4%B9%8B%E6%88%98-str-replace-apply-patch%E4%B8%8Ehashline.html"><![CDATA[<p>自己搭过 Agent harness 的人，都在同一个地方摔过跤：模型的思路完全正确,落到改文件这一步却搞砸了——目标代码找不到、缩进错位、或者把文件里另一处长得像的代码块给改了。</p>
+
+<p>我第一次遇到这个问题时的反应很典型：在提示词里加规则，「编辑时请确保精确匹配原文，注意缩进」。没用。第二反应是换个更强的模型。有点用，但贵。直到后来我意识到这根本不是模型问题，是<strong>接口设计</strong>问题——让模型用什么格式表达「我要改这段代码」，这个看起来微不足道的决定，直接决定编辑成功率和 token 账单。</p>
+
+<p>正好最近 hashline 格式的测试数据出来了，把三种主流方案放一起讲讲，最后附一点我自己复测的结果。</p>
+
+<h2 id="str_replace成也精确匹配败也精确匹配">str_replace：成也精确匹配，败也精确匹配</h2>
+
+<p>主流 coding agent 的默认格式。模型输出一段 <code class="language-plaintext highlighter-rouge">old_string</code> 和一段 <code class="language-plaintext highlighter-rouge">new_string</code>，harness 精确匹配前者、替换为后者，要求 <code class="language-plaintext highlighter-rouge">old_string</code> 在文件中唯一。</p>
+
+<p>优点是概念简单、模型零学习成本。缺点全部长在「精确匹配」上：</p>
+
+<p>模型必须<strong>逐字复现</strong>原文——每个空格、每个缩进、每个全角半角。人都做不好这件事，让一个概率模型做，长代码块出错是必然。我们的日志里，str_replace 的失败案例里七成以上是「复现原文时抄错了」，其中中文注释和混合缩进是重灾区。</p>
+
+<p>唯一性约束又逼着模型带上大量上下文行来消歧——输出 token 跟着膨胀。而输出 token 是账单里最贵的部分。</p>
+
+<p>还有个隐蔽的坑：文件在读取后被改过（另一个会话、另一个工具、甚至人手动改的），旧的 <code class="language-plaintext highlighter-rouge">old_string</code> 可能仍然能在新文件里匹配到——只是位置和语义已经不对了。这种「成功执行了错误编辑」的静默事故，比失败可怕得多。</p>
+
+<h2 id="apply_patch理论最优实践头疼">apply_patch：理论最优，实践头疼</h2>
+
+<p>另一派用类 diff 的补丁信封：输出一个近似 unified diff 的结构，上下文行、删除行、新增行。理论上 diff 是最紧凑的变更表达，这条路线看起来很正统。</p>
+
+<p>实践里的尴尬在于它是<strong>自创方言</strong>而不是标准 diff。模型训练语料里的海量标准 diff 会「串味」——你要方言，它时不时给你来两句普通话，harness 端就得写一堆容错解析去接「差一点就对」的输出。我实测的体感：同一个模型，apply_patch 的格式错误率明显高于 str_replace；换个模型，遵循率还会剧烈波动。兼容性是三者里最差的。</p>
+
+<h2 id="hashline换个思路别让模型抄书">hashline：换个思路，别让模型抄书</h2>
+
+<p>hashline 是 can_boluk（游戏安全出身，oh-my-pi 的维护者）发明的格式，思路和前两者完全不同：既然模型抄原文容易抄错，那就<strong>别让它抄</strong>。</p>
+
+<p>模型读文件时，每行附一个 2-3 字符的内容哈希：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>11:a3|function hello() {
+22:f1|   return "world";
+33:0e|}
 </code></pre></div></div>
 
-<p>这样 Claude Code 读到 CLAUDE.md，拉取 AGENTS.md 的内容，其他工具直接读 AGENTS.md，一份规范两边都能用。这个 symlink 式的做法不是官方推荐的，属于民间发现，用了几个月没出问题。</p>
+<p>编辑时只引用标签：「把 22:f1 那行换成 …」。harness 校验哈希——文件被改过，哈希对不上，直接拒绝执行。</p>
 
-<h2 id="一句话总结">一句话总结</h2>
+<p>一个设计吃掉三只鸟：不用复现原文（最大的错误源被结构性删除）；输出大幅变短（有模型实测输出 token 降了 61%）；并发安全白送（哈希校验就是乐观锁，str_replace 那种「匹配到过期内容还执行成功」的事故在这里不可能发生）。</p>
 
-<p>CLAUDE.md 的加载是「全量拼接，不是近者优先」。如果你在大型 monorepo 里或者多级目录结构里用 Agent，需要主动管理每一级 CLAUDE.md 的作用域，并且在父级规则里明确标注「以子目录为准」的边界，否则冲突规则会让 Agent 的行为变得不可预测，排查起来很费劲。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Claude" /><category term="CLAUDE.md" /><category term="AGENTS.md" /><category term="工程实践" /><summary type="html"><![CDATA[以为 CLAUDE.md 只有「用户级 + 项目级」两份？我也这么以为，直到在一个子模块里跑出了薛定谔的输出格式。把踩坑过程和加载机制拆清楚，记录一下。]]></summary></entry></feed>
+<p>公开测试的规模够说话：16 个模型 × 3 种格式 × 每种 540 个编辑任务，hashline 几乎在所有模型上追平或超过 str_replace。最值得玩味的是分布：<strong>弱模型获益最大</strong>。想想也对——强模型抄书也能抄对，最需要「免抄豁免」的就是弱模型。</p>
+
+<h2 id="我自己的复测">我自己的复测</h2>
+
+<p>公开数据再漂亮也得用自己的负载验一遍。我从我们真实任务里抽了 80 个编辑场景（Go 为主，混一些 PHP 和 SQL，特点是中文注释多、有几个超长文件），在自建 harness 上跑了 str_replace 和 hashline 的对比（apply_patch 解析器没写利索，弃权）：</p>
+
+<ul>
+  <li>编辑成功率：str_replace 87%，hashline 96%。hashline 挂掉的三例都是同一个原因——模型引用了错误的行号标签，属于「想错了」而不是「表达错了」。</li>
+  <li>输出 token：hashline 平均省 40% 出头，没到公开数据的 61%，估计和任务构成有关（我们的平均编辑块比较小）。</li>
+  <li>中文注释重灾区：str_replace 在这批 case 上成功率掉到 70% 台，hashline 无感——它根本不需要复现那些注释。</li>
+</ul>
+
+<p>结论：至少对我们的负载，切换是值得的。如果你也自建 harness，这个实验半天就能跑完，建议做。</p>
+
+<h2 id="想自己接-hashline-的几个提醒">想自己接 hashline 的几个提醒</h2>
+
+<p>如果复测结果说服了你，实现层面有几个我趟过的细节，写下来省你半天：</p>
+
+<p><strong>哈希和行号要一起校验，且编辑后全部重发。</strong>一次编辑成功后，后续行的行号全变了，旧标签全部作废。我的第一版实现偷懒没让模型重新读文件，它拿着旧标签继续编辑，全被拒绝，来回空转。正确做法是编辑工具的返回值里直接带上受影响区域的新标签，省一次重读。</p>
+
+<p><strong>2-3 字符的哈希会撞。</strong>短哈希只在「行号 + 哈希」联合校验下才可靠——同一行号上撞哈希的概率可以忽略，但别只用哈希做全文件定位。我见过一个实现拿哈希当全局唯一 ID 用，重复行（比如多个 <code class="language-plaintext highlighter-rouge">}</code>）立刻出事。</p>
+
+<p><strong>给拒绝一个好的错误信息。</strong>哈希失配被拒时，返回「该行内容已变化，请重新读取 N 行附近区域」比返回「edit rejected」有天壤之别——前者模型一步就恢复，后者它会开始瞎猜。harness 的错误信息是写给模型看的文档，这个意识很多实现没有。</p>
+
+<p><strong>保留 str_replace 做降级通道。</strong>个别场景（新建文件、整段追加）hashline 没有优势，两个工具并存、在描述里写清各自适用场景，让模型自己选，实测选得挺准。</p>
+
+<h2 id="这件事背后的普遍规律">这件事背后的普遍规律</h2>
+
+<p>编辑格式之争我最后沉淀下来一条 harness 设计原则，适用范围远超这个具体问题：</p>
+
+<p><strong>模型的失败模式，用机制去消除，不要用提示词去劝阻。</strong></p>
+
+<p>str_replace 的思路是「请你抄仔细点」——对抗概率；hashline 的思路是「你根本不用抄」——改变结构。前者永远有失败率，后者把失败的可能性从物理上删掉了。同样的分野到处都是：与其在提示词里写「不要编造 API」，不如给它一个能查真实 API 的工具；与其叮嘱「别改错文件」，不如用权限把可写范围圈死。</p>
+
+<p>每次你想往系统提示词里加一条「请注意…」的时候,都值得先停三秒问问：这个失败模式，能不能用机制直接干掉？能的话，那条提示词就不用写了——而且机制不占指令预算，不用戒断，不随模型换代贬值。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="Harness" /><category term="编辑格式" /><category term="工程实践" /><summary type="html"><![CDATA[模型明明「想」对了，改文件却改错了——自己搭 harness 的人都在这摔过跤。对比三种编辑格式的设计取舍，附上我自己在内部任务集上复测的结果，和一个关于 harness 设计的普遍规律。]]></summary></entry><entry><title type="html">工作区可以是文件，账本必须是数据库</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/23/%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%8F%AF%E4%BB%A5%E6%98%AF%E6%96%87%E4%BB%B6-%E8%B4%A6%E6%9C%AC%E5%BF%85%E9%A1%BB%E6%98%AF%E6%95%B0%E6%8D%AE%E5%BA%93.html" rel="alternate" type="text/html" title="工作区可以是文件，账本必须是数据库" /><published>2026-06-23T00:00:00+08:00</published><updated>2026-07-15T23:25:02+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/23/%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%8F%AF%E4%BB%A5%E6%98%AF%E6%96%87%E4%BB%B6-%E8%B4%A6%E6%9C%AC%E5%BF%85%E9%A1%BB%E6%98%AF%E6%95%B0%E6%8D%AE%E5%BA%93</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/23/%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%8F%AF%E4%BB%A5%E6%98%AF%E6%96%87%E4%BB%B6-%E8%B4%A6%E6%9C%AC%E5%BF%85%E9%A1%BB%E6%98%AF%E6%95%B0%E6%8D%AE%E5%BA%93.html"><![CDATA[<p>五月份给一个 Agent 系统做存储选型，团队里结结实实吵了两周。</p>
+
+<p>一派的论据是「Agent 天然爱文件」：你看它操作目录、grep、diff 多顺手，全上 Markdown + Git，人能看、Agent 能改、还自带版本历史。另一派反驳：「都 2026 年了还拿文件系统当数据库使？并发怎么办？约束怎么办？」两边都有道理，谁也说服不了谁。</p>
+
+<p>最后让我们达成一致的不是道理，是一次翻车。</p>
+
+<h2 id="那次翻车">那次翻车</h2>
+
+<p>我们有个后台任务编排的原型，图快，任务状态直接用 YAML 文件管理，Git 兜底。每个任务一个文件，字段大概是 <code class="language-plaintext highlighter-rouge">status: pending/running/done</code>，Agent 和人都可以改。</p>
+
+<p>跑了三周出事了。一次并发场景下，两个 Agent 几乎同时更新同一个任务的不同字段，后写的把先写的覆盖了——文件写入没有行级的概念，整个文件替换。更阴的是第二个问题：某次 Agent 更新状态时打错了字，写成 <code class="language-plaintext highlighter-rouge">status: runing</code>。没有 schema 校验，这个错误值安安静静地躺了四天，下游一个按 <code class="language-plaintext highlighter-rouge">running</code> 过滤的统计脚本一直漏算它，直到有人对不上数才被翻出来。</p>
+
+<p>Git 忠实地记录了这两次事故的完整历史。但 Git 只负责记录，不负责阻止——<strong>版本控制不是约束系统</strong>。这句话现在贴在我们的设计文档模板里。</p>
+
+<h2 id="想明白agent-到底爱文件的什么">想明白：Agent 到底「爱」文件的什么</h2>
+
+<p>翻车之后重新复盘那场争论，我发现双方其实都对，只是说的不是同一层东西。</p>
+
+<p>「Agent 爱文件」这个观察是真的，但要说准确一点：<strong>coding agent 是 file-native 的</strong>。它的整个工作闭环——读（cat/grep）、改（编辑工具）、看变更（diff）、审阅（人读 Markdown 成本极低）、回滚（git revert）——每一环都建立在文件语义上，而且每一环对人和模型<strong>同时透明</strong>。这个闭环数据库给不了：给 Agent 一套 CRUD API，它要先学你的 schema，人要审阅只能看查询结果，回滚要靠你自己写补偿逻辑。</p>
+
+<p>所以草稿、计划、中间产物、代码——这些<strong>工作区</strong>内容放文件系统，是真理。</p>
+
+<p>但我们翻车翻在把这个结论外推到了它不该去的地方。任务状态是什么？是多方并发读写、有 schema、有一致性要求、错了有真实业务后果的东西——这是<strong>账本</strong>，不是草稿。账本要的四样东西，文件加 Git 一样都给不了：</p>
+
+<ul>
+  <li>约束。schema 校验、枚举值、非空、唯一性。<code class="language-plaintext highlighter-rouge">runing</code> 那种错，数据库在写入时就会拒绝。</li>
+  <li>并发控制。行级锁三十年前就是成熟技术，文件系统的答案是「整个文件覆盖，后写赢」。</li>
+  <li>业务审计。Git log 记录的是「文件怎么变的」，审计要的是「谁以什么权限做了什么业务动作」，粒度错位。</li>
+  <li>防误改。Markdown 对人和 Agent 都敞开着，这是工作区的优点、账本的死穴。</li>
+</ul>
+
+<p>翻车后我们把任务状态迁进了 SQLite（就这个体量，够了），YAML 只留作 Agent 的工作草稿。迁移完那天我在群里发了那句总结，后来成了我们的选型口诀：<strong>工作区可以是文件，账本必须是数据库。</strong></p>
+
+<h2 id="那条容易被忽视的毕业线">那条容易被忽视的「毕业线」</h2>
+
+<p>口诀好记，实操中真正难的是识别<strong>状态什么时候毕业</strong>——从「工作草稿」变成「业务事实」的那条线。</p>
+
+<p>草稿的特征：可丢弃、可重建、错了能改、只有产生它的会话关心它。事实的特征：有下游依赖它做决定、错了有真实后果、多方并发访问。一条状态跨过这条线的时刻，就是它该搬进数据库的时刻。</p>
+
+<p>我们的翻车本质上就是没看见毕业线：任务状态在原型期确实是草稿（就一个 Agent 玩，错了重跑），但接入编排、有了下游统计之后，它已经悄悄毕业成事实了，存储却没跟着升级。<strong>每个拿文件系统当数据库用的系统，都欠着这样一笔账，区别只是什么时候翻车、翻多大。</strong></p>
+
+<h2 id="迁移之后agent-怎么访问账本">迁移之后：Agent 怎么访问账本</h2>
+
+<p>把任务状态迁进 SQLite 之后，马上遇到第二个设计题：Agent 怎么读写这个账本？直接给它 SQL 权限吗？</p>
+
+<p>我们最后的方案是<strong>读写不对称</strong>：读，给 Agent 一个只读的查询工具，随便查（只读连接 + 超时限制，查坏了也就是慢）；写，不给 SQL，只给一组语义化的操作接口——<code class="language-plaintext highlighter-rouge">claim_task</code>、<code class="language-plaintext highlighter-rouge">complete_task</code>、<code class="language-plaintext highlighter-rouge">report_failure</code>，每个接口内部带着状态机校验（pending 才能 claim、running 才能 complete）。</p>
+
+<p>为什么写路径要包一层？还是那个原则：机制能拦的错误不要靠约定。让 Agent 直接 UPDATE，哪怕提示词里把状态机写得再清楚，它总有一定概率写出非法状态迁移——概率乘以调用次数就是必然。包成接口后，非法迁移在接口层直接被拒，Agent 收到明确报错还能自我纠正。上线三个月，接口层拦截日志里有十几次非法迁移尝试——每一次都是没包接口时的一次静默数据损坏。</p>
+
+<p>这个「读宽写窄」的不对称，现在成了我们所有 Agent 访问账本类数据的默认姿势。它其实就是老掉牙的最小权限原则,只是执行主体从人变成了模型——而模型比人更需要这层保护，因为它犯错不知疲倦。</p>
+
+<h2 id="夹在中间的记忆和知识库">夹在中间的：记忆和知识库</h2>
+
+<p>工作区和账本之间还有一块灰色地带——Agent 记忆、个人知识库这类东西。它们的需求很拧巴：要人类可编辑（Markdown 的强项），又要机器可检索（数据库的强项），还要长期演化。</p>
+
+<p>我自己的知识库现在是纯 Markdown 三层结构：原始材料层（网页剪藏、导入的文档）、编译层（提炼出的概念页和实体页，靠双链互引）、索引层（一份 catalog 文件）。没有数据库。这不是懒，是评估过的决策：它至今没出现过需要事务的场景——单人写入、错了能改、没有下游系统依赖它的「正确性」。<strong>不引入 ledger 也是一个需要主动做的决策</strong>，条件变了（多人并发、引用完整性要求、权限）再升级不迟。</p>
+
+<h2 id="一点展望">一点展望</h2>
+
+<p>往后看，我不觉得结局是文件和数据库谁吃掉谁。更可能的形态是<strong>数据库把自己伪装成文件树</strong>：对 Agent 暴露路径、diff、类 commit 操作——它的母语；内部保留事务、索引、约束、审计——数据库的本分；对人保留可读文本。</p>
+
+<p>这个思路其实很老了，Plan 9 的「一切皆文件」、FUSE 把对象存储挂成目录，都是同一个方向。新鲜的是需求侧：世界上第一次出现了数以亿计的、以文件操作为母语的「用户」，而且他们的数量还在暴涨。有足够大的需求，接口层的进化会很快。已经能看到一些数据库产品在往这个方向做实验了，值得保持关注。</p>
+
+<p>在那个理想接口出现之前，先记住口诀，以及口诀背后那次 <code class="language-plaintext highlighter-rouge">runing</code> 的教训。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="存储架构" /><category term="文件系统" /><category term="数据库" /><summary type="html"><![CDATA[一场持续两周的存储选型之争，和一次用 YAML 管任务状态翻车的亲身经历。Agent 时代的存储分工，我现在的答案是一句话：工作区可以是文件，账本必须是数据库。]]></summary></entry></feed>

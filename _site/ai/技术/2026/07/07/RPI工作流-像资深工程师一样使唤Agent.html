@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>RPI 工作流：像资深工程师一样使唤 Agent | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="RPI 工作流：像资深工程师一样使唤 Agent" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="把 RPI 教给一个刚上手 AI Coding 的同事之后，他的返工率一周内降了一半。三步，三条铁律，一张便签能写下的方法，专治「一个窗口从头聊到尾」。" />
+<meta property="og:description" content="把 RPI 教给一个刚上手 AI Coding 的同事之后，他的返工率一周内降了一半。三步，三条铁律，一张便签能写下的方法，专治「一个窗口从头聊到尾」。" />
+<link rel="canonical" href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html" />
+<meta property="og:url" content="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-07-07T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="RPI 工作流：像资深工程师一样使唤 Agent" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-07-15T23:26:25+08:00","datePublished":"2026-07-07T00:00:00+08:00","description":"把 RPI 教给一个刚上手 AI Coding 的同事之后，他的返工率一周内降了一半。三步，三条铁律，一张便签能写下的方法，专治「一个窗口从头聊到尾」。","headline":"RPI 工作流：像资深工程师一样使唤 Agent","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-07-15T23:26:25+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>RPI 工作流：像资深工程师一样使唤 Agent</h1>
+    <p class="post-meta">
+      <time datetime="2026-07-07T00:00:00+08:00">2026-07-07</time>
+       · 最后更新于 <time datetime="2026-07-15T23:26:25+08:00">2026-07-15</time>
+       · AI / 技术
+       · AI, Agent, RPI, 工作流, AI Coding
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">AI</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">RPI 工作流：像资深工程师一样使唤 Agent</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>上周带一个新同事上手 AI Coding，看他操作了十分钟我就知道问题在哪了：一个窗口从头聊到尾。调研、讨论、写码、调试、返工，全在一个会话里滚，四十多轮之后窗口里是一锅粥，模型的输出质量随粥的浓度稳定下降，他的解决方式是骂骂咧咧地继续追加澄清——粥更稠了。</p>
+
+<p>我没给他讲上下文工程的大道理，只给了他一个足够简单的起手式：RPI——Research、Plan、Implement，三步，三个独立会话，每步一条铁律。一周后他自己跑来说返工少了一半。这个方法出自 HumanLayer，简单到一张便签能写下，但每条铁律背后都有讲究，值得写一篇。</p>
+
+<h2 id="r只许看不许动">R：只许看，不许动</h2>
+
+<p>第一个会话只做一件事：让 Agent 探索。给它问题陈述，让它摸清代码库结构、相关模块、已有的类似实现，最后产出一份调研纪要——落盘成文件，不是留在对话里。</p>
+
+<p>铁律：<strong>这个阶段不允许采取任何行动。</strong>不写代码、不改文件、不装依赖。</p>
+
+<p>为什么要这么绝对？因为模型有强烈的动手欲——你说「看看这个 bug」，它三分钟后已经提交修复了。而跳过理解的修复，命中根因靠运气，多数时候是在给症状打补丁。我自己的血泪版本：早期有次让它「看看为什么定时任务偶尔不执行」，它看了两个文件就动手加了个重试。重试当然「有效」——症状被掩盖了，真正的原因（时区处理错误导致的调度漂移）又活了两个月。</p>
+
+<p>从那以后我的 R 阶段提示词里永远有一句：「只调查，不修复，输出调研纪要。」</p>
+
+<h2 id="p人类判断力的主战场">P：人类判断力的主战场</h2>
+
+<p>第二个会话（或者接着第一个），让 Agent 基于调研纪要写出执行计划：改哪些文件、什么顺序、每步怎么验证。然后——重点来了——<strong>人来审</strong>。</p>
+
+<p>这是整个流程里人类时间投入产出比最高的一环，道理很朴素：计划里的错误此刻还是文字，改起来是几句话的事；放进实现阶段就变成散落在十几个文件里的代码，改起来是一次返工。同一个错误，在 P 阶段修和在 I 阶段修，成本差一个数量级。</p>
+
+<p>铁律：<strong>在这一步偷懒，代价在后面成倍偿还。</strong></p>
+
+<p>审什么？我给那位同事的清单只有三条，够用：</p>
+
+<ul>
+  <li>顺序：高风险、可能被推翻的决策（数据模型、接口）是不是排在最前面</li>
+  <li>边界：有没有混进「顺手优化」的 scope 蔓延苗头</li>
+  <li>验证：每一步做完拿什么证明是对的</li>
+</ul>
+
+<p>审计划平均花我五到十分钟。这五到十分钟是我全天杠杆最高的工作时间，没有之一。</p>
+
+<h2 id="i新窗口轻装上阵">I：新窗口，轻装上阵</h2>
+
+<p>第三步，<strong>开新窗口</strong>执行批准后的计划。输入只有两样：计划文件 + 相关文件的引用。</p>
+
+<p>为什么必须新窗口？R 阶段积累了大量探索噪声——读过的几十个文件、被否决的猜测、绕过的弯路。这些东西对执行不仅无用，还在稀释注意力。计划本身已经是调研成果的浓缩，带着计划轻装上阵，比拖着全部探索历史干活稳定得多。这是 RPI 里最反直觉也最见效的一条：<strong>信息不是越多越好，是越干净越好。</strong></p>
+
+<p>任务大就在 I 阶段内继续拆子任务、各起会话，子代理那篇讲过，不重复。</p>
+
+<h2 id="三份产物的文件约定">三份产物的文件约定</h2>
+
+<p>RPI 跑顺之后，我们把三个阶段的产物固定成了文件约定，放在仓库的 <code class="language-plaintext highlighter-rouge">.work/</code> 目录下（gitignore 掉，纯工作区）：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.work/
+  research-&lt;任务名&gt;.md    R 阶段产出：相关文件清单、现有约定、
+                          可选路径及各自代价、待确认的问题
+  plan-&lt;任务名&gt;.md        P 阶段产出：步骤清单，每步含改动范围
+                          和验证方式；头部有一行「已批准/待审」
+  notes-&lt;任务名&gt;.md       I 阶段产出：执行中的决策记录和偏差
+</code></pre></div></div>
+
+<p>这个约定带来两个当初没预料到的好处。一是<strong>中断恢复</strong>：执行到一半被会议打断、或者窗口爆了，新会话读这三个文件就能原地续上，不用从头交代背景。二是<strong>复盘材料</strong>：出问题回溯时，「当时调研到了什么、计划是什么、实际偏离了哪」全有据可查。以前这些信息散在对话历史里，会话一关就蒸发了。</p>
+
+<p>另外一个细节：plan 文件头部那行「已批准/待审」状态标记不是摆设。我们给 I 阶段的提示词里写死了一条——计划文件状态不是「已批准」就拒绝执行。很轻的一个机制，防的是手滑跳过人工审查那一步。跑了两个月，这条规则拦下过三次「我看计划差不多就直接跑了」的侥幸，每次事后看计划里都真有该改的东西。</p>
+
+<h2 id="它专治什么病">它专治什么病</h2>
+
+<p>回头说那位同事的「一锅粥」，其实是两个坏习惯的复合体，RPI 每一步都在精准拆解：</p>
+
+<p>「一窗到底」被「阶段切窗口」拆掉——每个阶段的产物落盘成文件，窗口用完即弃，信息靠文件传递而不是靠对话历史堆积。</p>
+
+<p>「拿到任务就动手」被 R 和 P 的强制顺序拆掉。这条其实和 AI 无关——资深工程师之所以资深，恰恰在于拿到任务后<strong>不立刻写代码</strong>。模型给了所有人「说一句就动手」的能力，这个能力本身在诱导坏流程。工具变了,纪律没变，只是纪律的执行对象从自己的手变成了 Agent 的手。</p>
+
+<p>要说 RPI 的局限也有：对五分钟能搞定的小改动，三个会话纯属仪式感，直接干就行。我的分界线大概是「一眼看不出要改哪几个文件」——达到这个复杂度，就值得走全流程。介于两者之间的模糊地带，我的偷懒版是「R 和 P 合并成一个会话、I 单独开」——保住「执行会话必须干净」这条底线，前面松一点问题不大。实践里真正不能省的其实就两样：P 的人工审查，和 I 的新窗口。</p>
+
+<p>另外提醒一句：R 阶段的调研纪要别追求完备。它的角色是「够 P 用」，不是代码库百科——我见过有人让 R 阶段跑一个小时输出五千字，P 阶段根本消化不了。调研纪要超过一屏，多数时候说明问题陈述给得太模糊，该回头改问题，不是继续堆调研。</p>
+
+<p>方法论最怕听完点头、回去照旧。所以结尾就一个建议：明天挑一个中等复杂度的任务，严格走一遍 R、P、I，产物落盘。跑完拿返工次数和你平时的做法比——数据会替我说话。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html">发现你的未知：Agentic Coding 的地图与疆域</a> <small>(2026-07-14)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html">AI 生成测试用例的四阶进化：从 Prompt 工程到自进化</a> <small>(2026-07-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html">锯齿智能与多模型调度</a> <small>(2026-07-11)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html">代码是负债，规格才是资产</a> <small>(2026-07-09)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83.html">AI Coding 控盘规则：水流理论与最小混沌单元</a> <small>(2026-07-05)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83.html" rel="prev">← 上一篇：AI Coding 控盘规则：水流理论与最小混沌单元</a>
+        
+        
+        <a class="next" href="/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html" rel="next">下一篇：代码是负债，规格才是资产 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=RPI%20%E5%B7%A5%E4%BD%9C%E6%B5%81%EF%BC%9A%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4%20Agent&url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>

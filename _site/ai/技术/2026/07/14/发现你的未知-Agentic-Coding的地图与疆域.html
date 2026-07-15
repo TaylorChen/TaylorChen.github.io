@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>发现你的未知：Agentic Coding 的地图与疆域 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="发现你的未知：Agentic Coding 的地图与疆域" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="照着 Anthropic 工程师的 unknowns 方法论实践了两周，最大的变化是心态：以前 Agent 产出不对，我怪它没理解；现在我先问自己的地图哪里漏了。附两周里最好用的几招和一次被 quiz 抓住的真实漏网。" />
+<meta property="og:description" content="照着 Anthropic 工程师的 unknowns 方法论实践了两周，最大的变化是心态：以前 Agent 产出不对，我怪它没理解；现在我先问自己的地图哪里漏了。附两周里最好用的几招和一次被 quiz 抓住的真实漏网。" />
+<link rel="canonical" href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html" />
+<meta property="og:url" content="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-07-14T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="发现你的未知：Agentic Coding 的地图与疆域" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-07-15T23:21:37+08:00","datePublished":"2026-07-14T00:00:00+08:00","description":"照着 Anthropic 工程师的 unknowns 方法论实践了两周，最大的变化是心态：以前 Agent 产出不对，我怪它没理解；现在我先问自己的地图哪里漏了。附两周里最好用的几招和一次被 quiz 抓住的真实漏网。","headline":"发现你的未知：Agentic Coding 的地图与疆域","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-07-15T23:21:37+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>发现你的未知：Agentic Coding 的地图与疆域</h1>
+    <p class="post-meta">
+      <time datetime="2026-07-14T00:00:00+08:00">2026-07-14</time>
+       · 最后更新于 <time datetime="2026-07-15T23:21:37+08:00">2026-07-15</time>
+       · AI / 技术
+       · AI, Agent, AI Coding, 方法论, 工程实践
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">AI</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">发现你的未知：Agentic Coding 的地图与疆域</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>先交代实践背景：这套方法论来自 Anthropic 一位工程师（@trq212）的总结，我照着用了两周，这篇一半是转述，一半是我自己的实践笔记。先说结论——值得用，而且它改变的主要不是技巧，是心态。</p>
+
+<h2 id="地图与疆域">地图与疆域</h2>
+
+<p>框架的核心是一个隐喻。你给 Agent 的 prompt、上下文、配置，是<strong>地图</strong>；代码库、真实约束、你脑子里的真实意图，是<strong>疆域</strong>。两者的差集就是 <strong>unknowns</strong>——Agent 每撞上一块地图没标注的疆域，只能按「对你意图的最佳猜测」行动。任务越大，撞上的未知越多，猜错的累积越可观。</p>
+
+<p>这个隐喻一下子解开了我用 Agent 时的一个长期困惑：为什么指令写详细也不对、写简略也不对？写太细，它该转向时也死守指令；写太粗，它按「业界最佳实践」补空——而最佳实践未必是你的场景。原来两头难受的根源是同一个：<strong>没有管理未知</strong>。指令的粗细只是在未知面前换姿势，未知本身一点没少。</p>
+
+<p>提出者有个判断我认同：新一代模型已经强到「工作质量的瓶颈不在模型，而在人能否把自己的不懂讲清楚」。顶级的 agentic coder 未知少——他们对代码库和模型行为都深度同步——但更关键的是,他们<strong>主动假设未知存在</strong>，把发现未知当成显式的工作项。</p>
+
+<h2 id="那个-22">那个 2×2</h2>
+
+<p>把「知道/不知道」和「意识到/没意识到」交叉，四个象限：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th>我知道</th>
+      <th>我不知道</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>意识到</strong></td>
+      <td>写进 prompt 的</td>
+      <td>明确还没想清楚的</td>
+    </tr>
+    <tr>
+      <td><strong>没意识到</strong></td>
+      <td>看到才认得的标准</td>
+      <td>完全没考虑到的</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>右下角（unknown unknowns）名声最大，但两周实践下来，我被坑最多的是<strong>左下角</strong>——unknown knowns：那些「显然到不会写下来、但看到成品立刻知道不对」的标准。</p>
+
+<p>给个真实例子。让 Agent 做一个内部报表页面，需求我自认写得很细。成品出来，功能全对，但我看了一眼就知道不行——数字没有千分位、表格能横向滚动但列没有冻结、导出按钮放在了左上角。这些要求我一条都没写，因为我不知道自己有这些要求，直到看见违反它们的东西。这就是 unknown knowns：<strong>你的品味和习惯里藏着大量从未显式化的验收标准。</strong></p>
+
+<h2 id="两周里最好用的三招">两周里最好用的三招</h2>
+
+<p>方法论原文给了七种技巧，覆盖实现前中后。我全试了，按实用度说说体感最好的三个。</p>
+
+<p><strong>第一名：先出方向，再反向采访。</strong>做有模糊空间的需求时，先让 Agent 出几个差异极大的方案方向（视觉类的就出几版风格迥异的原型），我挑一个，然后让它<strong>一次一个问题地采访我</strong>，优先问「答案会改变架构」的问题。上面那个报表页面的教训之后，我用这套流程重做了一次：它出的第二个问题就是「表格预期最大多少列？需要冻结列吗？」——你看，我自己想不起来的标准，被问出来了。两轮下来大概二十分钟，unknown knowns 被逼出来一串。这二十分钟省下的返工以天计。</p>
+
+<p><strong>第二名：给源码当参照物。</strong>说不清楚的需求，别憋形容词，直接指认：「交互参考这个库的这个组件」，最好直接给源码路径。实测源码远胜截图，截图又远胜形容词——「像 X 那样的丝滑滚动」这种话对模型是噪声，一个能读的实现才是信号。语言不同都没关系，语义能平移。</p>
+
+<p><strong>第三名：merge 前让它出题考我。</strong>实现完成后，让 Agent 出一套关于「这次改动实际行为」的小测验，我来答，答满分才 merge。听起来像行为艺术,直到它真抓住一条漏网之鱼：一次改动里它调整了某个接口的空值处理逻辑（计划里没有,是实现中撞到边界情况后的合理决策，也记进了变更说明——但我没细看）。quiz 里它问「传入空列表时接口现在返回什么」，我答错了。<strong>diff 我看过,行为我没懂</strong>——这条如果带着我的错误理解上线,排查时会非常酸爽。现在重要变更我都走这道工序，成本五分钟。</p>
+
+<p>顺便说没那么惊艳的：盲区扫描（让模型帮你找 unknown unknowns）在我熟悉的领域收益一般，多数「盲区」我确实知道；但在陌生领域（比如我最近碰的一点前端动画）确实有用，它列出的注意事项里有一半我真不知道。技巧的收益和你在该领域的未知存量成正比,很合理。</p>
+
+<h2 id="实现中决策日志接住计划外的一切">实现中：决策日志接住计划外的一切</h2>
+
+<p>前中后三个阶段里，「实现中」的技巧只有一个,但值得单独说，因为它解决的是最烦人的问题：计划再好，实现时总会撞上计划没覆盖的边界情况，这时候 Agent 怎么办？</p>
+
+<p>默认行为是两个极端：要么每撞上一个就停下来问你（你被打断十次,烦死）,要么自作主张选一个（选错了你还不知道）。这套方法给了第三条路,写进任务说明：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>撞到计划未覆盖的情况时：
+1. 选择保守方案（改动最小、最容易回滚的那个）
+2. 把「撞到什么、选了什么、为什么」记入 implementation-notes
+   的 Deviations 一节
+3. 继续推进，不要停下来等确认
+</code></pre></div></div>
+
+<p>然后你在方便的时候批量审查 Deviations。这个设计的精妙在于它同时优化了三方：Agent 不被阻塞、你不被打断、决策留痕可回溯。我用下来，一个中型任务通常积累三到七条偏差记录，批量审一遍五分钟，其中大概一两条我会要求改——<strong>也就是说它的保守猜测七成以上是对的，但剩下三成如果没有日志，就是三成的暗雷。</strong></p>
+
+<p>补一个细节：「保守」要在任务说明里定义,不能让它自由发挥。我的定义是「优先选不改变对外行为的方案；必须改变时，选影响面最小的」。没这句的时候，它对「保守」的理解偏向「功能最全」——给边界情况加一堆防御性处理——那不是保守，是画蛇添足。</p>
+
+<h2 id="心态的变化">心态的变化</h2>
+
+<p>说回开头那句「改变的是心态」。具体讲，是归因方式变了。</p>
+
+<p>以前 Agent 产出不对，我的第一反应是「它没理解」，改进动作是换个说法重试——本质是撞运气。现在的第一反应是「我的地图哪里漏了」，改进动作是定位那块缺失（是 unknown known 没逼出来？还是约束没写进 spec？），然后补上——<strong>补的地图是累积的</strong>，下次任务直接受益。前者是消耗，后者是投资，长期差距会很大。</p>
+
+<p>再往大了说，把这个系列的文章串起来看有条线：控盘规则管「边界内的自主」，RPI 管「阶段的顺序」，而 unknowns 方法管的是最上游——<strong>边界本身画得对不对</strong>。地图错了，下游纪律执行得越好，错得越远。</p>
+
+<p>模型每强一代，「它做不到」这个借口就少一分，剩下的差距全是「我没说清」。这话对工程师不算坏消息——把自己的不懂讲清楚，本来就是我们这行最古老的核心技能，从写需求文档的年代就是。工具换了，功夫没换。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html">AI 生成测试用例的四阶进化：从 Prompt 工程到自进化</a> <small>(2026-07-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html">锯齿智能与多模型调度</a> <small>(2026-07-11)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html">代码是负债，规格才是资产</a> <small>(2026-07-09)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html">RPI 工作流：像资深工程师一样使唤 Agent</a> <small>(2026-07-07)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83.html">AI Coding 控盘规则：水流理论与最小混沌单元</a> <small>(2026-07-05)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html" rel="prev">← 上一篇：AI 生成测试用例的四阶进化：从 Prompt 工程到自进化</a>
+        
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5%EF%BC%9AAgentic%20Coding%20%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F&url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>

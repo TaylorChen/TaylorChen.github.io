@@ -20,12 +20,12 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="异步 Agent：把任务扔进后台之后" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-06-13T14:30:50+08:00","datePublished":"2026-05-14T00:00:00+08:00","description":"背景 Agent 今年开始真正可用。但「把任务扔进后台」这件事，工程上的问题远比看起来多：任务怎么描述、进度怎么跟踪、失败了怎么办、多人协作怎么共享上下文。记录一些实际经历。","headline":"异步 Agent：把任务扔进后台之后","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-06-13T14:37:58+08:00","datePublished":"2026-05-14T00:00:00+08:00","description":"背景 Agent 今年开始真正可用。但「把任务扔进后台」这件事，工程上的问题远比看起来多：任务怎么描述、进度怎么跟踪、失败了怎么办、多人协作怎么共享上下文。记录一些实际经历。","headline":"异步 Agent：把任务扔进后台之后","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/05/14/%E5%BC%82%E6%AD%A5Agent-%E6%8A%8A%E4%BB%BB%E5%8A%A1%E6%89%94%E8%BF%9B%E5%90%8E%E5%8F%B0%E4%B9%8B%E5%90%8E.html"}</script>
 <!-- End Jekyll SEO tag -->
 
   
   
-  <meta property="article:modified_time" content="2026-06-13T14:30:50+08:00">
+  <meta property="article:modified_time" content="2026-06-13T14:37:58+08:00">
   
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
@@ -79,7 +79,7 @@
     <h1>异步 Agent：把任务扔进后台之后</h1>
     <p class="post-meta">
       <time datetime="2026-05-14T00:00:00+08:00">2026-05-14</time>
-       · 最后更新于 <time datetime="2026-06-13T14:30:50+08:00">2026-06-13</time>
+       · 最后更新于 <time datetime="2026-06-13T14:37:58+08:00">2026-06-13</time>
        · AI / 技术
        · AI, Agent, 异步, 工程实践, background agent
       <span id="busuanzi_container_page_pv" style="display: none;">
@@ -221,33 +221,19 @@
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <section class="related-posts">
       <h2>相关阅读</h2>
       <ul>
         
-        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html">上下文工程：比 Prompt 更重要的那一层</a> <small>(2026-06-13)</small></li>
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html">发现你的未知：Agentic Coding 的地图与疆域</a> <small>(2026-07-14)</small></li>
         
-        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">多 Agent 系统的协作模式：从单兵到军团</a> <small>(2026-06-06)</small></li>
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html">AI 生成测试用例的四阶进化：从 Prompt 工程到自进化</a> <small>(2026-07-13)</small></li>
         
-        <li><a href="/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html">AI 时代的深度工作：注意力是最后的稀缺资源</a> <small>(2026-05-31)</small></li>
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html">锯齿智能与多模型调度</a> <small>(2026-07-11)</small></li>
         
-        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/05/27/AI-Coding%E8%90%BD%E5%9C%B0%E5%AD%98%E9%87%8F%E5%A4%A7%E9%A1%B9%E7%9B%AE-%E8%A7%84%E8%8C%83%E5%85%88%E4%BA%8E%E5%B7%A5%E5%85%B7.html">AI Coding 落地存量大项目：规范先于工具</a> <small>(2026-05-27)</small></li>
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html">代码是负债，规格才是资产</a> <small>(2026-07-09)</small></li>
         
-        <li><a href="/%E6%8A%80%E6%9C%AF/mysql/2026/05/23/MySQL-%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E8%B7%B5-%E5%BD%93%E6%95%B0%E6%8D%AE%E5%BA%93%E9%81%87%E4%B8%8AEmbedding.html">MySQL 向量检索实践：当数据库遇上 Embedding</a> <small>(2026-05-23)</small></li>
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html">RPI 工作流：像资深工程师一样使唤 Agent</a> <small>(2026-07-07)</small></li>
         
       </ul>
     </section>

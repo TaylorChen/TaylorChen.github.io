@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>AGENTS.md 设计原则：好的入口文件等于免费换模型 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="AGENTS.md 设计原则：好的入口文件等于免费换模型" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="把我们仓库里那份自动生成的 CLAUDE.md 推倒重写之后，同样的模型、同样的任务，返工次数肉眼可见地降了。这篇记录重写过程中形成的判断，以及为什么我现在认为入口文件写得差比没有更糟。" />
+<meta property="og:description" content="把我们仓库里那份自动生成的 CLAUDE.md 推倒重写之后，同样的模型、同样的任务，返工次数肉眼可见地降了。这篇记录重写过程中形成的判断，以及为什么我现在认为入口文件写得差比没有更糟。" />
+<link rel="canonical" href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/02/AGENTS-md%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99-%E5%A5%BD%E7%9A%84%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%E7%AD%89%E4%BA%8E%E5%85%8D%E8%B4%B9%E6%8D%A2%E6%A8%A1%E5%9E%8B.html" />
+<meta property="og:url" content="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/02/AGENTS-md%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99-%E5%A5%BD%E7%9A%84%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%E7%AD%89%E4%BA%8E%E5%85%8D%E8%B4%B9%E6%8D%A2%E6%A8%A1%E5%9E%8B.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-06-02T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="AGENTS.md 设计原则：好的入口文件等于免费换模型" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-07-15T23:26:15+08:00","datePublished":"2026-06-02T00:00:00+08:00","description":"把我们仓库里那份自动生成的 CLAUDE.md 推倒重写之后，同样的模型、同样的任务，返工次数肉眼可见地降了。这篇记录重写过程中形成的判断，以及为什么我现在认为入口文件写得差比没有更糟。","headline":"AGENTS.md 设计原则：好的入口文件等于免费换模型","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/02/AGENTS-md%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99-%E5%A5%BD%E7%9A%84%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%E7%AD%89%E4%BA%8E%E5%85%8D%E8%B4%B9%E6%8D%A2%E6%A8%A1%E5%9E%8B.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/02/AGENTS-md%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99-%E5%A5%BD%E7%9A%84%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%E7%AD%89%E4%BA%8E%E5%85%8D%E8%B4%B9%E6%8D%A2%E6%A8%A1%E5%9E%8B.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-07-15T23:26:15+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>AGENTS.md 设计原则：好的入口文件等于免费换模型</h1>
+    <p class="post-meta">
+      <time datetime="2026-06-02T00:00:00+08:00">2026-06-02</time>
+       · 最后更新于 <time datetime="2026-07-15T23:26:15+08:00">2026-07-15</time>
+       · AI / 技术
+       · AI, Agent, AGENTS.md, 上下文工程, 工程实践
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">AI</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">AGENTS.md 设计原则：好的入口文件等于免费换模型</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>四月底我干了一件事：把我们主仓库里那份 CLAUDE.md 整个删了重写。</p>
+
+<p>那份文件的来历很典型——刚接入 AI Coding 的时候，图省事，直接让模型「分析这个仓库，生成一份 CLAUDE.md」。它生成出来的东西看起来非常专业：目录结构、技术栈清单、编码规范、注意事项，洋洋洒洒四百多行。团队里没人细看，反正「有总比没有强」，一放就是三个月。</p>
+
+<p>促使我重写的是一次很小的事故。让 Agent 加一个导出接口，它在动手前花了七八分钟、烧了大概四万 token 去读各种不相关的文件——包括一个早就废弃的 legacy 目录。我翻执行日志才发现，那份自动生成的 CLAUDE.md 里赫然写着「修改任何接口前，请先全面理解 <code class="language-plaintext highlighter-rouge">legacy/</code> 目录下的历史实现」。这句话是模型自己脑补的，仓库里从来没有这条规矩。<strong>Agent 忠实地执行了一条不存在的规则，而我们三个月没发现。</strong></p>
+
+<h2 id="有总比没有强是错的">「有总比没有强」是错的</h2>
+
+<p>后来我看到 ETH Zurich 的一个研究，算是给我的直觉补了数据。他们测了 138 个真实项目的 AGENTS.md：LLM 自动生成的配置文件，让任务成功率<strong>下降</strong>约 3%，推理成本<strong>上升</strong>超过 20%。只有人工精心编写的文件才有正向收益。</p>
+
+<p>原因和我们踩的坑一模一样：自动生成的文件塞满冗余规则、目录结构罗列、各种想象出来的 if-else 条件，每次会话全量注入，挤占的是模型真正干活的注意力。</p>
+
+<p>Augment Code 那边有个更狠的数据：同一份 AGENTS.md，在常规 bug 修复上 +25% 质量，在同一模块的复杂功能开发上 -30% 完整性。正负三十个点的波动。所以这东西不是「锦上添花的文档」，是一个方差极大的杠杆——用对了等于免费升级模型，用反了等于花钱买降级。</p>
+
+<h2 id="重写过程">重写过程</h2>
+
+<p>我重写的过程大概花了两个下午，几个决策记录一下。</p>
+
+<p><strong>第一刀：从 430 行砍到 120 行。</strong> 砍掉的内容包括：完整目录树（模型自己会 ls）、技术栈介绍（package.json/go.mod 里都有）、二十多条「注意」「务必」「不要」（大部分是自动生成时的废话）。留下来的标准只有一个：这条信息模型自己找不到、或者找起来很贵。</p>
+
+<p>为什么是 120 行？当时是凭手感，后来看到 Augment 的数据说这一代模型对入口文件的注意力甜区在 100-150 行，算是撞对了。</p>
+
+<p><strong>第二刀：把「描述」改成「决策」。</strong> 原来的文件里写「本项目 API 层遵循 RESTful 风格」——这种话对 Agent 毫无用处，它需要的是二选一时的答案。改成表格：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>新增接口        -&gt; api/v2/ 下新建，禁止动 v1
+改已有接口      -&gt; 必须加兼容层，见 docs/compat.md
+需要新增依赖    -&gt; 停下来问人，不要自己 go get
+数据库变更      -&gt; 只写 migration 文件，禁止直连执行
+</code></pre></div></div>
+
+<p>这个格式是我们试出来最有效的。散文式的规范模型会「理解」但不一定「执行」，决策表几乎百分之百执行。</p>
+
+<p><strong>第三刀：每条「不要」配一条「要」。</strong> 原文件里有十几条孤立的禁令。我观察到的现象是：禁令太多的时候，Agent 会进入一种畏首畏尾的探索模式——它知道到处是雷，但不知道路在哪，于是疯狂读文件确认。后来给每条禁令都补了出路（「不要 X，改用 Y」），过度探索的现象基本消失。</p>
+
+<p><strong>第四刀：写现状，不写愿景。</strong> 这是最反直觉的一条。我们的代码库里有些不光彩的妥协——比如有个模块的 service 层直接 import 了 ORM，按理说不应该。旧文件写的是理想架构（「领域层不依赖框架」），结果 Agent 每次碰到那个模块都很困惑：遵守文档就改不动代码，遵守代码就违反文档，最后在两者之间反复横跳。新文件我直接写：「<code class="language-plaintext highlighter-rouge">billing/</code> 模块历史原因分层不干净，改这里时跟随现有风格，不要试图修复架构。」不体面，但有效。</p>
+
+<h2 id="一个容易忽略的事实位置决定命运">一个容易忽略的事实：位置决定命运</h2>
+
+<p>为什么这些内容要写在 AGENTS.md 而不是 docs/ 里？因为发现率完全不是一个量级。Augment 追踪了数百个 session：AGENTS.md 的发现率接近 100%（每次会话强制注入），README 大于 80%，而 <code class="language-plaintext highlighter-rouge">docs/</code> 目录下的孤立文档，Agent 主动去读的概率不到 10%。</p>
+
+<p>我们仓库的 <code class="language-plaintext highlighter-rouge">docs/</code> 下躺着三万多字的架构文档，写得挺好，Agent 基本当它不存在。现在的做法是在 CLAUDE.md 里放指针：「数据库迁移规范见 docs/migration.md」——一行换五十行，需要时它自己会去读。这套「入口精简 + 指针下钻」的分层，配合子目录各自的 CLAUDE.md，实测每轮上下文消耗比堆一个大文件省了差不多三成，而且首轮生成质量明显更高。</p>
+
+<h2 id="重写之后">重写之后</h2>
+
+<p>没有做严格的 AB 测试（生产环境也没法做），但有几个可感知的变化：动手前的无效探索基本消失了；「改错地方」类的返工从每周两三次降到偶发；新同事问「这个项目的规矩是什么」，我直接把 CLAUDE.md 发给他，三分钟能读完——这是个意外收获，<strong>给 Agent 写的地图，恰好也是给人类新人的最好入职文档</strong>。反过来也成立：如果一份入口文件人类读三分钟抓不到重点，Agent 也一样。</p>
+
+<p>维护上我们定了一条纪律：这份文件有行数预算，想加一条规则，先看看能不能删一条旧的。听起来苛刻，实际执行下来发现大部分「想加的规则」都是针对某次偶发 bad case 的应激反应，冷静两天就会发现不值得占预算。</p>
+
+<p>另一个维护技巧是把 CLAUDE.md 的变更纳入 code review——它本来就在仓库里，PR 里改它和改代码走同一套流程。评审的问题也固定：这条规则模型自己发现不了吗？它可机械验证吗？能不能改成 lint 或 hook？三问过关才允许合入。自从走了这个流程，文件的膨胀速度基本被摁住了。</p>
+
+<p>最后说一句务虚的。「好的 AGENTS.md 等于免费换模型」这个说法我原来觉得夸张，重写完之后觉得方向没错但重点偏了——它真正的价值不是「换模型」，而是<strong>这是少数几个完全在你控制之内的杠杆</strong>。模型能力、API 价格、上下文窗口都是厂商说了算，唯独这份文件，今天下午就能重写。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html">发现你的未知：Agentic Coding 的地图与疆域</a> <small>(2026-07-14)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html">AI 生成测试用例的四阶进化：从 Prompt 工程到自进化</a> <small>(2026-07-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html">锯齿智能与多模型调度</a> <small>(2026-07-11)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html">代码是负债，规格才是资产</a> <small>(2026-07-09)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html">RPI 工作流：像资深工程师一样使唤 Agent</a> <small>(2026-07-07)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/%E6%80%9D%E8%80%83/2026/05/31/AI%E6%97%B6%E4%BB%A3%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%B7%A5%E4%BD%9C-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%98%AF%E6%9C%80%E5%90%8E%E7%9A%84%E7%A8%80%E7%BC%BA%E8%B5%84%E6%BA%90.html" rel="prev">← 上一篇：AI 时代的深度工作：注意力是最后的稀缺资源</a>
+        
+        
+        <a class="next" href="/ai/%E6%8A%80%E6%9C%AF/2026/06/04/%E6%8C%87%E4%BB%A4%E9%A2%84%E7%AE%97-%E6%A8%A1%E5%9E%8B%E5%8F%AA%E8%83%BD%E6%9C%89%E6%95%88%E9%81%B5%E5%BE%AA%E5%87%A0%E7%99%BE%E6%9D%A1%E6%8C%87%E4%BB%A4.html" rel="next">下一篇：指令预算：模型只能有效遵循几百条指令 →</a>
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=AGENTS.md%20%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99%EF%BC%9A%E5%A5%BD%E7%9A%84%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%E7%AD%89%E4%BA%8E%E5%85%8D%E8%B4%B9%E6%8D%A2%E6%A8%A1%E5%9E%8B&url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/02/AGENTS-md%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99-%E5%A5%BD%E7%9A%84%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%E7%AD%89%E4%BA%8E%E5%85%8D%E8%B4%B9%E6%8D%A2%E6%A8%A1%E5%9E%8B.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/02/AGENTS-md%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99-%E5%A5%BD%E7%9A%84%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%E7%AD%89%E4%BA%8E%E5%85%8D%E8%B4%B9%E6%8D%A2%E6%A8%A1%E5%9E%8B.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/02/AGENTS-md%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99-%E5%A5%BD%E7%9A%84%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%E7%AD%89%E4%BA%8E%E5%85%8D%E8%B4%B9%E6%8D%A2%E6%A8%A1%E5%9E%8B.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>
