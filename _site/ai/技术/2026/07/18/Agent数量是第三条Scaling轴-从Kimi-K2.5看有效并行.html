@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Agent 数量是第三条 Scaling 轴：从 Kimi K2.5 看有效并行 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Agent 数量是第三条 Scaling 轴：从 Kimi K2.5 看有效并行" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="多 Agent 的价值不在于创建了多少 Agent，而在于系统能否同时避免串行坍缩、虚假并行和汇总失败。Kimi K2.5 的 PARL 给出了一套很有工程价值的答案。" />
+<meta property="og:description" content="多 Agent 的价值不在于创建了多少 Agent，而在于系统能否同时避免串行坍缩、虚假并行和汇总失败。Kimi K2.5 的 PARL 给出了一套很有工程价值的答案。" />
+<link rel="canonical" href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C.html" />
+<meta property="og:url" content="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-07-18T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Agent 数量是第三条 Scaling 轴：从 Kimi K2.5 看有效并行" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-07-18T09:52:19+08:00","datePublished":"2026-07-18T00:00:00+08:00","description":"多 Agent 的价值不在于创建了多少 Agent，而在于系统能否同时避免串行坍缩、虚假并行和汇总失败。Kimi K2.5 的 PARL 给出了一套很有工程价值的答案。","headline":"Agent 数量是第三条 Scaling 轴：从 Kimi K2.5 看有效并行","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-07-18T09:52:19+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>Agent 数量是第三条 Scaling 轴：从 Kimi K2.5 看有效并行</h1>
+    <p class="post-meta">
+      <time datetime="2026-07-18T00:00:00+08:00">2026-07-18</time>
+       · 最后更新于 <time datetime="2026-07-18T09:52:19+08:00">2026-07-18</time>
+       · AI / 技术
+       · AI, Agent, 多Agent, Agent Swarm, PARL, Kimi K2.5, 强化学习, 架构设计
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">AI</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">Agent 数量是第三条 Scaling 轴：从 Kimi K2.5 看有效并行</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>最近看了 Kimi 团队杨植麟在 GTC 2026 的演讲《How We Scaled Kimi K2.5》。整场 39 分钟，给我冲击最大的不是万亿参数，也不是百万上下文，而是一个很朴素的判断：<strong>Agent 数量正在成为模型能力的第三条 Scaling 轴。</strong></p>
+
+<p>过去谈 Scaling，大家习惯想到更多参数、更多数据、更多算力。但 Agent 真正进入生产以后，单纯把模型变大已经不够了。一个复杂任务能否完成，还取决于三个问题：模型学得够不够高效、单个 Agent 能跑多远、系统能不能让多个 Agent 同时向一个目标推进。</p>
+
+<p>这三件事分别对应 Kimi 分享的三条路径：MuonClip、Kimi Linear、Agent Swarm。</p>
+
+<p><img loading="lazy" src="/assets/images/2026/kimi-k2.5-three-scaling-axes.svg" alt="Kimi K2.5 的三条 Scaling 轴" /></p>
+
+<h2 id="第一条轴让每个-token-更值钱">第一条轴：让每个 Token 更值钱</h2>
+
+<p>第一条轴是 <strong>Token efficiency</strong>。</p>
+
+<p>高质量训练数据不是无限的。当可用数据逐渐接近上限时，训练效率不再只是成本问题，而是能力上限问题。假设手里只有 50 万亿个高质量 Token，如果新的优化方法能做到两倍 Token 效率，效果就近似于凭空多出一份同等质量的数据。</p>
+
+<p>Kimi 在这里采用的是 MuonClip。Muon 提高矩阵参数更新的效率，但扩展到万亿参数时遇到了 attention logit 爆炸和训练发散。QK-Clip 的作用，是监测各 attention head 的异常 logit，并缩放 Q/K 投影，把不稳定性限制住。最终的 MuonClip 同时追求两件事：学得快，也不能炸。</p>
+
+<p>这条轴映射到 Agent 系统里，代表的是<strong>更强的先验</strong>。模型本身越强，同样的工具调用和搜索预算下，找到正确方案的概率越高。Harness 可以放大模型，但不能凭空替代底座能力。</p>
+
+<h2 id="第二条轴让一个-agent-跑得更远">第二条轴：让一个 Agent 跑得更远</h2>
+
+<p>第二条轴是 <strong>Context length</strong>。</p>
+
+<p>长上下文经常被理解成“能塞更多文档”，但对 Agent 来说，更重要的是<strong>能维持更长的有效工作轨迹</strong>。一个 Agent 要持续工作数小时甚至数天，需要记得早期约束、已完成动作和失败尝试，还要避免在第几十轮工具调用后开始重复劳动。</p>
+
+<p>Kimi Linear 的出发点正是这个问题。它的核心 Kimi Delta Attention，不再用一个全局衰减因子决定记忆保留，而是允许不同通道以不同速度遗忘：一部分通道保存长期信息，另一部分持续刷新短期状态。再把线性注意力与全注意力混合，换取长序列下更好的效率。</p>
+
+<p>这条轴映射到 Agent 系统里，代表的是<strong>时间深度</strong>。上下文窗口只是容量，真正有用的是上下文管理：哪些事实必须长期保留，哪些中间输出应该压缩，哪些失败轨迹可以丢弃。否则百万窗口也可能只是一个百万 Token 的垃圾场。</p>
+
+<h2 id="第三条轴让多个-agent-同时推进">第三条轴：让多个 Agent 同时推进</h2>
+
+<p>第三条轴才是这次演讲最有意思的部分：<strong>Number of agents</strong>。</p>
+
+<p>单 Agent 再强，本质上仍是一条串行执行链。面对可拆分任务，它只能依次搜索、阅读、验证、生成。Agent Swarm 则引入一个 Orchestrator，动态创建不同专长的子 Agent：有人搜索资料，有人分析数据，有人核查事实，有人负责最终交付。任务复杂度开始从“一个 Agent 能跑多久”，扩展为“一个组织能同时推进多少条有效分支”。</p>
+
+<p>我在上一篇<a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">《多 Agent 系统的协作模式》</a>里讲过 Orchestrator-Worker、Pipeline、Debate 和 Swarm。但那篇解决的是“怎么组织”，Kimi 这次回答的是另一个问题：<strong>怎么让模型主动学会并行，而且不是为了并行而并行？</strong></p>
+
+<p>答案是 PARL，Parallel-Agent Reinforcement Learning。</p>
+
+<h2 id="三个奖励卡住三种失败">三个奖励，卡住三种失败</h2>
+
+<p>PARL 的奖励函数可以简化成：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>R_PARL = λ1 × R_parallel + λ2 × R_finish + R_outcome
+</code></pre></div></div>
+
+<p>看起来简单，但三个奖励分别卡住了多 Agent 最典型的三种失败。</p>
+
+<p><strong>第一项是实例化奖励 <code class="language-plaintext highlighter-rouge">R_parallel</code>。</strong> 它鼓励 Orchestrator 创建子 Agent，防止模型明明拥有并发能力，却仍然退回单 Agent 串行执行。Kimi 把这种现象称为 serial collapse，串行坍缩。</p>
+
+<p><strong>第二项是完成奖励 <code class="language-plaintext highlighter-rouge">R_finish</code>。</strong> 只奖励创建数量，模型很快会钻空子：生成一堆子任务，任务过大、相互重复，甚至创建后从不回收。表面上 Agent 很多，实际吞吐没有增加。完成奖励要求创建出来的任务真正闭环，用来抑制 spurious parallelism，虚假并行。</p>
+
+<p><strong>第三项是结果奖励 <code class="language-plaintext highlighter-rouge">R_outcome</code>。</strong> 子任务全部完成，不代表用户目标完成。十份局部正确的报告可能互相矛盾，也可能根本没有被最终答案采用。结果奖励把优化目标重新拉回整个任务。</p>
+
+<p>训练早期，前两项权重较高，先让模型学会创建并完成子任务；随着训练推进，权重逐渐衰减，让最终结果成为主导。这个设计很像教一个新经理：先要求他必须学会分工，再要求每项分工有交付，最后才真正按团队结果考核。</p>
+
+<p>官方技术报告披露，K2.5 Agent Swarm 在 BrowseComp 上从单 Agent 的 60.6 提升到 78.4，在内部 Swarm Bench 上从 41.6 提升到 58.3；WideSearch 不仅从 72.7 提升到 79.0，在不同目标准确率下还获得约 3 到 4.5 倍的执行加速。这个结果至少说明一件事：对于检索、批量下载、百份文档阅读、长篇生成这类可大规模拆分的任务，并行宽度确实可以转化为能力和速度。</p>
+
+<p>但要注意，这些是模型方报告，不等于所有业务上多 Agent 都会更快。任务依赖越强、共享状态越多、汇总越困难，并行收益越容易被协调成本吃掉。</p>
+
+<h2 id="不训练模型也可以先复刻这套思想">不训练模型，也可以先复刻这套思想</h2>
+
+<p>大多数团队不会自己训练 Orchestrator，但 PARL 的思路完全可以翻译成平台指标。</p>
+
+<p>我会把运行时最小观测集设计成下面这样：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spawn_count               创建了多少子 Agent
+effective_parallelism     实际同时运行且产生有效输出的数量
+subtask_finish_rate       子任务完成率
+merge_contribution_rate   子任务结果被最终产物采用的比例
+outcome_success           最终任务是否通过验收
+token_cost                总 Token 成本
+wall_clock_latency        墙钟时间
+redundancy_rate           重复检索、重复推理的比例
+retry_rate                子任务重试率
+</code></pre></div></div>
+
+<p>其中我最看重 <code class="language-plaintext highlighter-rouge">merge_contribution_rate</code>。很多多 Agent Demo 会展示“我启动了 20 个 Agent”，却不告诉你最终答案究竟用了其中几份结果。如果 20 个 Agent 里只有两个产出被采用，其余都是噪声，那不是 Swarm，是昂贵的进度条动画。</p>
+
+<p>每个子任务还必须进入同一棵可追踪执行树：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">task_id</span><span class="pi">:</span> <span class="s">research-17</span>
+<span class="na">parent_id</span><span class="pi">:</span> <span class="s">report-01</span>
+<span class="na">goal</span><span class="pi">:</span> <span class="s">验证某项技术数据是否有官方来源</span>
+<span class="na">context_ref</span><span class="pi">:</span> <span class="s">snapshot-42</span>
+<span class="na">status</span><span class="pi">:</span> <span class="s">completed</span>
+<span class="na">latency_ms</span><span class="pi">:</span> <span class="m">18320</span>
+<span class="na">token_cost</span><span class="pi">:</span> <span class="m">12640</span>
+<span class="na">evidence</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">source_url</span><span class="pi">,</span> <span class="nv">excerpt</span><span class="pi">]</span>
+<span class="na">merged_into</span><span class="pi">:</span> <span class="s">final-report-01</span>
+</code></pre></div></div>
+
+<p>没有这棵树，系统出了问题时只能看到最终答案不好，却不知道是没拆任务、任务没完成，还是结果死在汇总阶段。多 Agent 系统和分布式系统一样：如果不可观测，就不可优化。</p>
+
+<h2 id="四个反模式">四个反模式</h2>
+
+<p><strong>把 Agent 数量当 KPI。</strong> 数量只代表成本，不能代表并行价值。真正该看的，是有效并行度和结果采用率。</p>
+
+<p><strong>把所有复杂任务都拆开。</strong> 复杂不等于可并行。核心方案权衡、强依赖代码修改、需要持续回溯决策链的任务，留在一个 Agent 里往往更稳。</p>
+
+<p><strong>只检查 Worker，不检查 Reducer。</strong> Worker 每份结论都可能正确，但汇总者会漏掉冲突、重复采信同一证据，或把不同口径的数据拼在一起。Merge failure 是多 Agent 独有的一等故障。</p>
+
+<p><strong>一开始就训练调度模型。</strong> 没有稳定任务定义、执行轨迹和结果评测时，训练只是在放大模糊。先用规则跑出基线，积累失败案例，再判断是否值得学习调度策略。</p>
+
+<h2 id="我会怎么分三步落地">我会怎么分三步落地</h2>
+
+<p>第一阶段，<strong>规则驱动</strong>。只开放一层 Orchestrator-Worker，限制并发和嵌套深度；明确哪些任务类型允许 fan-out；把执行树、成本和结果采用率记录完整。</p>
+
+<p>第二阶段，<strong>评测驱动</strong>。同一批任务持续比较单 Agent 与多 Agent：成功率提升多少、延迟下降多少、Token 增加多少。只有质量或速度收益能覆盖协调成本的任务，才进入 Swarm 白名单。</p>
+
+<p>第三阶段，<strong>策略学习</strong>。轨迹足够多以后，再从数据中学习什么时候拆、拆成多大粒度、选择什么角色。到这一步，PARL 才从一篇论文里的奖励函数，变成有真实业务反馈的 Orchestrator 训练方案。</p>
+
+<p>这个顺序很重要。Agent Swarm 首先是 Harness 和可观测性问题，然后才是强化学习问题。</p>
+
+<h2 id="结语">结语</h2>
+
+<p>Kimi 这场演讲把模型扩展画成了一个更完整的空间：MuonClip 提高每个 Token 的价值，Kimi Linear 延长单 Agent 的有效轨迹，PARL 扩大同一时间内的有效执行宽度。更强先验、更长时间、更宽并行，三项收益最终相乘。</p>
+
+<p>但对工程团队来说，最值得记住的不是“以后要开更多 Agent”，而是这句话：</p>
+
+<blockquote>
+  <p>多 Agent 的价值，不在于创建了多少 Agent，而在于有多少独立工作真正完成、被汇总，并推动了最终目标。</p>
+</blockquote>
+
+<p>如果现在就要行动，我建议先给现有 Agent 平台加一个指标：<code class="language-plaintext highlighter-rouge">merge_contribution_rate</code>。它会非常诚实地告诉你，眼前的并行究竟是生产力，还是表演。</p>
+
+<h2 id="参考资料">参考资料</h2>
+
+<ul>
+  <li><a href="https://www.youtube.com/watch?v=CwePo4847ho">How We Scaled Kimi K2.5｜Zhilin Yang’s full GTC 2026 Keynote</a></li>
+  <li><a href="https://arxiv.org/abs/2602.02276">Kimi K2.5: Visual Agentic Intelligence</a></li>
+  <li><a href="https://arxiv.org/abs/2507.20534">Kimi K2: Open Agentic Intelligence</a></li>
+  <li><a href="https://github.com/MoonshotAI/Kimi-Linear">Kimi Linear 官方仓库</a></li>
+  <li><a href="https://github.com/MoonshotAI/Attention-Residuals">Attention Residuals 官方仓库</a></li>
+</ul>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html">发现你的未知：Agentic Coding 的地图与疆域</a> <small>(2026-07-14)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html">AI 生成测试用例的四阶进化：从 Prompt 工程到自进化</a> <small>(2026-07-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html">锯齿智能与多模型调度</a> <small>(2026-07-11)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html">代码是负债，规格才是资产</a> <small>(2026-07-09)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html">RPI 工作流：像资深工程师一样使唤 Agent</a> <small>(2026-07-07)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html" rel="prev">← 上一篇：发现你的未知：Agentic Coding 的地图与疆域</a>
+        
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=Agent%20%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1%20Scaling%20%E8%BD%B4%EF%BC%9A%E4%BB%8E%20Kimi%20K2.5%20%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C&url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>

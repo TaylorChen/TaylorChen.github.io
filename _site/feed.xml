@@ -1,4 +1,137 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="zh-CN" /><updated>2026-07-15T23:27:15+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">小黄鸭</title><subtitle>这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><author><name>小黄鸭</name></author><entry><title type="html">发现你的未知：Agentic Coding 的地图与疆域</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html" rel="alternate" type="text/html" title="发现你的未知：Agentic Coding 的地图与疆域" /><published>2026-07-14T00:00:00+08:00</published><updated>2026-07-15T23:21:37+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html"><![CDATA[<p>先交代实践背景：这套方法论来自 Anthropic 一位工程师（@trq212）的总结，我照着用了两周，这篇一半是转述，一半是我自己的实践笔记。先说结论——值得用，而且它改变的主要不是技巧，是心态。</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="zh-CN" /><updated>2026-07-18T10:09:23+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">小黄鸭</title><subtitle>这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</subtitle><author><name>小黄鸭</name></author><entry><title type="html">Agent 数量是第三条 Scaling 轴：从 Kimi K2.5 看有效并行</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C.html" rel="alternate" type="text/html" title="Agent 数量是第三条 Scaling 轴：从 Kimi K2.5 看有效并行" /><published>2026-07-18T00:00:00+08:00</published><updated>2026-07-18T09:52:19+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C.html"><![CDATA[<p>最近看了 Kimi 团队杨植麟在 GTC 2026 的演讲《How We Scaled Kimi K2.5》。整场 39 分钟，给我冲击最大的不是万亿参数，也不是百万上下文，而是一个很朴素的判断：<strong>Agent 数量正在成为模型能力的第三条 Scaling 轴。</strong></p>
+
+<p>过去谈 Scaling，大家习惯想到更多参数、更多数据、更多算力。但 Agent 真正进入生产以后，单纯把模型变大已经不够了。一个复杂任务能否完成，还取决于三个问题：模型学得够不够高效、单个 Agent 能跑多远、系统能不能让多个 Agent 同时向一个目标推进。</p>
+
+<p>这三件事分别对应 Kimi 分享的三条路径：MuonClip、Kimi Linear、Agent Swarm。</p>
+
+<p><img src="/assets/images/2026/kimi-k2.5-three-scaling-axes.svg" alt="Kimi K2.5 的三条 Scaling 轴" /></p>
+
+<h2 id="第一条轴让每个-token-更值钱">第一条轴：让每个 Token 更值钱</h2>
+
+<p>第一条轴是 <strong>Token efficiency</strong>。</p>
+
+<p>高质量训练数据不是无限的。当可用数据逐渐接近上限时，训练效率不再只是成本问题，而是能力上限问题。假设手里只有 50 万亿个高质量 Token，如果新的优化方法能做到两倍 Token 效率，效果就近似于凭空多出一份同等质量的数据。</p>
+
+<p>Kimi 在这里采用的是 MuonClip。Muon 提高矩阵参数更新的效率，但扩展到万亿参数时遇到了 attention logit 爆炸和训练发散。QK-Clip 的作用，是监测各 attention head 的异常 logit，并缩放 Q/K 投影，把不稳定性限制住。最终的 MuonClip 同时追求两件事：学得快，也不能炸。</p>
+
+<p>这条轴映射到 Agent 系统里，代表的是<strong>更强的先验</strong>。模型本身越强，同样的工具调用和搜索预算下，找到正确方案的概率越高。Harness 可以放大模型，但不能凭空替代底座能力。</p>
+
+<h2 id="第二条轴让一个-agent-跑得更远">第二条轴：让一个 Agent 跑得更远</h2>
+
+<p>第二条轴是 <strong>Context length</strong>。</p>
+
+<p>长上下文经常被理解成“能塞更多文档”，但对 Agent 来说，更重要的是<strong>能维持更长的有效工作轨迹</strong>。一个 Agent 要持续工作数小时甚至数天，需要记得早期约束、已完成动作和失败尝试，还要避免在第几十轮工具调用后开始重复劳动。</p>
+
+<p>Kimi Linear 的出发点正是这个问题。它的核心 Kimi Delta Attention，不再用一个全局衰减因子决定记忆保留，而是允许不同通道以不同速度遗忘：一部分通道保存长期信息，另一部分持续刷新短期状态。再把线性注意力与全注意力混合，换取长序列下更好的效率。</p>
+
+<p>这条轴映射到 Agent 系统里，代表的是<strong>时间深度</strong>。上下文窗口只是容量，真正有用的是上下文管理：哪些事实必须长期保留，哪些中间输出应该压缩，哪些失败轨迹可以丢弃。否则百万窗口也可能只是一个百万 Token 的垃圾场。</p>
+
+<h2 id="第三条轴让多个-agent-同时推进">第三条轴：让多个 Agent 同时推进</h2>
+
+<p>第三条轴才是这次演讲最有意思的部分：<strong>Number of agents</strong>。</p>
+
+<p>单 Agent 再强，本质上仍是一条串行执行链。面对可拆分任务，它只能依次搜索、阅读、验证、生成。Agent Swarm 则引入一个 Orchestrator，动态创建不同专长的子 Agent：有人搜索资料，有人分析数据，有人核查事实，有人负责最终交付。任务复杂度开始从“一个 Agent 能跑多久”，扩展为“一个组织能同时推进多少条有效分支”。</p>
+
+<p>我在上一篇<a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/06/%E5%A4%9AAgent%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F-%E4%BB%8E%E5%8D%95%E5%85%B5%E5%88%B0%E5%86%9B%E5%9B%A2.html">《多 Agent 系统的协作模式》</a>里讲过 Orchestrator-Worker、Pipeline、Debate 和 Swarm。但那篇解决的是“怎么组织”，Kimi 这次回答的是另一个问题：<strong>怎么让模型主动学会并行，而且不是为了并行而并行？</strong></p>
+
+<p>答案是 PARL，Parallel-Agent Reinforcement Learning。</p>
+
+<h2 id="三个奖励卡住三种失败">三个奖励，卡住三种失败</h2>
+
+<p>PARL 的奖励函数可以简化成：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>R_PARL = λ1 × R_parallel + λ2 × R_finish + R_outcome
+</code></pre></div></div>
+
+<p>看起来简单，但三个奖励分别卡住了多 Agent 最典型的三种失败。</p>
+
+<p><strong>第一项是实例化奖励 <code class="language-plaintext highlighter-rouge">R_parallel</code>。</strong> 它鼓励 Orchestrator 创建子 Agent，防止模型明明拥有并发能力，却仍然退回单 Agent 串行执行。Kimi 把这种现象称为 serial collapse，串行坍缩。</p>
+
+<p><strong>第二项是完成奖励 <code class="language-plaintext highlighter-rouge">R_finish</code>。</strong> 只奖励创建数量，模型很快会钻空子：生成一堆子任务，任务过大、相互重复，甚至创建后从不回收。表面上 Agent 很多，实际吞吐没有增加。完成奖励要求创建出来的任务真正闭环，用来抑制 spurious parallelism，虚假并行。</p>
+
+<p><strong>第三项是结果奖励 <code class="language-plaintext highlighter-rouge">R_outcome</code>。</strong> 子任务全部完成，不代表用户目标完成。十份局部正确的报告可能互相矛盾，也可能根本没有被最终答案采用。结果奖励把优化目标重新拉回整个任务。</p>
+
+<p>训练早期，前两项权重较高，先让模型学会创建并完成子任务；随着训练推进，权重逐渐衰减，让最终结果成为主导。这个设计很像教一个新经理：先要求他必须学会分工，再要求每项分工有交付，最后才真正按团队结果考核。</p>
+
+<p>官方技术报告披露，K2.5 Agent Swarm 在 BrowseComp 上从单 Agent 的 60.6 提升到 78.4，在内部 Swarm Bench 上从 41.6 提升到 58.3；WideSearch 不仅从 72.7 提升到 79.0，在不同目标准确率下还获得约 3 到 4.5 倍的执行加速。这个结果至少说明一件事：对于检索、批量下载、百份文档阅读、长篇生成这类可大规模拆分的任务，并行宽度确实可以转化为能力和速度。</p>
+
+<p>但要注意，这些是模型方报告，不等于所有业务上多 Agent 都会更快。任务依赖越强、共享状态越多、汇总越困难，并行收益越容易被协调成本吃掉。</p>
+
+<h2 id="不训练模型也可以先复刻这套思想">不训练模型，也可以先复刻这套思想</h2>
+
+<p>大多数团队不会自己训练 Orchestrator，但 PARL 的思路完全可以翻译成平台指标。</p>
+
+<p>我会把运行时最小观测集设计成下面这样：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spawn_count               创建了多少子 Agent
+effective_parallelism     实际同时运行且产生有效输出的数量
+subtask_finish_rate       子任务完成率
+merge_contribution_rate   子任务结果被最终产物采用的比例
+outcome_success           最终任务是否通过验收
+token_cost                总 Token 成本
+wall_clock_latency        墙钟时间
+redundancy_rate           重复检索、重复推理的比例
+retry_rate                子任务重试率
+</code></pre></div></div>
+
+<p>其中我最看重 <code class="language-plaintext highlighter-rouge">merge_contribution_rate</code>。很多多 Agent Demo 会展示“我启动了 20 个 Agent”，却不告诉你最终答案究竟用了其中几份结果。如果 20 个 Agent 里只有两个产出被采用，其余都是噪声，那不是 Swarm，是昂贵的进度条动画。</p>
+
+<p>每个子任务还必须进入同一棵可追踪执行树：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">task_id</span><span class="pi">:</span> <span class="s">research-17</span>
+<span class="na">parent_id</span><span class="pi">:</span> <span class="s">report-01</span>
+<span class="na">goal</span><span class="pi">:</span> <span class="s">验证某项技术数据是否有官方来源</span>
+<span class="na">context_ref</span><span class="pi">:</span> <span class="s">snapshot-42</span>
+<span class="na">status</span><span class="pi">:</span> <span class="s">completed</span>
+<span class="na">latency_ms</span><span class="pi">:</span> <span class="m">18320</span>
+<span class="na">token_cost</span><span class="pi">:</span> <span class="m">12640</span>
+<span class="na">evidence</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">source_url</span><span class="pi">,</span> <span class="nv">excerpt</span><span class="pi">]</span>
+<span class="na">merged_into</span><span class="pi">:</span> <span class="s">final-report-01</span>
+</code></pre></div></div>
+
+<p>没有这棵树，系统出了问题时只能看到最终答案不好，却不知道是没拆任务、任务没完成，还是结果死在汇总阶段。多 Agent 系统和分布式系统一样：如果不可观测，就不可优化。</p>
+
+<h2 id="四个反模式">四个反模式</h2>
+
+<p><strong>把 Agent 数量当 KPI。</strong> 数量只代表成本，不能代表并行价值。真正该看的，是有效并行度和结果采用率。</p>
+
+<p><strong>把所有复杂任务都拆开。</strong> 复杂不等于可并行。核心方案权衡、强依赖代码修改、需要持续回溯决策链的任务，留在一个 Agent 里往往更稳。</p>
+
+<p><strong>只检查 Worker，不检查 Reducer。</strong> Worker 每份结论都可能正确，但汇总者会漏掉冲突、重复采信同一证据，或把不同口径的数据拼在一起。Merge failure 是多 Agent 独有的一等故障。</p>
+
+<p><strong>一开始就训练调度模型。</strong> 没有稳定任务定义、执行轨迹和结果评测时，训练只是在放大模糊。先用规则跑出基线，积累失败案例，再判断是否值得学习调度策略。</p>
+
+<h2 id="我会怎么分三步落地">我会怎么分三步落地</h2>
+
+<p>第一阶段，<strong>规则驱动</strong>。只开放一层 Orchestrator-Worker，限制并发和嵌套深度；明确哪些任务类型允许 fan-out；把执行树、成本和结果采用率记录完整。</p>
+
+<p>第二阶段，<strong>评测驱动</strong>。同一批任务持续比较单 Agent 与多 Agent：成功率提升多少、延迟下降多少、Token 增加多少。只有质量或速度收益能覆盖协调成本的任务，才进入 Swarm 白名单。</p>
+
+<p>第三阶段，<strong>策略学习</strong>。轨迹足够多以后，再从数据中学习什么时候拆、拆成多大粒度、选择什么角色。到这一步，PARL 才从一篇论文里的奖励函数，变成有真实业务反馈的 Orchestrator 训练方案。</p>
+
+<p>这个顺序很重要。Agent Swarm 首先是 Harness 和可观测性问题，然后才是强化学习问题。</p>
+
+<h2 id="结语">结语</h2>
+
+<p>Kimi 这场演讲把模型扩展画成了一个更完整的空间：MuonClip 提高每个 Token 的价值，Kimi Linear 延长单 Agent 的有效轨迹，PARL 扩大同一时间内的有效执行宽度。更强先验、更长时间、更宽并行，三项收益最终相乘。</p>
+
+<p>但对工程团队来说，最值得记住的不是“以后要开更多 Agent”，而是这句话：</p>
+
+<blockquote>
+  <p>多 Agent 的价值，不在于创建了多少 Agent，而在于有多少独立工作真正完成、被汇总，并推动了最终目标。</p>
+</blockquote>
+
+<p>如果现在就要行动，我建议先给现有 Agent 平台加一个指标：<code class="language-plaintext highlighter-rouge">merge_contribution_rate</code>。它会非常诚实地告诉你，眼前的并行究竟是生产力，还是表演。</p>
+
+<h2 id="参考资料">参考资料</h2>
+
+<ul>
+  <li><a href="https://www.youtube.com/watch?v=CwePo4847ho">How We Scaled Kimi K2.5｜Zhilin Yang’s full GTC 2026 Keynote</a></li>
+  <li><a href="https://arxiv.org/abs/2602.02276">Kimi K2.5: Visual Agentic Intelligence</a></li>
+  <li><a href="https://arxiv.org/abs/2507.20534">Kimi K2: Open Agentic Intelligence</a></li>
+  <li><a href="https://github.com/MoonshotAI/Kimi-Linear">Kimi Linear 官方仓库</a></li>
+  <li><a href="https://github.com/MoonshotAI/Attention-Residuals">Attention Residuals 官方仓库</a></li>
+</ul>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="多Agent" /><category term="Agent Swarm" /><category term="PARL" /><category term="Kimi K2.5" /><category term="强化学习" /><category term="架构设计" /><summary type="html"><![CDATA[多 Agent 的价值不在于创建了多少 Agent，而在于系统能否同时避免串行坍缩、虚假并行和汇总失败。Kimi K2.5 的 PARL 给出了一套很有工程价值的答案。]]></summary></entry><entry><title type="html">发现你的未知：Agentic Coding 的地图与疆域</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html" rel="alternate" type="text/html" title="发现你的未知：Agentic Coding 的地图与疆域" /><published>2026-07-14T00:00:00+08:00</published><updated>2026-07-15T23:30:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html"><![CDATA[<p>先交代实践背景：这套方法论来自 Anthropic 一位工程师（@trq212）的总结，我照着用了两周，这篇一半是转述，一半是我自己的实践笔记。先说结论——值得用，而且它改变的主要不是技巧，是心态。</p>
 
 <h2 id="地图与疆域">地图与疆域</h2>
 
@@ -75,7 +208,7 @@
 
 <p>再往大了说，把这个系列的文章串起来看有条线：控盘规则管「边界内的自主」，RPI 管「阶段的顺序」，而 unknowns 方法管的是最上游——<strong>边界本身画得对不对</strong>。地图错了，下游纪律执行得越好，错得越远。</p>
 
-<p>模型每强一代，「它做不到」这个借口就少一分，剩下的差距全是「我没说清」。这话对工程师不算坏消息——把自己的不懂讲清楚，本来就是我们这行最古老的核心技能，从写需求文档的年代就是。工具换了，功夫没换。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="AI Coding" /><category term="方法论" /><category term="工程实践" /><summary type="html"><![CDATA[照着 Anthropic 工程师的 unknowns 方法论实践了两周，最大的变化是心态：以前 Agent 产出不对，我怪它没理解；现在我先问自己的地图哪里漏了。附两周里最好用的几招和一次被 quiz 抓住的真实漏网。]]></summary></entry><entry><title type="html">AI 生成测试用例的四阶进化：从 Prompt 工程到自进化</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html" rel="alternate" type="text/html" title="AI 生成测试用例的四阶进化：从 Prompt 工程到自进化" /><published>2026-07-13T00:00:00+08:00</published><updated>2026-07-15T23:25:37+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html"><![CDATA[<p>我们内部有个 AI 生成测试用例的小工具，是去年 QA 同学用 prompt 攒出来的。演示很惊艳，实际用起来大家的评价出奇一致：「生成的用例没错，但太泛，不如自己写。」它就这么不温不火地挂着，用的人越来越少。</p>
+<p>模型每强一代，「它做不到」这个借口就少一分，剩下的差距全是「我没说清」。这话对工程师不算坏消息——把自己的不懂讲清楚，本来就是我们这行最古老的核心技能，从写需求文档的年代就是。工具换了，功夫没换。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="AI Coding" /><category term="方法论" /><category term="工程实践" /><summary type="html"><![CDATA[照着 Anthropic 工程师的 unknowns 方法论实践了两周，最大的变化是心态：以前 Agent 产出不对，我怪它没理解；现在我先问自己的地图哪里漏了。附两周里最好用的几招和一次被 quiz 抓住的真实漏网。]]></summary></entry><entry><title type="html">AI 生成测试用例的四阶进化：从 Prompt 工程到自进化</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html" rel="alternate" type="text/html" title="AI 生成测试用例的四阶进化：从 Prompt 工程到自进化" /><published>2026-07-13T00:00:00+08:00</published><updated>2026-07-15T23:30:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html"><![CDATA[<p>我们内部有个 AI 生成测试用例的小工具，是去年 QA 同学用 prompt 攒出来的。演示很惊艳，实际用起来大家的评价出奇一致：「生成的用例没错，但太泛，不如自己写。」它就这么不温不火地挂着，用的人越来越少。</p>
 
 <p>最近研究了快手 KATE 的公开分享（AiDD 大会，他们研发 Agent 负责人讲的），一个「AI 生成测试用例」系统从 8% 生成率做到 70% 的完整历程。对照之下我瞬间明白我们的工具卡在哪了——而且更有价值的是，这条演进路径明显不只适用于测试用例，任何「生成型 Agent 产品」都会按同样的顺序撞墙。这篇把地图画出来。</p>
 
@@ -129,7 +262,7 @@ demo 惊艳、实际生成率个位数    V1      别雕 prompt 了，拆流程
 质量上来了但知识靠人肉维护     V3      BadCase 闭环，让系统消化自己的错误
 </code></pre></div></div>
 
-<p>多数团队的 AI 产品死在把 V3 的病当 V1 治。包括三个月前的我们。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="测试" /><category term="知识工程" /><category term="工程实践" /><summary type="html"><![CDATA[我们自己的用例生成工具卡在「正确但没用」很久了，直到对照快手 KATE 的四阶演进（8% 生成率做到 70%）才看明白卡在哪。生成型 Agent 产品的瓶颈迁移路径其实高度可预测，这篇把地图画出来。]]></summary></entry><entry><title type="html">锯齿智能与多模型调度</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html" rel="alternate" type="text/html" title="锯齿智能与多模型调度" /><published>2026-07-11T00:00:00+08:00</published><updated>2026-07-15T23:23:42+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html"><![CDATA[<p>年初我们做过一轮内部模型选型评测，结论挺打脸的：团队主观投票「聊起来最聪明」的那个模型，在我们真实 Agent 负载（长工具链调用、改代码、查数据）的评测上排倒数。反过来，一个大家聊天时嫌它「木讷」的模型，跑长程任务稳得像老黄牛。</p>
+<p>多数团队的 AI 产品死在把 V3 的病当 V1 治。包括三个月前的我们。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="测试" /><category term="知识工程" /><category term="工程实践" /><summary type="html"><![CDATA[我们自己的用例生成工具卡在「正确但没用」很久了，直到对照快手 KATE 的四阶演进（8% 生成率做到 70%）才看明白卡在哪。生成型 Agent 产品的瓶颈迁移路径其实高度可预测，这篇把地图画出来。]]></summary></entry><entry><title type="html">锯齿智能与多模型调度</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html" rel="alternate" type="text/html" title="锯齿智能与多模型调度" /><published>2026-07-11T00:00:00+08:00</published><updated>2026-07-15T23:30:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html"><![CDATA[<p>年初我们做过一轮内部模型选型评测，结论挺打脸的：团队主观投票「聊起来最聪明」的那个模型，在我们真实 Agent 负载（长工具链调用、改代码、查数据）的评测上排倒数。反过来，一个大家聊天时嫌它「木讷」的模型，跑长程任务稳得像老黄牛。</p>
 
 <p>当时我们把这个结果归为评测集没做好。后来读到 Karpathy 的一个说法，才意识到这不是评测误差，是这一代模型的<strong>结构性质</strong>——他管它叫 jagged intelligence，锯齿智能：模型能力不是平滑分布的，是有高峰有断崖的锯齿。</p>
 
@@ -183,7 +316,7 @@ demo 惊艳、实际生成率个位数    V1      别雕 prompt 了，拆流程
 
 <p>模型在可验证任务上一骑绝尘，那么「定义什么是可验证的」「在模糊地带做判断」「识别模型此刻正站在哪个断崖边」——这些谷底位置就是人的新岗位。我在团队里的直观感受印证这一点：AI 用得越深，越依赖那几个「知道模型什么时候不可信」的人。他们不一定是代码写得最快的，但他们的判断在定价上涨。</p>
 
-<p>所以「哪个模型最强」真的是个没营养的问题。有营养的问题有两个：这个任务的画像匹配哪座峰？以及——我自己站在哪个谷里，站得够不够深。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="多模型" /><category term="模型调度" /><category term="架构" /><category term="Jagged Intelligence" /><summary type="html"><![CDATA[我们的模型选型评测得出过一个尴尬结论：聊天体验最好的那个模型，在真实 Agent 负载上垫底。锯齿智能这个概念解释了为什么，也解释了为什么「哪个模型最强」是个没有营养的问题。]]></summary></entry><entry><title type="html">代码是负债，规格才是资产</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html" rel="alternate" type="text/html" title="代码是负债，规格才是资产" /><published>2026-07-09T00:00:00+08:00</published><updated>2026-07-15T23:21:19+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html"><![CDATA[<p>去年重写一个跑了八年的老系统时，我们遇到一段谁也不敢动的代码：一个订单状态机里,某个分支对特定渠道的订单多做了一次看似多余的状态回写。没有注释，没有文档，git blame 指向一个六年前离职的同事,提交信息是「fix」。</p>
+<p>所以「哪个模型最强」真的是个没营养的问题。有营养的问题有两个：这个任务的画像匹配哪座峰？以及——我自己站在哪个谷里，站得够不够深。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="多模型" /><category term="模型调度" /><category term="架构" /><category term="Jagged Intelligence" /><summary type="html"><![CDATA[我们的模型选型评测得出过一个尴尬结论：聊天体验最好的那个模型，在真实 Agent 负载上垫底。锯齿智能这个概念解释了为什么，也解释了为什么「哪个模型最强」是个没有营养的问题。]]></summary></entry><entry><title type="html">代码是负债，规格才是资产</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html" rel="alternate" type="text/html" title="代码是负债，规格才是资产" /><published>2026-07-09T00:00:00+08:00</published><updated>2026-07-15T23:30:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/09/%E4%BB%A3%E7%A0%81%E6%98%AF%E8%B4%9F%E5%80%BA-%E8%A7%84%E6%A0%BC%E6%89%8D%E6%98%AF%E8%B5%84%E4%BA%A7.html"><![CDATA[<p>去年重写一个跑了八年的老系统时，我们遇到一段谁也不敢动的代码：一个订单状态机里,某个分支对特定渠道的订单多做了一次看似多余的状态回写。没有注释，没有文档，git blame 指向一个六年前离职的同事,提交信息是「fix」。</p>
 
 <p>删掉它？没人敢。留着它？重写后的新系统要不要复刻这个行为？我们最后花了两天，从客服的历史工单里考古出了答案：那是给某个老渠道的对账系统留的兼容行为，那个渠道——三年前就下线了。两天考古，换来「可以安全删除」五个字。</p>
 
@@ -249,7 +382,7 @@ demo 惊艳、实际生成率个位数    V1      别雕 prompt 了，拆流程
 
 <p><strong>如果明天代码全部消失，只留下文档、规格、测试和决策记录，你们多久能重建系统？</strong></p>
 
-<p>如果答案是「重建不了，好多逻辑只活在代码里」——那些逻辑就是你最大的隐性负债。好消息是上一节已经演示过的：还债的工具也到位了，三人日能还掉一个核心模块的主要本金。用 AI 还 AI 时代之前欠的债，算是这个时代给老系统维护者的一点温柔。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="AI Coding" /><category term="Spec" /><category term="软件工程" /><category term="工程实践" /><summary type="html"><![CDATA[重写一个八年老系统时我们发现：最值钱的业务逻辑只存在于代码里，而且没人说得清为什么。AI 把写代码的成本打到趋近于零之后，真正稀缺的东西显形了。聊聊「代码是负债」这个暴论，和它推出来的工程结论。]]></summary></entry><entry><title type="html">RPI 工作流：像资深工程师一样使唤 Agent</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html" rel="alternate" type="text/html" title="RPI 工作流：像资深工程师一样使唤 Agent" /><published>2026-07-07T00:00:00+08:00</published><updated>2026-07-15T23:26:25+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html"><![CDATA[<p>上周带一个新同事上手 AI Coding，看他操作了十分钟我就知道问题在哪了：一个窗口从头聊到尾。调研、讨论、写码、调试、返工，全在一个会话里滚，四十多轮之后窗口里是一锅粥，模型的输出质量随粥的浓度稳定下降，他的解决方式是骂骂咧咧地继续追加澄清——粥更稠了。</p>
+<p>如果答案是「重建不了，好多逻辑只活在代码里」——那些逻辑就是你最大的隐性负债。好消息是上一节已经演示过的：还债的工具也到位了，三人日能还掉一个核心模块的主要本金。用 AI 还 AI 时代之前欠的债，算是这个时代给老系统维护者的一点温柔。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="AI Coding" /><category term="Spec" /><category term="软件工程" /><category term="工程实践" /><summary type="html"><![CDATA[重写一个八年老系统时我们发现：最值钱的业务逻辑只存在于代码里，而且没人说得清为什么。AI 把写代码的成本打到趋近于零之后，真正稀缺的东西显形了。聊聊「代码是负债」这个暴论，和它推出来的工程结论。]]></summary></entry><entry><title type="html">RPI 工作流：像资深工程师一样使唤 Agent</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html" rel="alternate" type="text/html" title="RPI 工作流：像资深工程师一样使唤 Agent" /><published>2026-07-07T00:00:00+08:00</published><updated>2026-07-15T23:30:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/07/RPI%E5%B7%A5%E4%BD%9C%E6%B5%81-%E5%83%8F%E8%B5%84%E6%B7%B1%E5%B7%A5%E7%A8%8B%E5%B8%88%E4%B8%80%E6%A0%B7%E4%BD%BF%E5%94%A4Agent.html"><![CDATA[<p>上周带一个新同事上手 AI Coding，看他操作了十分钟我就知道问题在哪了：一个窗口从头聊到尾。调研、讨论、写码、调试、返工，全在一个会话里滚，四十多轮之后窗口里是一锅粥，模型的输出质量随粥的浓度稳定下降，他的解决方式是骂骂咧咧地继续追加澄清——粥更稠了。</p>
 
 <p>我没给他讲上下文工程的大道理，只给了他一个足够简单的起手式：RPI——Research、Plan、Implement，三步，三个独立会话，每步一条铁律。一周后他自己跑来说返工少了一半。这个方法出自 HumanLayer，简单到一张便签能写下，但每条铁律背后都有讲究，值得写一篇。</p>
 
@@ -317,7 +450,7 @@ demo 惊艳、实际生成率个位数    V1      别雕 prompt 了，拆流程
 
 <p>另外提醒一句：R 阶段的调研纪要别追求完备。它的角色是「够 P 用」，不是代码库百科——我见过有人让 R 阶段跑一个小时输出五千字，P 阶段根本消化不了。调研纪要超过一屏，多数时候说明问题陈述给得太模糊，该回头改问题，不是继续堆调研。</p>
 
-<p>方法论最怕听完点头、回去照旧。所以结尾就一个建议：明天挑一个中等复杂度的任务，严格走一遍 R、P、I，产物落盘。跑完拿返工次数和你平时的做法比——数据会替我说话。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="RPI" /><category term="工作流" /><category term="AI Coding" /><summary type="html"><![CDATA[把 RPI 教给一个刚上手 AI Coding 的同事之后，他的返工率一周内降了一半。三步，三条铁律，一张便签能写下的方法，专治「一个窗口从头聊到尾」。]]></summary></entry><entry><title type="html">AI Coding 控盘规则：水流理论与最小混沌单元</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83.html" rel="alternate" type="text/html" title="AI Coding 控盘规则：水流理论与最小混沌单元" /><published>2026-07-05T00:00:00+08:00</published><updated>2026-07-15T23:19:32+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83.html"><![CDATA[<p>团队里推 AI Coding 半年，被同学问得最多的一个问题：「它写代码的速度我 review 不过来，怎么办？」</p>
+<p>方法论最怕听完点头、回去照旧。所以结尾就一个建议：明天挑一个中等复杂度的任务，严格走一遍 R、P、I，产物落盘。跑完拿返工次数和你平时的做法比——数据会替我说话。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="RPI" /><category term="工作流" /><category term="AI Coding" /><summary type="html"><![CDATA[把 RPI 教给一个刚上手 AI Coding 的同事之后，他的返工率一周内降了一半。三步，三条铁律，一张便签能写下的方法，专治「一个窗口从头聊到尾」。]]></summary></entry><entry><title type="html">AI Coding 控盘规则：水流理论与最小混沌单元</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83.html" rel="alternate" type="text/html" title="AI Coding 控盘规则：水流理论与最小混沌单元" /><published>2026-07-05T00:00:00+08:00</published><updated>2026-07-15T23:30:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/05/AI-Coding%E6%8E%A7%E7%9B%98%E8%A7%84%E5%88%99-%E6%B0%B4%E6%B5%81%E7%90%86%E8%AE%BA%E4%B8%8E%E6%9C%80%E5%B0%8F%E6%B7%B7%E6%B2%8C%E5%8D%95%E5%85%83.html"><![CDATA[<p>团队里推 AI Coding 半年，被同学问得最多的一个问题：「它写代码的速度我 review 不过来，怎么办？」</p>
 
 <p>我最开始的回答很老实：「那就认真看，安全第一。」执行了一个月发现这个回答等于没回答——人均每天面对几千行 AI 生成的 diff，认真看的结果就是 AI 提效的部分全部被 review 吃回去，甚至倒贴。后来我们换了思路，摸了半年，现在的答案变成一句话：<strong>别看代码，看证据。</strong>人定方向、边界和验收标准，模型在边界内自主推进，用证据链收口。</p>
 
@@ -424,7 +557,7 @@ demo 惊艳、实际生成率个位数    V1      别雕 prompt 了，拆流程
 
 <p>最后一步最容易省略，也最值钱：把过程中澄清的事实、拍板的决策、发现的坑写回 spec 和 codemap。为什么值钱？因为 spec 和 codemap 是跨会话、跨模型版本存续的资产，而对话历史是易耗品——下次任务的「读地形」读的就是这次的归档。我们坚持回写三个月后，新任务的冷启动成本肉眼可见地降了：模型（和新同事）越来越少地问出「这里为什么这么设计」，因为答案都在地图上。</p>
 
-<p>有人听完这套说：「这不就是带实习生么。」结构上像，但有个本质区别值得记住：这个实习生产出是人类百倍速，而且<strong>它的失败是统计性的</strong>——同一个坑它以稳定概率反复踩，不会吃一堑长一智（除非你把「智」写进 spec 或机制里）。所以控盘体系不能建立在磨合和信任上，只能建立在结构上：边界、观测点、安全通道。信任留给人，结构留给模型。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="AI Coding" /><category term="Harness" /><category term="工程实践" /><category term="工作流" /><summary type="html"><![CDATA[「AI 写的代码我看不过来了」——团队里被问得最多的问题。我的答案是别看代码，看证据。这篇把我们摸了半年的控盘打法写下来：水流理论、漫溢与溃堤的分辨、最小混沌单元，和一次删掉两千行错误 diff 的教训。]]></summary></entry><entry><title type="html">Loop Engineering：从手工调 prompt 到设计实验回路</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/03/Loop-Engineering-%E4%BB%8E%E6%89%8B%E5%B7%A5%E8%B0%83prompt%E5%88%B0%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C%E5%9B%9E%E8%B7%AF.html" rel="alternate" type="text/html" title="Loop Engineering：从手工调 prompt 到设计实验回路" /><published>2026-07-03T00:00:00+08:00</published><updated>2026-07-15T23:20:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/03/Loop-Engineering-%E4%BB%8E%E6%89%8B%E5%B7%A5%E8%B0%83prompt%E5%88%B0%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C%E5%9B%9E%E8%B7%AF</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/03/Loop-Engineering-%E4%BB%8E%E6%89%8B%E5%B7%A5%E8%B0%83prompt%E5%88%B0%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C%E5%9B%9E%E8%B7%AF.html"><![CDATA[<p>六月中的一个周五下午，我做了个决定：不再手工调那个分类 Agent 的 prompt 了，改成搭一个回路，让另一个 Agent 来调它。</p>
+<p>有人听完这套说：「这不就是带实习生么。」结构上像，但有个本质区别值得记住：这个实习生产出是人类百倍速，而且<strong>它的失败是统计性的</strong>——同一个坑它以稳定概率反复踩，不会吃一堑长一智（除非你把「智」写进 spec 或机制里）。所以控盘体系不能建立在磨合和信任上，只能建立在结构上：边界、观测点、安全通道。信任留给人，结构留给模型。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="AI Coding" /><category term="Harness" /><category term="工程实践" /><category term="工作流" /><summary type="html"><![CDATA[「AI 写的代码我看不过来了」——团队里被问得最多的问题。我的答案是别看代码，看证据。这篇把我们摸了半年的控盘打法写下来：水流理论、漫溢与溃堤的分辨、最小混沌单元，和一次删掉两千行错误 diff 的教训。]]></summary></entry><entry><title type="html">Loop Engineering：从手工调 prompt 到设计实验回路</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/03/Loop-Engineering-%E4%BB%8E%E6%89%8B%E5%B7%A5%E8%B0%83prompt%E5%88%B0%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C%E5%9B%9E%E8%B7%AF.html" rel="alternate" type="text/html" title="Loop Engineering：从手工调 prompt 到设计实验回路" /><published>2026-07-03T00:00:00+08:00</published><updated>2026-07-15T23:30:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/03/Loop-Engineering-%E4%BB%8E%E6%89%8B%E5%B7%A5%E8%B0%83prompt%E5%88%B0%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C%E5%9B%9E%E8%B7%AF</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/03/Loop-Engineering-%E4%BB%8E%E6%89%8B%E5%B7%A5%E8%B0%83prompt%E5%88%B0%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C%E5%9B%9E%E8%B7%AF.html"><![CDATA[<p>六月中的一个周五下午，我做了个决定：不再手工调那个分类 Agent 的 prompt 了，改成搭一个回路，让另一个 Agent 来调它。</p>
 
 <p>背景交代一下。我们有个工单自动分类的 Agent，准确率卡在 82% 上不去。我手工调了两周——改 prompt、加示例、调整类目描述——每轮改完跑一遍评测集、看 bad case、再改，一轮下来一两个小时，大部分时间在等和搬运结果。改到后来我意识到一件事：<strong>我在这个循环里干的活，没有一步是非人不可的。</strong></p>
 
@@ -484,7 +617,7 @@ demo 惊艳、实际生成率个位数    V1      别雕 prompt 了，拆流程
 
 <p>它们的共同命运大概率是：从「工程师手工做」变成「工程师设计回路 + 定义评测 + 复核结果」。人的投入没有消失，是往上挪了一层——从拧螺丝变成设计拧螺丝的机器，以及（更重要的）决定螺丝该不该拧。</p>
 
-<p>周一那天早上我看着迭代日志的心情有点复杂：它两天干的活赶上我两周，手法还挺像我——毕竟任务说明是我写的。要说感想，大概是：<strong>我调 prompt 的手艺没什么护城河了，但「知道该优化什么、拿什么衡量」这件事，短期内还是我的。</strong>得往这个方向多攒本钱。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="Loop Engineering" /><category term="评测" /><category term="工程实践" /><summary type="html"><![CDATA[我们把一个分类 Agent 的准确率优化交给了另一个 Agent，它跑了一个周末，迭代了十几轮，交回一个比我手工调了两周更好的版本——中间也差点被它的 reward hacking 摆了一道。记录这次实践和 Loop Engineering 的几个关键机制。]]></summary></entry><entry><title type="html">目标驱动循环：从口头指令到完成合同</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/30/%E7%9B%AE%E6%A0%87%E9%A9%B1%E5%8A%A8%E5%BE%AA%E7%8E%AF-%E4%BB%8E%E5%8F%A3%E5%A4%B4%E6%8C%87%E4%BB%A4%E5%88%B0%E5%AE%8C%E6%88%90%E5%90%88%E5%90%8C.html" rel="alternate" type="text/html" title="目标驱动循环：从口头指令到完成合同" /><published>2026-06-30T00:00:00+08:00</published><updated>2026-07-15T23:25:22+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/30/%E7%9B%AE%E6%A0%87%E9%A9%B1%E5%8A%A8%E5%BE%AA%E7%8E%AF-%E4%BB%8E%E5%8F%A3%E5%A4%B4%E6%8C%87%E4%BB%A4%E5%88%B0%E5%AE%8C%E6%88%90%E5%90%88%E5%90%8C</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/30/%E7%9B%AE%E6%A0%87%E9%A9%B1%E5%8A%A8%E5%BE%AA%E7%8E%AF-%E4%BB%8E%E5%8F%A3%E5%A4%B4%E6%8C%87%E4%BB%A4%E5%88%B0%E5%AE%8C%E6%88%90%E5%90%88%E5%90%8C.html"><![CDATA[<p>先讲两次亲身经历，一次爽的，一次疼的。</p>
+<p>周一那天早上我看着迭代日志的心情有点复杂：它两天干的活赶上我两周，手法还挺像我——毕竟任务说明是我写的。要说感想，大概是：<strong>我调 prompt 的手艺没什么护城河了，但「知道该优化什么、拿什么衡量」这件事，短期内还是我的。</strong>得往这个方向多攒本钱。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="Loop Engineering" /><category term="评测" /><category term="工程实践" /><summary type="html"><![CDATA[我们把一个分类 Agent 的准确率优化交给了另一个 Agent，它跑了一个周末，迭代了十几轮，交回一个比我手工调了两周更好的版本——中间也差点被它的 reward hacking 摆了一道。记录这次实践和 Loop Engineering 的几个关键机制。]]></summary></entry><entry><title type="html">目标驱动循环：从口头指令到完成合同</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/30/%E7%9B%AE%E6%A0%87%E9%A9%B1%E5%8A%A8%E5%BE%AA%E7%8E%AF-%E4%BB%8E%E5%8F%A3%E5%A4%B4%E6%8C%87%E4%BB%A4%E5%88%B0%E5%AE%8C%E6%88%90%E5%90%88%E5%90%8C.html" rel="alternate" type="text/html" title="目标驱动循环：从口头指令到完成合同" /><published>2026-06-30T00:00:00+08:00</published><updated>2026-07-15T23:30:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/30/%E7%9B%AE%E6%A0%87%E9%A9%B1%E5%8A%A8%E5%BE%AA%E7%8E%AF-%E4%BB%8E%E5%8F%A3%E5%A4%B4%E6%8C%87%E4%BB%A4%E5%88%B0%E5%AE%8C%E6%88%90%E5%90%88%E5%90%8C</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/30/%E7%9B%AE%E6%A0%87%E9%A9%B1%E5%8A%A8%E5%BE%AA%E7%8E%AF-%E4%BB%8E%E5%8F%A3%E5%A4%B4%E6%8C%87%E4%BB%A4%E5%88%B0%E5%AE%8C%E6%88%90%E5%90%88%E5%90%8C.html"><![CDATA[<p>先讲两次亲身经历，一次爽的，一次疼的。</p>
 
 <p>爽的那次：我们 CI 里有个 flaky test，间歇性挂，复现概率大概 5%，三个同事断断续续查了三周没抓到。后来我用 goal 模式挂了个任务：目标写清楚（「找到并修复该测试的间歇性失败根因，验证方式为连续 200 次运行全绿」），扔到后台。它跑了四个多小时、迭代了几十轮——反复运行测试收集失败样本、加日志、缩小范围——最后定位到一个测试间共享的临时目录清理竞态。修复后 200 连跑全绿。第二天早上看结果的心情，做这行十几年没体验过几次。</p>
 
@@ -544,7 +677,7 @@ Stop           什么时候停下来问人：需要改基础设施配置时
 
 <p>听起来像解放，其实是难度搬家。写六要素合同比写代码难——「连续 200 次全绿」这个验收标准，是我想了一会儿才定下来的（100 次够不够？要不要跨机器？），而这个决定直接框定了它整晚工作的方向。定义「完成」正在变成一项核心工程技能，而我们这代工程师在学校里没人教过这个。</p>
 
-<p>好在有个笨办法：每次写 goal 之前，假想它跑完了、过来找你验收，你会检查什么？把你会检查的东西原样写进合同。我的六要素模板，说穿了就是这个问题的展开。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="Goal" /><category term="目标驱动" /><category term="工程实践" /><summary type="html"><![CDATA[用 goal 模式治好了一个折磨我们三周的 flaky test，也烧过一整晚 token 一无所获。两次经历的差别不在模型，在于我有没有把「完成」定义清楚。聊聊 goal 类功能的机制设计和写好一份完成合同的六要素。]]></summary></entry><entry><title type="html">编辑格式之战：str_replace、apply_patch 与 hashline</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/26/%E7%BC%96%E8%BE%91%E6%A0%BC%E5%BC%8F%E4%B9%8B%E6%88%98-str-replace-apply-patch%E4%B8%8Ehashline.html" rel="alternate" type="text/html" title="编辑格式之战：str_replace、apply_patch 与 hashline" /><published>2026-06-26T00:00:00+08:00</published><updated>2026-07-15T23:23:56+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/26/%E7%BC%96%E8%BE%91%E6%A0%BC%E5%BC%8F%E4%B9%8B%E6%88%98-str-replace-apply-patch%E4%B8%8Ehashline</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/26/%E7%BC%96%E8%BE%91%E6%A0%BC%E5%BC%8F%E4%B9%8B%E6%88%98-str-replace-apply-patch%E4%B8%8Ehashline.html"><![CDATA[<p>自己搭过 Agent harness 的人，都在同一个地方摔过跤：模型的思路完全正确,落到改文件这一步却搞砸了——目标代码找不到、缩进错位、或者把文件里另一处长得像的代码块给改了。</p>
+<p>好在有个笨办法：每次写 goal 之前，假想它跑完了、过来找你验收，你会检查什么？把你会检查的东西原样写进合同。我的六要素模板，说穿了就是这个问题的展开。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="Goal" /><category term="目标驱动" /><category term="工程实践" /><summary type="html"><![CDATA[用 goal 模式治好了一个折磨我们三周的 flaky test，也烧过一整晚 token 一无所获。两次经历的差别不在模型，在于我有没有把「完成」定义清楚。聊聊 goal 类功能的机制设计和写好一份完成合同的六要素。]]></summary></entry><entry><title type="html">编辑格式之战：str_replace、apply_patch 与 hashline</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/26/%E7%BC%96%E8%BE%91%E6%A0%BC%E5%BC%8F%E4%B9%8B%E6%88%98-str-replace-apply-patch%E4%B8%8Ehashline.html" rel="alternate" type="text/html" title="编辑格式之战：str_replace、apply_patch 与 hashline" /><published>2026-06-26T00:00:00+08:00</published><updated>2026-07-15T23:30:36+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/26/%E7%BC%96%E8%BE%91%E6%A0%BC%E5%BC%8F%E4%B9%8B%E6%88%98-str-replace-apply-patch%E4%B8%8Ehashline</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/26/%E7%BC%96%E8%BE%91%E6%A0%BC%E5%BC%8F%E4%B9%8B%E6%88%98-str-replace-apply-patch%E4%B8%8Ehashline.html"><![CDATA[<p>自己搭过 Agent harness 的人，都在同一个地方摔过跤：模型的思路完全正确,落到改文件这一步却搞砸了——目标代码找不到、缩进错位、或者把文件里另一处长得像的代码块给改了。</p>
 
 <p>我第一次遇到这个问题时的反应很典型：在提示词里加规则，「编辑时请确保精确匹配原文，注意缩进」。没用。第二反应是换个更强的模型。有点用，但贵。直到后来我意识到这根本不是模型问题，是<strong>接口设计</strong>问题——让模型用什么格式表达「我要改这段代码」，这个看起来微不足道的决定，直接决定编辑成功率和 token 账单。</p>
 
@@ -617,67 +750,4 @@ Stop           什么时候停下来问人：需要改基础设施配置时
 
 <p>str_replace 的思路是「请你抄仔细点」——对抗概率；hashline 的思路是「你根本不用抄」——改变结构。前者永远有失败率，后者把失败的可能性从物理上删掉了。同样的分野到处都是：与其在提示词里写「不要编造 API」，不如给它一个能查真实 API 的工具；与其叮嘱「别改错文件」，不如用权限把可写范围圈死。</p>
 
-<p>每次你想往系统提示词里加一条「请注意…」的时候,都值得先停三秒问问：这个失败模式，能不能用机制直接干掉？能的话，那条提示词就不用写了——而且机制不占指令预算，不用戒断，不随模型换代贬值。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="Harness" /><category term="编辑格式" /><category term="工程实践" /><summary type="html"><![CDATA[模型明明「想」对了，改文件却改错了——自己搭 harness 的人都在这摔过跤。对比三种编辑格式的设计取舍，附上我自己在内部任务集上复测的结果，和一个关于 harness 设计的普遍规律。]]></summary></entry><entry><title type="html">工作区可以是文件，账本必须是数据库</title><link href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/23/%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%8F%AF%E4%BB%A5%E6%98%AF%E6%96%87%E4%BB%B6-%E8%B4%A6%E6%9C%AC%E5%BF%85%E9%A1%BB%E6%98%AF%E6%95%B0%E6%8D%AE%E5%BA%93.html" rel="alternate" type="text/html" title="工作区可以是文件，账本必须是数据库" /><published>2026-06-23T00:00:00+08:00</published><updated>2026-07-15T23:25:02+08:00</updated><id>http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/23/%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%8F%AF%E4%BB%A5%E6%98%AF%E6%96%87%E4%BB%B6-%E8%B4%A6%E6%9C%AC%E5%BF%85%E9%A1%BB%E6%98%AF%E6%95%B0%E6%8D%AE%E5%BA%93</id><content type="html" xml:base="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/06/23/%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%8F%AF%E4%BB%A5%E6%98%AF%E6%96%87%E4%BB%B6-%E8%B4%A6%E6%9C%AC%E5%BF%85%E9%A1%BB%E6%98%AF%E6%95%B0%E6%8D%AE%E5%BA%93.html"><![CDATA[<p>五月份给一个 Agent 系统做存储选型，团队里结结实实吵了两周。</p>
-
-<p>一派的论据是「Agent 天然爱文件」：你看它操作目录、grep、diff 多顺手，全上 Markdown + Git，人能看、Agent 能改、还自带版本历史。另一派反驳：「都 2026 年了还拿文件系统当数据库使？并发怎么办？约束怎么办？」两边都有道理，谁也说服不了谁。</p>
-
-<p>最后让我们达成一致的不是道理，是一次翻车。</p>
-
-<h2 id="那次翻车">那次翻车</h2>
-
-<p>我们有个后台任务编排的原型，图快，任务状态直接用 YAML 文件管理，Git 兜底。每个任务一个文件，字段大概是 <code class="language-plaintext highlighter-rouge">status: pending/running/done</code>，Agent 和人都可以改。</p>
-
-<p>跑了三周出事了。一次并发场景下，两个 Agent 几乎同时更新同一个任务的不同字段，后写的把先写的覆盖了——文件写入没有行级的概念，整个文件替换。更阴的是第二个问题：某次 Agent 更新状态时打错了字，写成 <code class="language-plaintext highlighter-rouge">status: runing</code>。没有 schema 校验，这个错误值安安静静地躺了四天，下游一个按 <code class="language-plaintext highlighter-rouge">running</code> 过滤的统计脚本一直漏算它，直到有人对不上数才被翻出来。</p>
-
-<p>Git 忠实地记录了这两次事故的完整历史。但 Git 只负责记录，不负责阻止——<strong>版本控制不是约束系统</strong>。这句话现在贴在我们的设计文档模板里。</p>
-
-<h2 id="想明白agent-到底爱文件的什么">想明白：Agent 到底「爱」文件的什么</h2>
-
-<p>翻车之后重新复盘那场争论，我发现双方其实都对，只是说的不是同一层东西。</p>
-
-<p>「Agent 爱文件」这个观察是真的，但要说准确一点：<strong>coding agent 是 file-native 的</strong>。它的整个工作闭环——读（cat/grep）、改（编辑工具）、看变更（diff）、审阅（人读 Markdown 成本极低）、回滚（git revert）——每一环都建立在文件语义上，而且每一环对人和模型<strong>同时透明</strong>。这个闭环数据库给不了：给 Agent 一套 CRUD API，它要先学你的 schema，人要审阅只能看查询结果，回滚要靠你自己写补偿逻辑。</p>
-
-<p>所以草稿、计划、中间产物、代码——这些<strong>工作区</strong>内容放文件系统，是真理。</p>
-
-<p>但我们翻车翻在把这个结论外推到了它不该去的地方。任务状态是什么？是多方并发读写、有 schema、有一致性要求、错了有真实业务后果的东西——这是<strong>账本</strong>，不是草稿。账本要的四样东西，文件加 Git 一样都给不了：</p>
-
-<ul>
-  <li>约束。schema 校验、枚举值、非空、唯一性。<code class="language-plaintext highlighter-rouge">runing</code> 那种错，数据库在写入时就会拒绝。</li>
-  <li>并发控制。行级锁三十年前就是成熟技术，文件系统的答案是「整个文件覆盖，后写赢」。</li>
-  <li>业务审计。Git log 记录的是「文件怎么变的」，审计要的是「谁以什么权限做了什么业务动作」，粒度错位。</li>
-  <li>防误改。Markdown 对人和 Agent 都敞开着，这是工作区的优点、账本的死穴。</li>
-</ul>
-
-<p>翻车后我们把任务状态迁进了 SQLite（就这个体量，够了），YAML 只留作 Agent 的工作草稿。迁移完那天我在群里发了那句总结，后来成了我们的选型口诀：<strong>工作区可以是文件，账本必须是数据库。</strong></p>
-
-<h2 id="那条容易被忽视的毕业线">那条容易被忽视的「毕业线」</h2>
-
-<p>口诀好记，实操中真正难的是识别<strong>状态什么时候毕业</strong>——从「工作草稿」变成「业务事实」的那条线。</p>
-
-<p>草稿的特征：可丢弃、可重建、错了能改、只有产生它的会话关心它。事实的特征：有下游依赖它做决定、错了有真实后果、多方并发访问。一条状态跨过这条线的时刻，就是它该搬进数据库的时刻。</p>
-
-<p>我们的翻车本质上就是没看见毕业线：任务状态在原型期确实是草稿（就一个 Agent 玩，错了重跑），但接入编排、有了下游统计之后，它已经悄悄毕业成事实了，存储却没跟着升级。<strong>每个拿文件系统当数据库用的系统，都欠着这样一笔账，区别只是什么时候翻车、翻多大。</strong></p>
-
-<h2 id="迁移之后agent-怎么访问账本">迁移之后：Agent 怎么访问账本</h2>
-
-<p>把任务状态迁进 SQLite 之后，马上遇到第二个设计题：Agent 怎么读写这个账本？直接给它 SQL 权限吗？</p>
-
-<p>我们最后的方案是<strong>读写不对称</strong>：读，给 Agent 一个只读的查询工具，随便查（只读连接 + 超时限制，查坏了也就是慢）；写，不给 SQL，只给一组语义化的操作接口——<code class="language-plaintext highlighter-rouge">claim_task</code>、<code class="language-plaintext highlighter-rouge">complete_task</code>、<code class="language-plaintext highlighter-rouge">report_failure</code>，每个接口内部带着状态机校验（pending 才能 claim、running 才能 complete）。</p>
-
-<p>为什么写路径要包一层？还是那个原则：机制能拦的错误不要靠约定。让 Agent 直接 UPDATE，哪怕提示词里把状态机写得再清楚，它总有一定概率写出非法状态迁移——概率乘以调用次数就是必然。包成接口后，非法迁移在接口层直接被拒，Agent 收到明确报错还能自我纠正。上线三个月，接口层拦截日志里有十几次非法迁移尝试——每一次都是没包接口时的一次静默数据损坏。</p>
-
-<p>这个「读宽写窄」的不对称，现在成了我们所有 Agent 访问账本类数据的默认姿势。它其实就是老掉牙的最小权限原则,只是执行主体从人变成了模型——而模型比人更需要这层保护，因为它犯错不知疲倦。</p>
-
-<h2 id="夹在中间的记忆和知识库">夹在中间的：记忆和知识库</h2>
-
-<p>工作区和账本之间还有一块灰色地带——Agent 记忆、个人知识库这类东西。它们的需求很拧巴：要人类可编辑（Markdown 的强项），又要机器可检索（数据库的强项），还要长期演化。</p>
-
-<p>我自己的知识库现在是纯 Markdown 三层结构：原始材料层（网页剪藏、导入的文档）、编译层（提炼出的概念页和实体页，靠双链互引）、索引层（一份 catalog 文件）。没有数据库。这不是懒，是评估过的决策：它至今没出现过需要事务的场景——单人写入、错了能改、没有下游系统依赖它的「正确性」。<strong>不引入 ledger 也是一个需要主动做的决策</strong>，条件变了（多人并发、引用完整性要求、权限）再升级不迟。</p>
-
-<h2 id="一点展望">一点展望</h2>
-
-<p>往后看，我不觉得结局是文件和数据库谁吃掉谁。更可能的形态是<strong>数据库把自己伪装成文件树</strong>：对 Agent 暴露路径、diff、类 commit 操作——它的母语；内部保留事务、索引、约束、审计——数据库的本分；对人保留可读文本。</p>
-
-<p>这个思路其实很老了，Plan 9 的「一切皆文件」、FUSE 把对象存储挂成目录，都是同一个方向。新鲜的是需求侧：世界上第一次出现了数以亿计的、以文件操作为母语的「用户」，而且他们的数量还在暴涨。有足够大的需求，接口层的进化会很快。已经能看到一些数据库产品在往这个方向做实验了，值得保持关注。</p>
-
-<p>在那个理想接口出现之前，先记住口诀，以及口诀背后那次 <code class="language-plaintext highlighter-rouge">runing</code> 的教训。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="存储架构" /><category term="文件系统" /><category term="数据库" /><summary type="html"><![CDATA[一场持续两周的存储选型之争，和一次用 YAML 管任务状态翻车的亲身经历。Agent 时代的存储分工，我现在的答案是一句话：工作区可以是文件，账本必须是数据库。]]></summary></entry></feed>
+<p>每次你想往系统提示词里加一条「请注意…」的时候,都值得先停三秒问问：这个失败模式，能不能用机制直接干掉？能的话，那条提示词就不用写了——而且机制不占指令预算，不用戒断，不随模型换代贬值。</p>]]></content><author><name>小黄鸭</name></author><category term="AI" /><category term="技术" /><category term="AI" /><category term="Agent" /><category term="Harness" /><category term="编辑格式" /><category term="工程实践" /><summary type="html"><![CDATA[模型明明「想」对了，改文件却改错了——自己搭 harness 的人都在这摔过跤。对比三种编辑格式的设计取舍，附上我自己在内部任务集上复测的结果，和一个关于 harness 设计的普遍规律。]]></summary></entry></feed>
