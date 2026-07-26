@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>经验不是记忆，也不是 Skill：Agent 记忆的第五层 | 小黄鸭</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="经验不是记忆，也不是 Skill：Agent 记忆的第五层" />
+<meta name="author" content="小黄鸭" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="description" content="上个月写 Agent 记忆架构的时候我把记忆分成四层，当时觉得挺完整。最近看了阿里云 AgentLoop 的经验自进化方案，发现漏了一层。经验不是 Skill，不是 Trace，不是语义记忆，它是另一种东西。" />
+<meta property="og:description" content="上个月写 Agent 记忆架构的时候我把记忆分成四层，当时觉得挺完整。最近看了阿里云 AgentLoop 的经验自进化方案，发现漏了一层。经验不是 Skill，不是 Trace，不是语义记忆，它是另一种东西。" />
+<link rel="canonical" href="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/26/%E7%BB%8F%E9%AA%8C%E4%B8%8D%E6%98%AF%E8%AE%B0%E5%BF%86%E4%B9%9F%E4%B8%8D%E6%98%AFSkill-Agent%E8%AE%B0%E5%BF%86%E7%9A%84%E7%AC%AC%E4%BA%94%E5%B1%82.html" />
+<meta property="og:url" content="http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/26/%E7%BB%8F%E9%AA%8C%E4%B8%8D%E6%98%AF%E8%AE%B0%E5%BF%86%E4%B9%9F%E4%B8%8D%E6%98%AFSkill-Agent%E8%AE%B0%E5%BF%86%E7%9A%84%E7%AC%AC%E4%BA%94%E5%B1%82.html" />
+<meta property="og:site_name" content="小黄鸭" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-07-26T00:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="经验不是记忆，也不是 Skill：Agent 记忆的第五层" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"小黄鸭","url":"https://chen.zz.ac"},"dateModified":"2026-07-26T08:41:58+08:00","datePublished":"2026-07-26T00:00:00+08:00","description":"上个月写 Agent 记忆架构的时候我把记忆分成四层，当时觉得挺完整。最近看了阿里云 AgentLoop 的经验自进化方案，发现漏了一层。经验不是 Skill，不是 Trace，不是语义记忆，它是另一种东西。","headline":"经验不是记忆，也不是 Skill：Agent 记忆的第五层","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/26/%E7%BB%8F%E9%AA%8C%E4%B8%8D%E6%98%AF%E8%AE%B0%E5%BF%86%E4%B9%9F%E4%B8%8D%E6%98%AFSkill-Agent%E8%AE%B0%E5%BF%86%E7%9A%84%E7%AC%AC%E4%BA%94%E5%B1%82.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/favicons/favicon-96x96.png"},"name":"小黄鸭"},"url":"http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/26/%E7%BB%8F%E9%AA%8C%E4%B8%8D%E6%98%AF%E8%AE%B0%E5%BF%86%E4%B9%9F%E4%B8%8D%E6%98%AFSkill-Agent%E8%AE%B0%E5%BF%86%E7%9A%84%E7%AC%AC%E4%BA%94%E5%B1%82.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+  
+  <meta property="article:modified_time" content="2026-07-26T08:41:58+08:00">
+  
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="alternate" type="application/atom+xml" href="http://localhost:4000/feed.xml" title="小黄鸭" /><link rel="icon" href="/assets/images/favicons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="/assets/images/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96"
+    href="/assets/images/favicons/favicon-96x96.png"><meta property="og:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png">
+  <meta name="twitter:image" content="http://localhost:4000/assets/images/favicons/web-app-manifest-512x512.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" /><link rel="stylesheet" href="/assets/css/custom.css?v=1.0.1"><script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "小黄鸭",
+    "url": "http://localhost:4000",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "http://localhost:4000/search/?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "小黄鸭",
+    "url": "https://chen.zz.ac",
+    "sameAs": ["https://github.com/taylorchen","https://twitter.com/shlchen"]
+  }
+  </script><script src="/assets/js/theme.js" defer></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head><body><header class="site-header" role="banner">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">小黄鸭</a>
+    <nav class="site-nav">
+      <a class="page-link" href="/">首页</a>
+      <a class="page-link" href="/categories/">分类</a>
+      <a class="page-link" href="/tags/">标签</a>
+      <a class="page-link" href="/archives/">归档</a>
+      <a class="page-link" href="/search/">搜索</a>
+      <a class="page-link" href="/feed.xml" rel="alternate" type="application/atom+xml">订阅</a>
+      <a class="page-link" href="/about/">关于</a>
+    </nav>
+  </div>
+</header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting"><header class="post-header">
+    <h1>经验不是记忆，也不是 Skill：Agent 记忆的第五层</h1>
+    <p class="post-meta">
+      <time datetime="2026-07-26T00:00:00+08:00">2026-07-26</time>
+       · 最后更新于 <time datetime="2026-07-26T08:41:58+08:00">2026-07-26</time>
+       · AI / 技术
+       · AI, Agent, 记忆架构, 经验, 上下文工程, AgentLoop
+      <span id="busuanzi_container_page_pv" style="display: none;">
+        ·
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="vertical-align: text-bottom; display: inline-block;">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">首页</a>
+      
+      
+      &nbsp;/&nbsp;<a href="/categories/">AI</a>
+      
+      &nbsp;/&nbsp;<a href="/categories/">技术</a>
+      
+      
+      &nbsp;/&nbsp;<span aria-current="page">经验不是记忆，也不是 Skill：Agent 记忆的第五层</span>
+    </nav>
+
+  </header>
+
+  <div class="post-body" id="post-body">
+    <aside id="toc" class="glass-effect"></aside>
+    <div id="post-content">
+      <p>上个月写<a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/16/Agent%E8%AE%B0%E5%BF%86%E6%9E%B6%E6%9E%84-%E5%9B%9B%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%86%B7%E7%83%AD%E5%88%86%E7%A6%BB.html">记忆架构</a>那篇文章的时候，我把 Agent 的记忆分成四层：工作记忆（上下文窗口）、程序性记忆（skills）、情景记忆（会话历史）、语义记忆（事实和约定）。写完挺满意的，觉得该覆盖的都覆盖了。</p>
+
+<p>然后最近看了阿里云 AgentLoop 的一篇产品介绍，讲他们怎么从 Agent 的真实运行轨迹里自动挖掘「经验」，再注入回 Agent 的运行时上下文。看完之后我坐在那儿想了很久，脑子里一直转着一个问题：他们说的这个「经验」，到底该放进我那个四层模型里的哪一层？</p>
+
+<p>答案是：哪一层都放不进去。</p>
+
+<h2 id="先说为什么四层不够">先说为什么四层不够</h2>
+
+<p>回顾一下那四层各自管什么。</p>
+
+<p>程序性记忆是 skills——「怎么做事」。排查 OOM 的标准步骤、发布流程、数据订正操作。这些东西是人写的，稳定的，跟具体会话无关。写一次，用很久。</p>
+
+<p>情景记忆是原始会话历史。上周三那次排查的完整记录，原样存、不加工。它的价值在于原始，需要的时候全文搜。</p>
+
+<p>语义记忆是提炼过的事实。「测试库只读，用 mock」「提交信息用中文」。一份人工可审的 Markdown 小文件，常驻上下文。</p>
+
+<p>现在想想 AgentLoop 说的「经验」是什么：「排查 ECS SSH 连接超时时，先查安全组再查 iptables，不要反过来，因为 80% 的情况是安全组规则问题」「调用这个查询接口时，时间范围不要超过 7 天，超过会超时返回空结果，Agent 会误以为没有数据然后反复重试」。</p>
+
+<p>乍一看最像 skill。但仔细想，skill 是完整的操作流程——「第一步做什么，第二步做什么」。上面那两条不是流程，是判断。是在某个具体节点上告诉你应该选 A 不要选 B，以及为什么。Skill 像菜谱，经验更像老师傅站在你旁边说的那句「火别开太大，这个锅薄」。</p>
+
+<p>跟情景记忆的区别更明显。情景记忆是「上周三发生了什么」，是一次具体执行的原始记录。经验不属于任何一次会话，它是从几十次、几百次类似执行里长出来的。</p>
+
+<p>最容易混的是语义记忆。毕竟都是提炼过的、可以写成一句话的东西。但语义记忆存的是静态事实——「测试库只读」不管你在干什么任务都是真的。经验不是。经验有适用范围，跟当前情境强相关。「时间范围不要超过 7 天」这条，只有在你调用那个特定接口的时候才需要看见，写前端代码的时候它出现在上下文里就是噪音。</p>
+
+<p>想来想去，经验是另一种东西。它回答的问题跟前面四层都不一样——不是「怎么做」，不是「发生过什么」，不是「什么是真的」，而是「在这种情境下，以前怎么走通的、怎么栽的」。</p>
+
+<h2 id="trace-不是经验中间差着一步">Trace 不是经验，中间差着一步</h2>
+
+<p>AgentLoop 那篇文章里有一个我觉得很重要的区分：Trace 不等于 Trajectory，Trajectory 不等于经验。</p>
+
+<p>原始 Trace 是 Agent 跑一次任务留下的全部日志——模型调用、工具调用、中间推理、基础设施 span、重复消息，什么都有。他们给了一个数字：清洗后的高价值轨迹大概只有原始 Trace 的 4% 到 6%。</p>
+
+<p>这个数字让我停下来想了想。我们现在的做法是把会话历史原样存 JSONL 进 SQLite，当时觉得「原样存、不加工」是对的，因为加工会丢信息。但如果 95% 的内容是噪音，那「原样存」的代价就是：你以后每次检索都要在 95% 的垃圾里翻找那 5% 有用的东西。我们第一版记忆系统检索命中率不到一成，现在回头看，问题不只是「存了不该存的」，还有「该提炼的没提炼」。</p>
+
+<p>从 Trajectory 到经验还有一步：跨轨迹比较。不是对单条 Trace 做摘要，而是把几十条同类任务的轨迹放在一起看——哪些动作反复出现在成功轨迹里，哪些反复出现在失败轨迹里，失败之后什么恢复策略有效。这一步才是真正产生「经验」的地方。</p>
+
+<p>我们现在的 skills 是人写的。人写 skill 的过程其实就是手动做这件事——一个资深工程师踩了十次坑，总结出「以后遇到这种情况先查 A 再查 B」，写成文档。AgentLoop 试图让这个过程自动化。能不能做到、做到什么程度，后面再说。但方向上，它填的确实是一个真实的空档。</p>
+
+<h2 id="一个更实际的指标每个成功任务花多少钱">一个更实际的指标：每个成功任务花多少钱</h2>
+
+<p>文章里有一个观点我觉得比产品本身更有价值：衡量 Agent 成本不应该看单次调用用了多少 Token，应该看每完成一个成功任务花了多少 Token、时间、工具调用和人工介入。</p>
+
+<p>这个说法戳中了一个我之前的盲区。我们之前优化 Agent 成本的时候，盯着的是「这次调用能不能少用点 Token」「prompt 能不能再压缩一点」。但真正烧钱的地方往往不是单次调用贵，而是 Agent 走错了方向之后反复重试。选错了信息入口，推理了三轮才发现不对；工具参数填错了，原样重试五次；查询范围太大超时了，换个范围再来。这些无效循环消耗的 Token 远超正常执行。</p>
+
+<p>如果经验能帮 Agent 在关键节点上少走弯路——一开始就选对入口、第一次就把参数填对、失败后直接用有效的恢复策略——那 Token 总量下降是自然结果，不需要专门去「省 Token」。</p>
+
+<p>他们给的 benchmark 数据里，PawBench 通过率从 24.53% 到 30.67%，Token 降了 58%。这个组合说明的就是这件事：做对的次数多了，浪费在错误路径上的 Token 就少了。不是刻意省，是不走弯路自然就省了。</p>
+
+<p>当然，这些数据是阿里云自己跑的，bench 也是他们选的，得打个折扣看。SWE-bench Verified 那组数据就诚实一些：成功率从 67.2% 到 74.4%，但 Token 从 362M 涨到了 536M。质量和成本之间确实存在权衡，不是所有场景都能「又准又省」。他们自己也承认了这一点，我觉得这个态度还行。</p>
+
+<h2 id="如果重新画那张表">如果重新画那张表</h2>
+
+<p>回到我的四层模型。如果现在重新画，我会加一行：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>层</th>
+      <th>存什么</th>
+      <th>怎么来的</th>
+      <th>什么时候用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Working</td>
+      <td>当前会话</td>
+      <td>实时</td>
+      <td>始终在窗口里</td>
+    </tr>
+    <tr>
+      <td>Procedural</td>
+      <td>怎么做事</td>
+      <td>人写</td>
+      <td>按需加载</td>
+    </tr>
+    <tr>
+      <td>Episodic</td>
+      <td>发生过什么</td>
+      <td>原样存</td>
+      <td>全文搜索</td>
+    </tr>
+    <tr>
+      <td>Semantic</td>
+      <td>什么是真的</td>
+      <td>人工提炼</td>
+      <td>常驻上下文</td>
+    </tr>
+    <tr>
+      <td>Experiential</td>
+      <td>什么有效什么会失败</td>
+      <td>自动挖掘+人工审</td>
+      <td>按情境召回</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>第五层和前面四层的关键区别在于它的产生方式和召回方式。Skills 是人写的，写一次用很久，更新慢。经验是从真实执行里自动提炼的，理论上可以随着 Agent 跑得越多而持续更新。Skills 是完整流程，按需加载整个 skill 文件。经验是碎片化的判断，按当前任务的具体情境——目标、工具、进度、错误状态——召回少量相关的几条。</p>
+
+<p>这个「按情境召回」很关键。不是把所有经验一股脑塞进上下文，而是在 Agent 准备调用某个工具的时候，只拉出跟那个工具相关的参数约束；在 Agent 遇到空结果准备重试的时候，只拉出有效的恢复策略。这跟<a href="/ai/%E6%8A%80%E6%9C%AF/2026/06/13/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B-%E6%AF%94Prompt%E6%9B%B4%E9%87%8D%E8%A6%81%E7%9A%84%E9%82%A3%E4%B8%80%E5%B1%82.html">上下文工程</a>里说的「选取」操作是一回事——信噪比永远比召回率重要。</p>
+
+<h2 id="跟微调和-rl-的边界">跟微调和 RL 的边界</h2>
+
+<p>文章里有一张对比表，把经验自进化和 Memory、RAG、Skill、微调、RL 放在一起比较。这张表本身比产品更有参考价值，因为它回答了一个很多人混淆的问题：这些东西到底是不是在干同一件事？</p>
+
+<p>不是。</p>
+
+<p>微调改的是模型权重，是「让模型本身变得更倾向于做对的事」。经验不改模型，改的是模型做决策时看到的上下文，是「在模型已经具备能力的前提下，告诉它当前情境下哪条路更靠谱」。</p>
+
+<p>这个区分在工程上非常重要。微调需要数据、算力、验证周期，改一次模型要重新评估所有下游任务。经验是运行时注入的，更新一条经验不需要重新训练任何东西，发现一条经验有问题可以立刻下线。</p>
+
+<p>用文章里的话说：「模型负责推理，工具负责执行，知识库提供事实，经验库帮助判断。」这句话我觉得是整篇文章里最值钱的一句。它把经验的位置定得很准——不是替代模型能力，是在模型能力和具体情境之间加一层「过去验证过的判断」。</p>
+
+<h2 id="我不确定的地方">我不确定的地方</h2>
+
+<p>说了这么多好的，说说我不确定的。</p>
+
+<p>最让我没底的是自动挖掘的质量。从几十条轨迹里提炼出「先查安全组再查 iptables」，听起来很合理。但你得想想 Agent 的执行轨迹长什么样——模型会自我解释一大段、会走毫无意义的弯路、会在成功之后输出一堆正确的废话。从这些东西里自动提炼出靠谱的经验，误报率是多少？文章没给。我担心的场景是：挖出来的经验里有两成是错的，注入之后 Agent 反而被带偏，那这个飞轮转得越快越糟糕。</p>
+
+<p>经验的时效性也让我犹豫。工具会升级，接口会变，三个月前有效的经验三个月后可能就是反模式。文章说可以「快速下线」，但问题是——谁来发现它过期了？靠人审，规模一大就审不过来。这个问题我没有好的答案。</p>
+
+<p>还有一个跨 Agent 共享的边界问题，不过这个相对好办。同一个团队、同一类任务里共享大概没问题，不同工具集和权限的 Agent 之间乱共享肯定会出事。文章提到了按 AgentSpace 隔离，具体粒度怎么定，得跑起来才知道。</p>
+
+<h2 id="对那篇旧文的修正">对那篇旧文的修正</h2>
+
+<p>写记忆架构那篇文章的时候，我说语义记忆文件维持在一百行以内，每两周人工审一遍。现在我觉得这个说法需要修正。</p>
+
+<p>一百行以内是对的，人工审也是对的。但我把「人工提炼」当成了唯一的知识沉淀路径，这太窄了。Agent 每天跑那么多任务，成功和失败的轨迹里确实藏着大量我靠人脑总结不过来的模式。与其等踩了十次坑再手动写一条 skill，不如让系统先从轨迹里把候选经验挖出来，我来审。</p>
+
+<p>这跟语义记忆的写入纪律其实是一个思路：不是什么都往里塞，而是系统产出候选、人来把关。只不过以前候选是我自己脑子里产生的，以后候选可以是从轨迹里自动提炼的。把关这一步不能省，但产生候选的方式可以变。</p>
+
+<p>所以如果让我现在重写那篇文章，四层模型的基本框架不用改，但我会加一节讲第五层，并且把「人写 skill」的定位从「程序性知识的唯一来源」改成「程序性知识的来源之一」。另一个来源是自动挖掘的经验，经过人工审核后，可以升级为 skill，也可以继续以碎片化经验的形式存在。</p>
+
+<p>大概就是这么回事。四层变五层，不是什么大改动，但确实有一个之前没想清楚的东西被想清楚了。接下来我打算在实际项目里试着跑一跑经验的自动挖掘，看看误报率到底什么水平。到时候再写。</p>
+ </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <section class="related-posts">
+      <h2>相关阅读</h2>
+      <ul>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/26/%E7%BB%84%E7%BB%87%E5%8D%B3%E4%B8%8A%E4%B8%8B%E6%96%87-%E4%BB%8EAGENTS-md%E5%88%B0%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%BB%E6%9D%83.html">组织即上下文：从 AGENTS.md 到文件夹主权</a> <small>(2026-07-26)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/18/Agent%E6%95%B0%E9%87%8F%E6%98%AF%E7%AC%AC%E4%B8%89%E6%9D%A1Scaling%E8%BD%B4-%E4%BB%8EKimi-K2.5%E7%9C%8B%E6%9C%89%E6%95%88%E5%B9%B6%E8%A1%8C.html">Agent 数量是第三条 Scaling 轴：从 Kimi K2.5 看有效并行</a> <small>(2026-07-18)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/14/%E5%8F%91%E7%8E%B0%E4%BD%A0%E7%9A%84%E6%9C%AA%E7%9F%A5-Agentic-Coding%E7%9A%84%E5%9C%B0%E5%9B%BE%E4%B8%8E%E7%96%86%E5%9F%9F.html">发现你的未知：Agentic Coding 的地图与疆域</a> <small>(2026-07-14)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/13/AI%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%9A%84%E5%9B%9B%E9%98%B6%E8%BF%9B%E5%8C%96.html">AI 生成测试用例的四阶进化：从 Prompt 工程到自进化</a> <small>(2026-07-13)</small></li>
+        
+        <li><a href="/ai/%E6%8A%80%E6%9C%AF/2026/07/11/%E9%94%AF%E9%BD%BF%E6%99%BA%E8%83%BD%E4%B8%8E%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%BA%A6.html">锯齿智能与多模型调度</a> <small>(2026-07-11)</small></li>
+        
+      </ul>
+    </section>
+    
+
+    <footer class="post-footer">
+      <nav class="post-pager" aria-label="Post Navigation">
+        
+        <a class="prev" href="/ai/%E6%8A%80%E6%9C%AF/2026/07/26/%E7%BB%84%E7%BB%87%E5%8D%B3%E4%B8%8A%E4%B8%8B%E6%96%87-%E4%BB%8EAGENTS-md%E5%88%B0%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%BB%E6%9D%83.html" rel="prev">← 上一篇：组织即上下文：从 AGENTS.md 到文件夹主权</a>
+        
+        
+      </nav>
+      <div class="share">
+        <a href="https://twitter.com/intent/tweet?text=%E7%BB%8F%E9%AA%8C%E4%B8%8D%E6%98%AF%E8%AE%B0%E5%BF%86%EF%BC%8C%E4%B9%9F%E4%B8%8D%E6%98%AF%20Skill%EF%BC%9AAgent%20%E8%AE%B0%E5%BF%86%E7%9A%84%E7%AC%AC%E4%BA%94%E5%B1%82&url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/26/%E7%BB%8F%E9%AA%8C%E4%B8%8D%E6%98%AF%E8%AE%B0%E5%BF%86%E4%B9%9F%E4%B8%8D%E6%98%AFSkill-Agent%E8%AE%B0%E5%BF%86%E7%9A%84%E7%AC%AC%E4%BA%94%E5%B1%82.html"
+          target="_blank" rel="noopener">Share to X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/26/%E7%BB%8F%E9%AA%8C%E4%B8%8D%E6%98%AF%E8%AE%B0%E5%BF%86%E4%B9%9F%E4%B8%8D%E6%98%AFSkill-Agent%E8%AE%B0%E5%BF%86%E7%9A%84%E7%AC%AC%E4%BA%94%E5%B1%82.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/ai/%E6%8A%80%E6%9C%AF/2026/07/26/%E7%BB%8F%E9%AA%8C%E4%B8%8D%E6%98%AF%E8%AE%B0%E5%BF%86%E4%B9%9F%E4%B8%8D%E6%98%AFSkill-Agent%E8%AE%B0%E5%BF%86%E7%9A%84%E7%AC%AC%E4%BA%94%E5%B1%82.html"
+          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+      </div>
+
+      
+      <section id="comments" style="margin-top: 24px;">
+        <script src="https://giscus.app/client.js" data-repo=""
+          data-repo-id="" data-category="General"
+          data-category-id="" data-mapping="pathname" data-strict="0"
+          data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
+          data-theme="light" data-lang="zh-CN" crossorigin="anonymous" async>
+          </script>
+      </section>
+      
+    </footer>
+</article>
+
+<button id="back-to-top" title="回到顶部">↑</button>
+
+<script>
+  // 构建目录
+  (function () {
+    const content = document.getElementById('post-content');
+    const toc = document.getElementById('toc');
+    if (!content || !toc) return;
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (!headings.length) return;
+    const ul = document.createElement('ul');
+    headings.forEach(h => {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-');
+      const li = document.createElement('li');
+      li.style.marginLeft = ({ H1: 0, H2: 12, H3: 24 })[h.tagName] + 'px';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    const title = document.createElement('div');
+    title.textContent = '目录';
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '8px';
+    toc.appendChild(title);
+    toc.appendChild(ul);
+  })();
+
+  // 代码复制按钮
+  (function () {
+    document.querySelectorAll('pre > code').forEach(code => {
+      const pre = code.parentElement;
+      const btn = document.createElement('button');
+      btn.textContent = '复制';
+      btn.className = 'copy-btn';
+      btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(code.innerText); btn.textContent = '已复制'; setTimeout(() => btn.textContent = '复制', 1000); } catch (e) { }
+      };
+      pre.style.position = 'relative';
+      btn.style.position = 'absolute';
+      btn.style.right = '8px';
+      btn.style.top = '8px';
+      pre.appendChild(btn);
+    });
+  })();
+
+  // 回到顶部
+  (function () {
+    const btn = document.getElementById('back-to-top');
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    window.addEventListener('scroll', onscroll); onscroll();
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  })();
+
+  // 图片懒加载与缺失 alt 自动补全
+  (function () {
+    document.querySelectorAll('#post-content img').forEach(img => {
+      img.loading = 'lazy';
+      if (!img.hasAttribute('alt') || img.getAttribute('alt') === '') {
+        try {
+          const u = new URL(img.src, window.location.origin);
+          const name = (u.pathname.split('/').pop() || '').split('.')[0];
+          if (name) img.setAttribute('alt', decodeURIComponent(name));
+        } catch (e) { }
+      }
+    });
+  })();
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/%20/"></data>
+
+  <div class="wrapper">
+    <div class="footer-content">
+      <div class="footer-col footer-col-1">
+        <h2 class="footer-heading">小黄鸭</h2>
+        <p class="footer-description">这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <div class="footer-links">
+          <h3>快速链接</h3>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/archives/">归档</a></li>
+            <li><a href="/categories/">分类</a></li>
+            <li><a href="/tags/">标签</a></li>
+            <li><a href="/about/">关于</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <div class="footer-contact">
+          <h3>联系方式</h3>
+          <ul class="contact-list"><li><a href="mailto:cherrycmd@gmail.com">cherrycmd@gmail.com</a></li><li><a href="https://github.com/taylorchen" target="_blank" rel="noopener">GitHub</a></li><li><a href="https://twitter.com/shlchen" target="_blank" rel="noopener">Twitter</a>
+            </li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-stats">
+        <span id="busuanzi_container_site_pv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="busuanzi_value_site_pv"></span> 次浏览
+        </span>
+        <span class="separator">·</span>
+        <span id="busuanzi_container_site_uv" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="busuanzi_value_site_uv"></span> 位访客
+        </span>
+      </div>
+      <div class="footer-copyright">
+        <p>© 2026 小黄鸭. All rights reserved.</p>
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> & <a
+            href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--divider-color);
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .footer-heading {
+    font-size: 1.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-col h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .footer-links ul,
+  .footer-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li,
+  .footer-contact li {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links a,
+  .footer-contact a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover,
+  .footer-contact a:hover {
+    color: var(--primary-color);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .footer-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-stats svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .footer-stats .separator {
+    color: var(--text-muted);
+  }
+
+  .footer-copyright {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-copyright p {
+    margin: 0.25rem 0;
+  }
+
+  .footer-copyright a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-copyright a:hover {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .footer-copyright {
+      text-align: left;
+    }
+  }
+</style>
+
+<script>
+  // 不蒜子统计信息显示控制
+  (function () {
+    // 等待不蒜子脚本加载完成
+    const checkBusuanzi = setInterval(function () {
+      if (typeof busuanzi !== 'undefined') {
+        clearInterval(checkBusuanzi);
+
+        // 显示统计信息
+        const pvContainer = document.getElementById('busuanzi_container_site_pv');
+        const uvContainer = document.getElementById('busuanzi_container_site_uv');
+
+        if (pvContainer) pvContainer.style.display = 'inline-flex';
+        if (uvContainer) uvContainer.style.display = 'inline-flex';
+      }
+    }, 100);
+
+    // 超时处理：5秒后如果still未加载，隐藏容器
+    setTimeout(function () {
+      clearInterval(checkBusuanzi);
+    }, 5000);
+  })();
+</script></body>
+
+</html>
