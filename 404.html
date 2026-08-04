@@ -1,25 +1,16 @@
 ---
 permalink: /404.html
-layout: page
+layout: default
+title: 页面不存在
 ---
 
-<style type="text/css" media="screen">
-  .container {
-    margin: 10px auto;
-    max-width: 600px;
-    text-align: center;
-  }
-  h1 {
-    margin: 30px 0;
-    font-size: 4em;
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-</style>
-
-<div class="container">
-  <h1>404</h1>
-
-  <p><strong>Page not found :(</strong></p>
-  <p>The requested page could not be found.</p>
+<div class="notfound">
+  <p class="notfound-code">404</p>
+  <h1 class="notfound-title">这里没有你要找的东西</h1>
+  <p class="notfound-hint">页面可能已经被移动或删除。</p>
+  <p class="notfound-actions">
+    <a class="btn" href="{{ '/' | relative_url }}">回到首页</a>
+    <a class="btn" href="{{ '/archives/' | relative_url }}">浏览归档</a>
+    <a class="btn" href="{{ '/search/' | relative_url }}">搜索文章</a>
+  </p>
 </div>

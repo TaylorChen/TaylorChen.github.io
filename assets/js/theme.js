@@ -21,14 +21,17 @@
         createToggleButton() {
             const button = document.createElement('button');
             button.id = 'theme-toggle';
-            button.setAttribute('aria-label', '切换主题');
+            button.type = 'button';
+            button.setAttribute('aria-label', '切换深色/浅色主题');
             button.innerHTML = this.getThemeIcon();
-            document.body.appendChild(button);
+            // 放进顶部导航，避免再多一个浮在页面上的圆形按钮
+            (document.querySelector('.site-nav') || document.body).appendChild(button);
         },
 
         getThemeIcon() {
-            const currentTheme = this.getCurrentTheme();
-            return currentTheme === this.DARK ? '🌞' : '🌙';
+            const sun = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.4v2.2M12 19.4v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.4 12h2.2M19.4 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg>';
+            const moon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.3A8.5 8.5 0 0 1 9.7 3.5a8.5 8.5 0 1 0 10.8 10.8z"/></svg>';
+            return this.getCurrentTheme() === this.DARK ? sun : moon;
         },
 
         getCurrentTheme() {
@@ -36,25 +39,32 @@
         },
 
         loadTheme() {
-            // 优先读取本地存储
+            // 没存过就跟随系统；注意这里只能 applyTheme，不能写入存储，
+            // 否则「用户显式选择」和「当前生效主题」会被混为一谈，
+            // 跟随系统的监听器将永远不再触发。
             const savedTheme = localStorage.getItem(this.STORAGE_KEY);
-
-            // 如果没有保存过，检测系统偏好
-            const preferredTheme = savedTheme ||
-                (window.matchMedia('(prefers-color-scheme: dark)').matches ? this.DARK : this.LIGHT);
-
-            this.setTheme(preferredTheme);
+            this.applyTheme(savedTheme || this.systemTheme());
         },
 
-        setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem(this.STORAGE_KEY, theme);
+        systemTheme() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? this.DARK : this.LIGHT;
+        },
 
-            // 更新按钮图标
+        // 只负责让主题生效
+        applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+
             const button = document.getElementById('theme-toggle');
             if (button) {
                 button.innerHTML = this.getThemeIcon();
+                button.setAttribute('aria-pressed', String(theme === this.DARK));
             }
+        },
+
+        // 只在用户显式切换时调用：生效 + 记住选择
+        setTheme(theme) {
+            this.applyTheme(theme);
+            localStorage.setItem(this.STORAGE_KEY, theme);
         },
 
         toggleTheme() {
@@ -69,10 +79,10 @@
                 button.addEventListener('click', () => this.toggleTheme());
             }
 
-            // 监听系统主题变化
+            // 用户没有显式选过主题时，跟随系统变化
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
                 if (!localStorage.getItem(this.STORAGE_KEY)) {
-                    this.setTheme(e.matches ? this.DARK : this.LIGHT);
+                    this.applyTheme(e.matches ? this.DARK : this.LIGHT);
                 }
             });
         }

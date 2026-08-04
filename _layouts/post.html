@@ -9,13 +9,21 @@ layout: default
   {%- comment -%} 移除冗余顶层包含，统一使用 header 中的面包屑或下方的精简导航 {%- endcomment -%}
 
   <header class="post-header">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ '/' | relative_url }}">首页</a>
+      {% if page.categories and page.categories.size > 0 %}
+      {% for c in page.categories %}
+      &nbsp;/&nbsp;<a href="{{ '/categories/' | relative_url }}">{{ c }}</a>
+      {% endfor %}
+      {% endif %}
+    </nav>
+
     <h1>{{ page.title }}</h1>
     <p class="post-meta">
-      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y.%m.%d" }}</time>
       {% if page.last_modified_at %} · 最后更新于 <time datetime="{{ page.last_modified_at | date_to_xmlschema }}">{{
-        page.last_modified_at | date: "%Y-%m-%d" }}</time>{% endif %}
+        page.last_modified_at | date: "%Y.%m.%d" }}</time>{% endif %}
       {% if page.categories %} · {{ page.categories | join: ' / ' }}{% endif %}
-      {% if page.tags %} · {{ page.tags | join: ', ' }}{% endif %}
       <span id="busuanzi_container_page_pv" style="display: none;">
         ·
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -26,20 +34,15 @@ layout: default
         <span id="busuanzi_value_page_pv"></span>
       </span>
     </p>
-    <nav class="breadcrumbs" aria-label="Breadcrumb">
-      <a href="{{ '/' | relative_url }}">首页</a>
-      {% if page.categories and page.categories.size > 0 %}
-      {% for c in page.categories %}
-      &nbsp;/&nbsp;<a href="{{ '/categories/' | relative_url }}">{{ c }}</a>
-      {% endfor %}
-      {% endif %}
-      &nbsp;/&nbsp;<span aria-current="page">{{ page.title }}</span>
-    </nav>
-
+    {% if page.tags and page.tags.size > 0 %}
+    <div class="post-tags">
+      {% for tag in page.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+    </div>
+    {% endif %}
   </header>
 
   <div class="post-body" id="post-body">
-    <aside id="toc" class="glass-effect"></aside>
+    <aside id="toc"></aside>
     <div id="post-content">
       {{ content | replace: '<img', '<img loading="lazy"' }} </div>
     </div>
@@ -69,7 +72,7 @@ layout: default
       <h2>相关阅读</h2>
       <ul>
         {% for r in related %}
-        <li><a href="{{ r.url | relative_url }}">{{ r.title }}</a> <small>({{ r.date | date: "%Y-%m-%d" }})</small></li>
+        <li><a href="{{ r.url | relative_url }}">{{ r.title }}</a> <small>{{ r.date | date: "%Y.%m.%d" }}</small></li>
         {% endfor %}
       </ul>
     </section>
@@ -85,12 +88,13 @@ layout: default
         {% endif %}
       </nav>
       <div class="share">
+        <span class="share-label">分享</span>
         <a href="https://twitter.com/intent/tweet?text={{ page.title | uri_escape }}&url={{ page.url | absolute_url | uri_escape }}"
-          target="_blank" rel="noopener">Share to X</a>
+          target="_blank" rel="noopener">X</a>
         <a href="https://www.facebook.com/sharer/sharer.php?u={{ page.url | absolute_url | uri_escape }}"
-          target="_blank" rel="noopener" style="margin-left:12px;">Share to Facebook</a>
+          target="_blank" rel="noopener">Facebook</a>
         <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ page.url | absolute_url | uri_escape }}"
-          target="_blank" rel="noopener" style="margin-left:12px;">Share to LinkedIn</a>
+          target="_blank" rel="noopener">LinkedIn</a>
       </div>
 
       {% if site.giscus and site.giscus.repo %}
@@ -128,9 +132,8 @@ layout: default
       ul.appendChild(li);
     });
     const title = document.createElement('div');
+    title.className = 'toc-heading';
     title.textContent = '目录';
-    title.style.fontWeight = 'bold';
-    title.style.marginBottom = '8px';
     toc.appendChild(title);
     toc.appendChild(ul);
   })();
@@ -156,7 +159,7 @@ layout: default
   // 回到顶部
   (function () {
     const btn = document.getElementById('back-to-top');
-    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'block' : 'none'; };
+    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'flex' : 'none'; };
     window.addEventListener('scroll', onscroll); onscroll();
     btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   })();

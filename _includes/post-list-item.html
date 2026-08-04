@@ -1,0 +1,64 @@
+{%- comment -%}
+文章列表行（首页 / 分类页 / 标签页共用）。
+
+参数：
+  post          必填，文章对象
+  category_text 可选，日期后面显示的分类文本；空字符串或不传则不显示
+  tag_limit     可选，最多显示几个标签，默认 3
+  exclude_tag   可选，需要排除的标签（标签页里不重复显示当前标签）
+{%- endcomment -%}
+
+{%- comment -%}
+只有真正建了归档页的标签才做成链接，其余保持纯文本。
+站内 199 个标签里只有少数几个建了 tags/<name>/ 目录，全部加链接会产生大量 404。
+{%- endcomment -%}
+{%- assign tag_page_slugs = site.pages | where_exp: "p", "p.tag" | map: "tag" -%}
+
+{%- assign tag_limit = include.tag_limit | default: 3 -%}
+{%- assign shown_tags = 0 -%}
+{%- capture tags_html -%}
+{%- for t in include.post.tags -%}
+{%- unless t == include.exclude_tag -%}
+{%- if shown_tags < tag_limit -%}
+{%- if tag_page_slugs contains t -%}
+<a class="tag" href="{{ '/tags/' | append: t | append: '/' | relative_url }}">{{ t }}</a>
+{%- else -%}
+<span class="tag">{{ t }}</span>
+{%- endif -%}
+{%- assign shown_tags = shown_tags | plus: 1 -%}
+{%- endif -%}
+{%- endunless -%}
+{%- endfor -%}
+{%- endcapture -%}
+
+<li class="post-item" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
+  <article>
+    <header class="post-item-header">
+      <div class="post-item-meta">
+        <time itemprop="datePublished" datetime="{{ include.post.date | date_to_xmlschema }}">
+          {{ include.post.date | date: "%Y.%m.%d" }}
+        </time>
+        {%- if include.category_text and include.category_text != '' %}
+        <span class="separator">/</span>
+        <span class="post-category">{{ include.category_text }}</span>
+        {%- endif %}
+      </div>
+      <h3 class="post-item-title" itemprop="headline">
+        <a class="post-link" itemprop="url" href="{{ include.post.url | relative_url }}">{{ include.post.title | escape
+          }}</a>
+      </h3>
+    </header>
+
+    {%- if include.post.description %}
+    <p class="post-excerpt" itemprop="description">{{ include.post.description | strip_html | truncate: 150 }}</p>
+    {%- elsif site.show_excerpts %}
+    <div class="post-excerpt">{{ include.post.excerpt }}</div>
+    {%- endif %}
+
+    {%- if shown_tags > 0 %}
+    <footer class="post-item-footer">
+      <div class="post-tags">{{ tags_html }}</div>
+    </footer>
+    {%- endif %}
+  </article>
+</li>

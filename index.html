@@ -3,16 +3,12 @@ layout: default
 ---
 
 <div class="home">
-  {%- comment -%} Hero 个人介绍区域 {%- endcomment -%}
-  <section class="hero-section">
-    <div class="hero-content">
-      <div class="hero-avatar">
-        <img src="{{ site.logo | relative_url }}" alt="{{ site.author.name }}" />
-      </div>
-      <div class="hero-info">
-        <div class="hero-title-row">
-          <h1 class="hero-title">{{ site.title }}</h1>
-          <div class="hero-social">
+  {%- comment -%} 报头：站名 + 一句话简介 + 社交入口 {%- endcomment -%}
+  <section class="masthead">
+      <div class="masthead-info">
+        <h1 class="masthead-title">{{ site.title }}</h1>
+        <p class="masthead-tagline">{{ site.description }}</p>
+          <div class="masthead-social">
             {% if site.github_username %}
             <a href="https://github.com/{{ site.github_username }}" target="_blank" rel="noopener" aria-label="GitHub"
               title="GitHub">
@@ -40,10 +36,12 @@ layout: default
             </a>
             {% endif %}
           </div>
-        </div>
-        <p class="hero-description">{{ site.description }}</p>
       </div>
-    </div>
+      <div class="masthead-avatar">
+        {%- comment -%} 显示尺寸 84px，取 192px 素材保证 2x 屏清晰 {%- endcomment -%}
+        <img src="{{ '/assets/images/favicons/web-app-manifest-192x192.png' | relative_url }}"
+          alt="{{ site.author.name }}" width="84" height="84" />
+      </div>
   </section>
 
 
@@ -52,40 +50,8 @@ layout: default
   <ul class="post-list" itemscope itemtype="https://schema.org/Blog">
     {% assign posts = paginator.posts | default: site.posts %}
     {% for post in posts %}
-    <li class="post-item card" itemscope itemprop="blogPost" itemtype="https://schema.org/BlogPosting">
-      <article>
-        <header class="post-item-header">
-          <h3 class="post-item-title" itemprop="headline">
-            <a class="post-link" itemprop="url" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-          </h3>
-          <div class="post-item-meta">
-            <time itemprop="datePublished" datetime="{{ post.date | date_to_xmlschema }}">
-              {{ post.date | date: "%Y-%m-%d" }}
-            </time>
-            {% if post.categories and post.categories.size > 0 %}
-            <span class="separator">·</span>
-            <span class="post-category">{{ post.categories | join: ' / ' }}</span>
-            {% endif %}
-          </div>
-        </header>
-
-        {% if post.description %}
-        <p class="post-excerpt" itemprop="description">{{ post.description | strip_html | truncate: 150 }}</p>
-        {% elsif site.show_excerpts %}
-        <div class="post-excerpt">{{ post.excerpt }}</div>
-        {% endif %}
-
-        {% if post.tags and post.tags.size > 0 %}
-        <footer class="post-item-footer">
-          <div class="post-tags">
-            {% for tag in post.tags limit:3 %}
-            <span class="tag">{{ tag }}</span>
-            {% endfor %}
-          </div>
-        </footer>
-        {% endif %}
-      </article>
-    </li>
+    {% assign cat_text = post.categories | join: ' / ' %}
+    {% include post-list-item.html post=post category_text=cat_text tag_limit=3 %}
     {% endfor %}
   </ul>
 

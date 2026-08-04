@@ -99,7 +99,7 @@ title: 所有标签
         {% for post in tag_posts %}
         <li class="post-item">
           <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">
-            {{ post.date | date: "%Y-%m-%d" }}
+            {{ post.date | date: "%Y.%m.%d" }}
           </time>
           <a href="{{ post.url | relative_url }}" class="post-title">
             {{ post.title }}

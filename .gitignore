@@ -1,8 +1,22 @@
-/.specstory
+# Jekyll 构建产物与缓存
+# 线上由 GitHub Pages 自行构建（build_type=legacy，source=main:/），
+# 仓库里的 _site 不会被发布，提交它只会让每次 diff 多出上百个无关文件。
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
+
+# 依赖
 /vendor
-/.idea
-/.vscode
-.specstory/
 vendor/
 .bundle
+
+# 编辑器 / 工具
+/.idea
+/.vscode
+/.specstory
+.specstory/
 .cursorindexingignore
+
+# 系统
+.DS_Store

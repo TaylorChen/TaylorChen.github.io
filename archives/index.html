@@ -3,14 +3,43 @@ layout: default
 title: 归档
 ---
 
-<h1>文章归档</h1>
 {% assign posts_by_year = site.posts | group_by_exp: 'post', 'post.date | date: "%Y"' %}
 {% assign posts_by_year = posts_by_year | sort: 'name' | reverse %}
-{% for year in posts_by_year %}
-  <h2>{{ year.name }}</h2>
-  <ul>
-    {% for post in year.items %}
-      <li><a href="{{ post.url }}">{{ post.title }}</a> ({{ post.date | date: "%m-%d" }})</li>
+
+<div class="archive-page">
+  <header class="archive-header">
+    <h1 class="archive-title">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 8v13H3V8"></path>
+        <rect x="1" y="3" width="22" height="5"></rect>
+        <line x1="10" y1="12" x2="14" y2="12"></line>
+      </svg>
+      文章归档
+    </h1>
+    <p class="archive-stats">
+      共 <strong>{{ site.posts.size }}</strong> 篇文章，跨越 <strong>{{ posts_by_year.size }}</strong> 个年份
+    </p>
+  </header>
+
+  <nav class="alpha-nav" aria-label="按年份跳转">
+    {% for year in posts_by_year %}
+    <a href="#y{{ year.name }}" class="alpha-link">{{ year.name }}</a>
     {% endfor %}
-  </ul>
-{% endfor %}
+  </nav>
+
+  {% for year in posts_by_year %}
+  <section class="tag-group">
+    <h2 class="group-title" id="y{{ year.name }}">
+      {{ year.name }} <span class="tag-count">({{ year.items.size }})</span>
+    </h2>
+    <ul class="posts-list">
+      {% for post in year.items %}
+      <li class="post-item">
+        <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%m.%d" }}</time>
+        <a href="{{ post.url | relative_url }}" class="post-title">{{ post.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endfor %}
+</div>

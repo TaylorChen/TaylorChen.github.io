@@ -38,15 +38,18 @@
   {%- endif -%}
 
 
-  {%- comment -%} Google Fonts & Special Fonts {%- endcomment -%}
+  {%- comment -%}
+  Web 字体只加载拉丁字形（Newsreader 衬线标题 / Inter 无衬线正文 / JetBrains Mono 等宽），
+  中文走系统字体栈，避免引入数 MB 的 CJK 字体文件。
+  {%- endcomment -%}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://npm.elemecdn.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
 
   {%- comment -%} 自定义样式 {%- endcomment -%}
-  <link rel="stylesheet" href="{{ '/assets/css/custom.css?v=1.0.1' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/custom.css?v=2.0.0' | relative_url }}">
 
   {%- comment -%} 结构化数据：WebSite + SearchAction 与 Person {%- endcomment -%}
   <script type="application/ld+json">
@@ -70,6 +73,17 @@
     "url": {{ site.author.url | default: site.url | jsonify }},
     "sameAs": {{ site.author.same_as | jsonify }}
   }
+  </script>
+
+  {%- comment -%} 在样式生效前定好主题，避免深色偏好下先闪一帧白底 {%- endcomment -%}
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('blog-theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) { }
+    })();
   </script>
 
   {%- comment -%} 主题功能脚本 {%- endcomment -%}

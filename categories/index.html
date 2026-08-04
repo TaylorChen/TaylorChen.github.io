@@ -33,7 +33,7 @@ title: 所有分类
         {% for post in category_posts %}
         <li class="post-item">
           <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">
-            {{ post.date | date: "%Y-%m-%d" }}
+            {{ post.date | date: "%Y.%m.%d" }}
           </time>
           <a href="{{ post.url | relative_url }}" class="post-title">
             {{ post.title }}
