@@ -1,0 +1,5 @@
+---
+# 遮蔽 minima gem 的 assets/main.scss。
+# 全站样式由 assets/css/custom.css 完全接管，head.html 已不再引用本文件，
+# 这里保留一个空产物，避免 gem 版本（约 7KB 无人使用的 CSS + source map）被发布。
+---

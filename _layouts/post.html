@@ -156,13 +156,7 @@ layout: default
     });
   })();
 
-  // 回到顶部
-  (function () {
-    const btn = document.getElementById('back-to-top');
-    const onscroll = () => { btn.style.display = window.scrollY > 300 ? 'flex' : 'none'; };
-    window.addEventListener('scroll', onscroll); onscroll();
-    btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-  })();
+  // 回到顶部的显隐与点击统一由 theme.js 的 BackToTop 处理，此处不再重复绑定
 
   // 图片懒加载与缺失 alt 自动补全
   (function () {

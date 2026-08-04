@@ -21,7 +21,10 @@
   {% if page.last_modified_at %}
   <meta property="article:modified_time" content="{{ page.last_modified_at | date_to_xmlschema }}">
   {% endif %}
-  <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
+  {%- comment -%}
+  不再加载 minima 的 main.css：全站样式已由 custom.css 完全接管，
+  继续叠加只会带来选择器权重冲突（曾导致代码块被写死 #eef 浅蓝底）。
+  {%- endcomment -%}
   <link rel="alternate" type="application/atom+xml" href="{{ '/feed.xml' | absolute_url }}" title="{{ site.title }}" />
 
   {%- comment -%} Favicon 图标 {%- endcomment -%}
@@ -49,7 +52,7 @@
     rel="stylesheet">
 
   {%- comment -%} 自定义样式 {%- endcomment -%}
-  <link rel="stylesheet" href="{{ '/assets/css/custom.css?v=2.0.0' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/custom.css?v=2.1.0' | relative_url }}">
 
   {%- comment -%} 结构化数据：WebSite + SearchAction 与 Person {%- endcomment -%}
   <script type="application/ld+json">

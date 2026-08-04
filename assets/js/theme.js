@@ -88,35 +88,54 @@
         }
     };
 
+    // ==================== 滚动调度 ====================
+    // 页面上原有 3 个各自独立的 scroll 监听（阅读进度、回到顶部 ×2），
+    // 每次滚动事件都同步读取 scrollY / scrollHeight，触发重复的布局计算。
+    // 这里合并为单一监听 + rAF 节流：一帧最多执行一次，且标记 passive
+    // 让浏览器无需等待回调即可滚动。
+    const ScrollDispatcher = {
+        handlers: [],
+        ticking: false,
+
+        add(fn) {
+            this.handlers.push(fn);
+            fn();
+        },
+
+        init() {
+            if (!this.handlers.length) return;
+            window.addEventListener('scroll', () => this.request(), { passive: true });
+            window.addEventListener('resize', () => this.request(), { passive: true });
+        },
+
+        request() {
+            if (this.ticking) return;
+            this.ticking = true;
+            window.requestAnimationFrame(() => {
+                this.ticking = false;
+                this.handlers.forEach(fn => fn());
+            });
+        }
+    };
+
     // ==================== 阅读进度条 ====================
     const ReadingProgress = {
         init() {
             // 只在文章页显示
             if (!document.querySelector('.post')) return;
 
-            this.createProgressBar();
-            this.updateProgress();
-            window.addEventListener('scroll', () => this.updateProgress());
-        },
+            this.bar = document.createElement('div');
+            this.bar.id = 'reading-progress';
+            document.body.appendChild(this.bar);
 
-        createProgressBar() {
-            const bar = document.createElement('div');
-            bar.id = 'reading-progress';
-            document.body.appendChild(bar);
+            ScrollDispatcher.add(() => this.updateProgress());
         },
 
         updateProgress() {
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-            const scrollTop = window.scrollY;
-
-            const maxScroll = documentHeight - windowHeight;
-            const progress = (scrollTop / maxScroll) * 100;
-
-            const bar = document.getElementById('reading-progress');
-            if (bar) {
-                bar.style.width = Math.min(progress, 100) + '%';
-            }
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            // 内容不足一屏时没有进度可言，避免除以 0 得到 NaN
+            const progress = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+            this.bar.style.width = Math.min(progress, 100) + '%';
         }
     };
 
@@ -184,18 +203,22 @@
         }
     };
 
-    // ==================== 返回顶部按钮优化 ====================
+    // ==================== 返回顶部 ====================
+    // 显隐与点击都收在这里；post.html 里原本还有一份重复实现，已移除。
     const BackToTop = {
         init() {
-            const button = document.getElementById('back-to-top');
-            if (!button) return;
+            this.button = document.getElementById('back-to-top');
+            if (!this.button) return;
 
-            this.updateVisibility();
-            window.addEventListener('scroll', () => this.updateVisibility());
+            this.button.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            ScrollDispatcher.add(() => this.updateVisibility());
         },
 
         updateVisibility() {
-            const button = document.getElementById('back-to-top');
+            const button = this.button;
             if (button) {
                 button.style.display = window.scrollY > 300 ? 'flex' : 'none';
             }
@@ -348,6 +371,8 @@
         ReadingTime.init();
         BusuanziStats.init();
 
+        // 必须在所有 ScrollDispatcher.add 之后，此时才知道要不要挂监听
+        ScrollDispatcher.init();
     }
 
     // DOM加载完成后初始化
