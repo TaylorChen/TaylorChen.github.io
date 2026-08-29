@@ -19,9 +19,14 @@
 # in the templates via {{ site.myvariable }}.
 
 title: 小黄鸭
+# tagline 只用于首页 <title>（jekyll-seo-tag 优先取 tagline，其次才是 description），
+# 这样标题保持精简，description 仍完整用于 <meta name="description">
+tagline: AI Agent 工程、MySQL/Go/Nginx 性能排查实战
 email: cherrycmd@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  这里是 小黄鸭 的个人博客，与你一起发现更大的世界 | 要做一个有 ikigai 的程序员
+  分享后端工程与 AI 实践：MySQL 索引/死锁/慢查询排查、Nginx 灰度与高并发调优、
+  Go pprof 性能剖析、Java GC 与并发，以及 AI Agent 记忆、Agentic Coding
+  与工程方法论的思考。
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://chen.zz.ac" # the base hostname & protocol for your site (no trailing slash)
 twitter_username: shlchen
