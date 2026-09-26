@@ -24,9 +24,7 @@ title: 小黄鸭
 tagline: AI Agent 工程、MySQL/Go/Nginx 性能排查实战
 email: cherrycmd@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  分享后端工程与 AI 实践：MySQL 索引/死锁/慢查询排查、Nginx 灰度与高并发调优、
-  Go pprof 性能剖析、Java GC 与并发，以及 AI Agent 记忆、Agentic Coding
-  与工程方法论的思考。
+  AI 时代一线工程师的实践与思考。
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://chen.zz.ac" # the base hostname & protocol for your site (no trailing slash)
 twitter_username: shlchen
