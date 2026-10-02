@@ -1,0 +1,15 @@
+{%- comment -%}
+书签式外链卡片。用法：
+{% include bookmark.html url="https://example.com" title="标题" desc="一句话摘要" %}
+desc 可省略。
+{%- endcomment -%}
+<a class="bookmark-card" href="{{ include.url }}" target="_blank" rel="noopener">
+  <span class="bookmark-main">
+    <span class="bookmark-title">{{ include.title }}</span>
+    {%- if include.desc -%}
+    <span class="bookmark-desc">{{ include.desc }}</span>
+    {%- endif -%}
+    <span class="bookmark-url">{{ include.url | remove: 'https://' | remove: 'http://' | split: '/' | first }}</span>
+  </span>
+  <span class="bookmark-arrow" aria-hidden="true">&rarr;</span>
+</a>
