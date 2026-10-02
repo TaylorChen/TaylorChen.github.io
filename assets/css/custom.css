@@ -1809,3 +1809,67 @@ pre:hover .copy-btn,
 blockquote {
   font-family: "TsangerJinKai02", "TsangerJinKai", "STKaiti", "KaiTi", "Kaiti SC", "TW-Kai", var(--font-serif);
 }
+
+/* ==================== tw93 式排版：正文呼吸感 ==================== */
+/* 正文 15px + 0.5px 字距 + 1.7 行高，仅作用于文章正文区 */
+.post-content,
+#post-content {
+  font-size: 15px;
+  line-height: 1.7;
+  letter-spacing: 0.5px;
+}
+
+/* 文章内 h2 左侧鸭黄竖条：章节标记 */
+.post-content h2,
+#post-content h2 {
+  border-left: 3px solid var(--accent-mark);
+  padding-left: 0.75rem;
+}
+
+/* ==================== 书签式外链卡片 ==================== */
+.bookmark-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent-mark);
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color var(--transition-fast);
+}
+.bookmark-card:hover {
+  border-color: var(--accent-mark);
+}
+.bookmark-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+.bookmark-title {
+  font-weight: 600;
+  font-family: "TsangerJinKai02", "TsangerJinKai", "STKaiti", "KaiTi", "Kaiti SC", "TW-Kai", var(--font-serif);
+}
+.bookmark-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.bookmark-url {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.bookmark-arrow {
+  flex: none;
+  color: var(--accent);
+  font-size: 1.25rem;
+}
