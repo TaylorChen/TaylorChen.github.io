@@ -1,4 +1,4 @@
-# Welcome to Jekyll!
+successfully downloaded text file (SHA: 566e50b6a1b1f416d43ea690193d56400eb67dd6)# Welcome to Jekyll!
 #
 # This config file is meant for settings that affect your whole blog, values
 # which you are expected to set up once and rarely edit after that. If you find
@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: 小黄鸭
+title: AI即世界
 # tagline 只用于首页 <title>（jekyll-seo-tag 优先取 tagline，其次才是 description），
 # 这样标题保持精简，description 仍完整用于 <meta name="description">
 tagline: AI Agent 工程、MySQL/Go/Nginx 性能排查实战
@@ -33,7 +33,7 @@ keywords: 技术博客, 技术文章, 教程, Tutorial, Guide, 实战, 笔记, �
 lang: zh-CN
 timezone: Asia/Shanghai
 author:
-  name: "小黄鸭"
+  name: "AI即世界"
   url: "https://chen.zz.ac"
   same_as:
     - "https://github.com/taylorchen"
