@@ -1,5 +1,5 @@
 /**
- * 小黄鸭 博客 —— 极简杂志排版
+ * AI即世界 博客 —— 极简杂志排版
  *
  * 设计原则：
  * 1. 用排版层级和细分割线建立结构，不用卡片和阴影。
@@ -1796,4 +1796,16 @@ pre:hover .copy-btn,
     right: 1rem;
     bottom: 1rem;
   }
+}
+
+/* ==================== 中文楷体：标题与引用 ==================== */
+/* 字体栈：仓耳今楷（本地已安装时优先）→ macOS/iOS 华文楷体 → Windows 楷体 → 回退主题衬线 */
+/* 纯系统字体，零网络加载成本；没有楷体的设备自动回退到原有衬线样式 */
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-title,
+.posts-list .post-title,
+blockquote {
+  font-family: "TsangerJinKai02", "TsangerJinKai", "STKaiti", "KaiTi", "Kaiti SC", "TW-Kai", var(--font-serif);
 }
