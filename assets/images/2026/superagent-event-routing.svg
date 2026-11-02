@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="s2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#64748b"/></marker>
+    <marker id="s2g" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#10b981"/></marker>
+  </defs>
+  <rect width="760" height="380" fill="#f8fafc" rx="8"/>
+  <text x="380" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">一条事件的路径：先便宜地丢，再昂贵地想</text>
+
+  <rect x="24" y="70" width="110" height="150" rx="8" fill="#e2e8f0"/>
+  <text x="79" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">事件源</text>
+  <g font-size="11" fill="#475569" text-anchor="middle"><text x="79" y="122">群聊消息</text><text x="79" y="146">PR 评论</text><text x="79" y="170">CI 结果</text><text x="79" y="194">邮件 / 日程</text></g>
+
+  <rect x="180" y="90" width="120" height="50" rx="8" fill="#f59e0b"/><text x="240" y="112" text-anchor="middle" font-size="12" fill="#fff">程序层过滤</text><text x="240" y="130" text-anchor="middle" font-size="10" fill="#fff">白名单 / 来源 / 范围</text>
+  <rect x="180" y="160" width="120" height="50" rx="8" fill="#f59e0b" opacity=".75"/><text x="240" y="182" text-anchor="middle" font-size="12" fill="#fff">语义层判断</text><text x="240" y="200" text-anchor="middle" font-size="10" fill="#fff">LLM + 提示词规则</text>
+  <text x="100" y="62" text-anchor="middle" font-size="11" fill="#b45309">先丢掉绝大多数噪音 →</text>
+
+  <rect x="350" y="150" width="120" height="50" rx="8" fill="#6366f1"/><text x="410" y="172" text-anchor="middle" font-size="12" fill="#fff">Router</text><text x="410" y="190" text-anchor="middle" font-size="10" fill="#fff">新任务冷启动 / 跨任务</text>
+
+  <rect x="540" y="70" width="190" height="64" rx="8" fill="#0ea5e9"/><text x="635" y="96" text-anchor="middle" font-size="12" fill="#fff">Worker A（订阅 PR #12）</text><text x="635" y="116" text-anchor="middle" font-size="10" fill="#fff">隔离上下文 · 完整工具</text>
+  <rect x="540" y="230" width="190" height="64" rx="8" fill="#0ea5e9"/><text x="635" y="256" text-anchor="middle" font-size="12" fill="#fff">Worker B（订阅 话题 #7）</text><text x="635" y="276" text-anchor="middle" font-size="10" fill="#fff">隔离上下文 · 完整工具</text>
+
+  <g stroke="#64748b" stroke-width="1.5" marker-end="url(#s2)"><line x1="134" y1="145" x2="176" y2="118"/><line x1="240" y1="142" x2="240" y2="156" /><line x1="300" y1="185" x2="346" y2="178"/><line x1="470" y1="165" x2="536" y2="112"/><line x1="470" y1="185" x2="536" y2="248"/></g>
+  <text x="508" y="128" font-size="10" fill="#64748b">派工</text>
+  <path d="M240,90 C240,70 560,60 635,66" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#s2g)"/>
+  <text x="430" y="52" text-anchor="middle" font-size="11" fill="#059669">已订阅的 Thread：程序直通（Fast Path）</text>
+  <path d="M240,210 C240,330 520,330 635,298" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#s2g)"/>
+
+  <path d="M600,136 C470,260 460,260 440,204" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#s2)"/>
+  <text x="440" y="340" text-anchor="middle" font-size="11" fill="#64748b">Worker 只向 Router 汇报，由 Router 统一对人说话</text>
+  <text x="380" y="366" text-anchor="middle" font-size="11" fill="#94a3b8">绿色虚线 = 直通；Router 仍能看到所有事件，但只处理未被订阅的</text>
+</svg>

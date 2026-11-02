@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <rect width="760" height="320" fill="#f8fafc" rx="8"/>
+  <text x="380" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">官方实验里能确认的两组数（合成负载，约 300 条消息 / 20 个任务）</text>
+  <text x="190" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">任务完成时间 p95（分钟）</text>
+  <line x1="60" y1="260" x2="330" y2="260" stroke="#94a3b8"/>
+  <rect x="100" y="176" width="70" height="84" fill="#6366f1"/><text x="135" y="168" text-anchor="middle" font-size="13" fill="#334155">15.7</text>
+  <rect x="220" y="102" width="70" height="158" fill="#f59e0b"/><text x="255" y="94" text-anchor="middle" font-size="13" fill="#334155">29.5</text>
+  <text x="135" y="282" text-anchor="middle" font-size="11" fill="#475569">Super-agent</text>
+  <text x="255" y="282" text-anchor="middle" font-size="11" fill="#475569">单 Session + Subagent</text>
+  <text x="255" y="298" text-anchor="middle" font-size="10" fill="#94a3b8">（中性提示，0/5 次委派）</text>
+
+  <text x="570" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">Router 读缓存 token（万）</text>
+  <line x1="440" y1="260" x2="710" y2="260" stroke="#94a3b8"/>
+  <rect x="480" y="143" width="70" height="117" fill="#6366f1"/><text x="515" y="135" text-anchor="middle" font-size="13" fill="#334155">2323</text>
+  <rect x="600" y="100" width="70" height="160" fill="#f59e0b"/><text x="635" y="92" text-anchor="middle" font-size="13" fill="#334155">3177</text>
+  <text x="515" y="282" text-anchor="middle" font-size="11" fill="#475569">完整版（有直通）</text>
+  <text x="635" y="282" text-anchor="middle" font-size="11" fill="#475569">去掉直通</text>
+  <text x="575" y="298" text-anchor="middle" font-size="10" fill="#94a3b8">完成时间基本不变，token 多 ~37%</text>
+</svg>

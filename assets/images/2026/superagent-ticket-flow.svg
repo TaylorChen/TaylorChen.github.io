@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs><marker id="s3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#64748b"/></marker></defs>
+  <rect width="760" height="300" fill="#f8fafc" rx="8"/>
+  <text x="380" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">仓库里的领域模型：谁授权的，干到哪了，全有账</text>
+  <g font-size="12" fill="#fff" text-anchor="middle">
+    <rect x="20" y="90" width="90" height="44" rx="8" fill="#64748b"/><text x="65" y="117">Source</text>
+    <rect x="135" y="90" width="90" height="44" rx="8" fill="#64748b"/><text x="180" y="117">Trigger</text>
+    <rect x="250" y="90" width="90" height="44" rx="8" fill="#64748b"/><text x="295" y="117">Thread</text>
+    <rect x="365" y="90" width="90" height="44" rx="8" fill="#f59e0b"/><text x="410" y="108">Eval</text><text x="410" y="124" font-size="10">准入 + 研判</text>
+    <rect x="480" y="90" width="90" height="44" rx="8" fill="#6366f1"/><text x="525" y="108">Mandate</text><text x="525" y="124" font-size="10">授权凭证</text>
+    <rect x="595" y="90" width="70" height="44" rx="8" fill="#0ea5e9"/><text x="630" y="117">Ticket</text>
+    <rect x="680" y="90" width="64" height="44" rx="8" fill="#0ea5e9" opacity=".75"/><text x="712" y="108">Exec</text><text x="712" y="123">执行器</text>
+  </g>
+  <g stroke="#64748b" stroke-width="1.5" marker-end="url(#s3)"><line x1="110" y1="112" x2="131" y2="112"/><line x1="225" y1="112" x2="246" y2="112"/><line x1="340" y1="112" x2="361" y2="112"/><line x1="455" y1="112" x2="476" y2="112"/><line x1="570" y1="112" x2="591" y2="112"/><line x1="665" y1="112" x2="676" y2="112"/></g>
+  <path d="M295,136 C295,200 630,200 630,138" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#s3)"/>
+  <text x="462" y="196" text-anchor="middle" font-size="11" fill="#059669">Subscription 扇出：只给上下文，不给权限</text>
+  <text x="410" y="70" text-anchor="middle" font-size="11" fill="#b45309">只有 Eval 能创建 Ticket</text>
+  <text x="525" y="70" text-anchor="middle" font-size="11" fill="#4f46e5">记录策略版本 + 强度</text>
+  <g font-size="11" fill="#475569"><text x="30" y="250">Decision：accept 接单 · stop 停止 · ignore 忽略 · unavailable 未完成</text><text x="30" y="272">Strength：explicit（白名单的人点名）· inferred（推断，observe 模式下只记录）</text></g>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="s1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#64748b"/></marker>
+  </defs>
+  <rect width="760" height="330" fill="#f8fafc" rx="8"/>
+  <text x="190" y="32" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">现在：人当调度器</text>
+  <text x="570" y="32" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">Super-agent：人只面对一个入口</text>
+  <line x1="380" y1="48" x2="380" y2="270" stroke="#cbd5e1" stroke-dasharray="4 4"/>
+
+  <circle cx="190" cy="100" r="24" fill="#f59e0b"/><text x="190" y="105" text-anchor="middle" font-size="12" fill="#fff">人</text>
+  <g fill="#0ea5e9"><rect x="50" y="190" width="56" height="34" rx="6"/><rect x="118" y="190" width="56" height="34" rx="6"/><rect x="186" y="190" width="56" height="34" rx="6"/><rect x="254" y="190" width="56" height="34" rx="6"/></g>
+  <g text-anchor="middle" font-size="11" fill="#fff"><text x="78" y="212">S1</text><text x="146" y="212">S2</text><text x="214" y="212">S3</text><text x="282" y="212">S4</text></g>
+  <g stroke="#64748b" stroke-width="1.5" marker-end="url(#s1)"><line x1="172" y1="118" x2="84" y2="186"/><line x1="182" y1="123" x2="148" y2="186"/><line x1="198" y1="123" x2="212" y2="186"/><line x1="208" y1="118" x2="276" y2="186"/></g>
+  <text x="190" y="262" text-anchor="middle" font-size="12" fill="#64748b">切换、记上下文、盯进度</text>
+  <text x="190" y="284" text-anchor="middle" font-size="12" fill="#64748b">上限 ≈ 3~5 个活跃 Session（作者观察）</text>
+
+  <circle cx="570" cy="80" r="22" fill="#f59e0b"/><text x="570" y="85" text-anchor="middle" font-size="12" fill="#fff">人</text>
+  <rect x="505" y="130" width="130" height="36" rx="8" fill="#6366f1"/><text x="570" y="153" text-anchor="middle" font-size="12" fill="#fff">Router（常驻）</text>
+  <g fill="#0ea5e9"><rect x="440" y="210" width="50" height="30" rx="6"/><rect x="505" y="210" width="50" height="30" rx="6"/><rect x="570" y="210" width="50" height="30" rx="6"/><rect x="635" y="210" width="50" height="30" rx="6"/><rect x="700" y="210" width="40" height="30" rx="6" opacity=".5"/></g>
+  <g text-anchor="middle" font-size="11" fill="#fff"><text x="465" y="230">W</text><text x="530" y="230">W</text><text x="595" y="230">W</text><text x="660" y="230">W</text><text x="720" y="230">…</text></g>
+  <g stroke="#64748b" stroke-width="1.5" marker-end="url(#s1)"><line x1="570" y1="104" x2="570" y2="126"/><line x1="540" y1="168" x2="470" y2="206"/><line x1="560" y1="168" x2="532" y2="206"/><line x1="580" y1="168" x2="598" y2="206"/><line x1="600" y1="168" x2="656" y2="206"/></g>
+  <text x="570" y="262" text-anchor="middle" font-size="12" fill="#64748b">Session 退回实现细节</text>
+  <text x="570" y="284" text-anchor="middle" font-size="12" fill="#64748b">瓶颈换成：Router 的吞吐 + 人的信任</text>
+</svg>
